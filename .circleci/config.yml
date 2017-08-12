@@ -1,0 +1,26 @@
+version: 2
+jobs:
+  py3test:
+    working_directory: ~/pymacy
+    docker:
+      - image: circleci/python:3.6.1
+    steps:
+      - checkout
+      - run:
+          command: |
+            python -m venv venv
+            . venv/bin/activate
+            pip install -q numpy
+            pip install -q -r requirements.txt
+      - run:
+          command: |
+            . venv/bin/activate
+            python setup.py develop
+            nosetests
+          no_output_timeout: 3600
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - py3test
