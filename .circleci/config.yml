@@ -1,7 +1,7 @@
 version: 2
 jobs:
   py3test:
-    working_directory: ~/pymacy
+    working_directory: ~/veidt
     docker:
       - image: circleci/python:3.6.1
     steps:
