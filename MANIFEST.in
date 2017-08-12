@@ -1,0 +1,3 @@
+include *.rst requirements*.txt
+recursive-include veidt *.py
+recursive-exclude veidt tests/*.* tests/*
