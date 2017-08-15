@@ -1,0 +1,152 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>veidt.models module &#8212; veidt  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="veidt.descriptors module" href="veidt.descriptors.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-veidt.models">
+<span id="veidt-models-module"></span><h1>veidt.models module<a class="headerlink" href="#module-veidt.models" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="veidt.models.NeuralNet">
+<em class="property">class </em><code class="descclassname">veidt.models.</code><code class="descname">NeuralNet</code><span class="sig-paren">(</span><em>layer_sizes</em>, <em>describer</em>, <em>preprocessor=StandardScaler(copy=True</em>, <em>with_mean=True</em>, <em>with_std=True)</em>, <em>activation='relu'</em>, <em>loss='mae'</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.models.NeuralNet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="veidt.abstract.html#veidt.abstract.Model" title="veidt.abstract.Model"><code class="xref py py-class docutils literal"><span class="pre">veidt.abstract.Model</span></code></a></p>
+<dl class="method">
+<dt id="veidt.models.NeuralNet.fit">
+<code class="descname">fit</code><span class="sig-paren">(</span><em>inputs</em>, <em>outputs</em>, <em>test_size=0.2</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.models.NeuralNet.fit" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>inputs</strong> – List of inputs</li>
+<li><strong>outputs</strong> – List of outputs</li>
+<li><strong>test_size</strong> – Size of test set. Defaults to 0.2.</li>
+<li><strong>kwargs</strong> – Passthrough to fit function in keras.models</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="veidt.models.NeuralNet.predict">
+<code class="descname">predict</code><span class="sig-paren">(</span><em>inputs</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.models.NeuralNet.predict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="veidt.models.NeuralNet.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>model_fname</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.models.NeuralNet.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">veidt</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="veidt.html">veidt package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="veidt.html#subpackages">Subpackages</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="veidt.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="veidt.abstract.html">veidt.abstract module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="veidt.descriptors.html">veidt.descriptors module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">veidt.models module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="veidt.html#module-veidt">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="veidt.html">veidt package</a><ul>
+      <li>Previous: <a href="veidt.descriptors.html" title="previous chapter">veidt.descriptors module</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Materials Virtual Lab.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/veidt.models.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

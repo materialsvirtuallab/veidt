@@ -20,7 +20,7 @@ class NeuralNetTest(unittest.TestCase):
 
     def test_fit_evaluate(self):
         li2o = Structure.from_file(os.path.join(os.path.dirname(__file__),
-                                               "Li2O.cif"))
+                                                "Li2O.cif"))
         na2o = Structure.from_file(os.path.join(os.path.dirname(__file__),
                                                 "Na2O.cif"))
         structures = [li2o] * 100 + [na2o] * 100

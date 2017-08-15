@@ -1,0 +1,219 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>veidt.abstract module &#8212; veidt  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="veidt.descriptors module" href="veidt.descriptors.html" />
+    <link rel="prev" title="veidt package" href="veidt.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-veidt.abstract">
+<span id="veidt-abstract-module"></span><h1>veidt.abstract module<a class="headerlink" href="#module-veidt.abstract" title="Permalink to this headline">¶</a></h1>
+<p>Define abstract base classes.</p>
+<dl class="class">
+<dt id="veidt.abstract.Describer">
+<em class="property">class </em><code class="descclassname">veidt.abstract.</code><code class="descname">Describer</code><a class="headerlink" href="#veidt.abstract.Describer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">monty.json.MSONable</span></code></p>
+<p>Base class for a Describer, i.e., something that converts an object to a
+descriptor, typically a numerical representation useful for machine
+learning.</p>
+<dl class="method">
+<dt id="veidt.abstract.Describer.describe">
+<code class="descname">describe</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.abstract.Describer.describe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts an obj to a descriptor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>obj</strong> – Object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Descriptor for a structure. Recommended format is a pandas
+Series or Dataframe object for easy manipulation. For example, a
+simple site descriptor of the fractional coordinates (this is
+usually a bad descriptor, so it is just for illustration purposes)
+can be generated as:<div class="highlight-default"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">frac_coords</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">]))</span>
+          <span class="n">a</span>         <span class="n">b</span>         <span class="n">c</span>
+<span class="mi">0</span>  <span class="mf">0.000000</span>  <span class="mf">0.000000</span>  <span class="mf">0.000000</span>
+<span class="mi">1</span>  <span class="mf">0.750178</span>  <span class="mf">0.750178</span>  <span class="mf">0.750178</span>
+<span class="mi">2</span>  <span class="mf">0.249822</span>  <span class="mf">0.249822</span>  <span class="mf">0.249822</span>
+</pre></div>
+</div>
+<p>Pandas dataframes can be dumped to a variety of formats (json, csv,
+etc.) easily.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="veidt.abstract.Describer.describe_all">
+<code class="descname">describe_all</code><span class="sig-paren">(</span><em>objs</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.abstract.Describer.describe_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience method to convert a list of objects to a list of
+descriptors. Default implementation simply loops a call to describe, but
+in some instances, a batch implementation may be more efficient.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>objs</strong> – List of objects</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of descriptors</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.abstract.Model">
+<em class="property">class </em><code class="descclassname">veidt.abstract.</code><code class="descname">Model</code><a class="headerlink" href="#veidt.abstract.Model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">monty.json.MSONable</span></code></p>
+<p>Abstract Base class for a Model. Basically, it usually wraps around a deep
+learning package, e.g., the Sequential Model in Keras, but provides for
+transparent conversion of arbitrary input and outputs.</p>
+<dl class="method">
+<dt id="veidt.abstract.Model.fit">
+<code class="descname">fit</code><span class="sig-paren">(</span><em>inputs</em>, <em>outputs</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.abstract.Model.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit the model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>inputs</strong> – List of input objects</li>
+<li><strong>outputs</strong> – List of output objects</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="veidt.abstract.Model.predict">
+<code class="descname">predict</code><span class="sig-paren">(</span><em>inputs</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.abstract.Model.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predict the value given a set of inputs based on fitted model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>inputs</strong> – List of input objects</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of output objects</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">veidt</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="veidt.html">veidt package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="veidt.html#subpackages">Subpackages</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="veidt.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">veidt.abstract module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="veidt.descriptors.html">veidt.descriptors module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="veidt.models.html">veidt.models module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="veidt.html#module-veidt">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="veidt.html">veidt package</a><ul>
+      <li>Previous: <a href="veidt.html" title="previous chapter">veidt package</a></li>
+      <li>Next: <a href="veidt.descriptors.html" title="next chapter">veidt.descriptors module</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Materials Virtual Lab.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/veidt.abstract.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
