@@ -17,7 +17,11 @@ setup(
     url="http://www.materialsvirtuallab.org",
     license="BSD",
     description="Veidt is a deep learning library for materials science.",
-    long_description="None",
+    long_description="""Veidt is a deep learning library for materials science. It builds on top of
+the popular pymatgen (Python Materials Genomics) materials analysis library
+and well-known deep learning libraries like Keras and Tensorflow. The aim is
+to link the power of both kinds of libraries for rapid experimentation and
+learning of materials data.""",
     keywords=["materials", "science", "deep", "learning"],
     classifiers=[
         "Programming Language :: Python :: 3",
