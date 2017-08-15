@@ -16,7 +16,7 @@ Installation
 
 Veidt should be easily installable via pip on most systems::
 
-   pip install veidt
+    pip install veidt
 
 General concepts
 ================
