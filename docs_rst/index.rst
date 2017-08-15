@@ -18,6 +18,44 @@ Veidt should be easily installable via pip on most systems::
 
    pip install veidt
 
+General concepts
+================
+
+Veidt works by abstracting some common tasks to high-level classes. For example,
+deep learning require numerical representations, i.e., descriptors. Veidt
+specifies Describer classes that take an input object and convert it into a
+numerical representation. Similarly, the Model classes serves as a wrapper
+around common models.
+
+Here's a simple example utilizing Materials Project::
+
+    from pymatgen import MPRester
+    from veidt.descriptors import DistinctSiteProperty
+    from veidt.models import NeuralNet
+
+    # Let's grab the Li2O and Na2O structures via pymatgen's high level
+    # interface to the Materials Project API.
+    mpr = MPRester()
+    li2o = mpr.get_structures("Li2O")
+    na2o = li2o.copy()
+    na2o.replace_species({"Li": "Na"})
+
+    # Construct a NeuralNet with a single hidden layer of 20 neurons.
+    # The DistinctSiteProperty just says we want the look at only the 8c sites
+    # and use the atomic number (Z) of the site as a descriptor.
+
+    model = NeuralNet([20], describer=DistinctSiteProperty(['8c'], ["Z"]))
+
+    # Create some artificial data to fit.
+    structures = [li2o] * 100 + [na2o] * 100
+    energies = [3] * 100 + [4] * 100
+
+    # Fit the model.
+    model.fit(inputs=structures, outputs=energies, epochs=100)
+
+    # Use the model to do a prediction.
+    model.predict([na2o])
+
 API docs
 ========
 

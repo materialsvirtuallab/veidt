@@ -57,6 +57,43 @@ learning of materials data.</p>
 </pre></div>
 </div>
 </div>
+<div class="section" id="general-concepts">
+<h1>General concepts<a class="headerlink" href="#general-concepts" title="Permalink to this headline">¶</a></h1>
+<p>Veidt works by abstracting some common tasks to high-level classes. For example,
+deep learning require numerical representations, i.e., descriptors. Veidt
+specifies Describer classes that take an input object and convert it into a
+numerical representation. Similarly, the Model classes serves as a wrapper
+around common models.</p>
+<p>Here’s a simple example utilizing Materials Project:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pymatgen</span> <span class="k">import</span> <span class="n">MPRester</span>
+<span class="kn">from</span> <span class="nn">veidt.descriptors</span> <span class="k">import</span> <span class="n">DistinctSiteProperty</span>
+<span class="kn">from</span> <span class="nn">veidt.models</span> <span class="k">import</span> <span class="n">NeuralNet</span>
+
+<span class="c1"># Let&#39;s grab the Li2O and Na2O structures via pymatgen&#39;s high level</span>
+<span class="c1"># interface to the Materials Project API.</span>
+<span class="n">mpr</span> <span class="o">=</span> <span class="n">MPRester</span><span class="p">()</span>
+<span class="n">li2o</span> <span class="o">=</span> <span class="n">mpr</span><span class="o">.</span><span class="n">get_structures</span><span class="p">(</span><span class="s2">&quot;Li2O&quot;</span><span class="p">)</span>
+<span class="n">na2o</span> <span class="o">=</span> <span class="n">li2o</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">na2o</span><span class="o">.</span><span class="n">replace_species</span><span class="p">({</span><span class="s2">&quot;Li&quot;</span><span class="p">:</span> <span class="s2">&quot;Na&quot;</span><span class="p">})</span>
+
+<span class="c1"># Construct a NeuralNet with a single hidden layer of 20 neurons.</span>
+<span class="c1"># The DistinctSiteProperty just says we want the look at only the 8c sites</span>
+<span class="c1"># and use the atomic number (Z) of the site as a descriptor.</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">NeuralNet</span><span class="p">([</span><span class="mi">20</span><span class="p">],</span> <span class="n">describer</span><span class="o">=</span><span class="n">DistinctSiteProperty</span><span class="p">([</span><span class="s1">&#39;8c&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;Z&quot;</span><span class="p">]))</span>
+
+<span class="c1"># Create some artificial data to fit.</span>
+<span class="n">structures</span> <span class="o">=</span> <span class="p">[</span><span class="n">li2o</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">+</span> <span class="p">[</span><span class="n">na2o</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span>
+<span class="n">energies</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">+</span> <span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span>
+
+<span class="c1"># Fit the model.</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">structures</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">energies</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="c1"># Use the model to do a prediction.</span>
+<span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">([</span><span class="n">na2o</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="api-docs">
 <h1>API docs<a class="headerlink" href="#api-docs" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
