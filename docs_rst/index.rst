@@ -36,14 +36,14 @@ Here's a simple example utilizing Materials Project::
     # Let's grab the Li2O and Na2O structures via pymatgen's high level
     # interface to the Materials Project API.
     mpr = MPRester()
-    li2o = mpr.get_structures("Li2O")
+    li2o = mpr.get_structures("Li2O")[0]
     na2o = li2o.copy()
     na2o.replace_species({"Li": "Na"})
 
     # Construct a NeuralNet with a single hidden layer of 20 neurons.
     # The DistinctSiteProperty just says we want the look at only the 8c sites
-    # and use the atomic number (Z) of the site as a descriptor.
-
+    # and use the atomic number (Z) of the site as a descriptor. This is not
+    # a good model of course. It is meant to illustrate the concepts.
     model = NeuralNet([20], describer=DistinctSiteProperty(['8c'], ["Z"]))
 
     # Create some artificial data to fit.

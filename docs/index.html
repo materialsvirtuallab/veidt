@@ -72,14 +72,14 @@ around common models.</p>
 <span class="c1"># Let&#39;s grab the Li2O and Na2O structures via pymatgen&#39;s high level</span>
 <span class="c1"># interface to the Materials Project API.</span>
 <span class="n">mpr</span> <span class="o">=</span> <span class="n">MPRester</span><span class="p">()</span>
-<span class="n">li2o</span> <span class="o">=</span> <span class="n">mpr</span><span class="o">.</span><span class="n">get_structures</span><span class="p">(</span><span class="s2">&quot;Li2O&quot;</span><span class="p">)</span>
+<span class="n">li2o</span> <span class="o">=</span> <span class="n">mpr</span><span class="o">.</span><span class="n">get_structures</span><span class="p">(</span><span class="s2">&quot;Li2O&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">na2o</span> <span class="o">=</span> <span class="n">li2o</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 <span class="n">na2o</span><span class="o">.</span><span class="n">replace_species</span><span class="p">({</span><span class="s2">&quot;Li&quot;</span><span class="p">:</span> <span class="s2">&quot;Na&quot;</span><span class="p">})</span>
 
 <span class="c1"># Construct a NeuralNet with a single hidden layer of 20 neurons.</span>
 <span class="c1"># The DistinctSiteProperty just says we want the look at only the 8c sites</span>
-<span class="c1"># and use the atomic number (Z) of the site as a descriptor.</span>
-
+<span class="c1"># and use the atomic number (Z) of the site as a descriptor. This is not</span>
+<span class="c1"># a good model of course. It is meant to illustrate the concepts.</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">NeuralNet</span><span class="p">([</span><span class="mi">20</span><span class="p">],</span> <span class="n">describer</span><span class="o">=</span><span class="n">DistinctSiteProperty</span><span class="p">([</span><span class="s1">&#39;8c&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;Z&quot;</span><span class="p">]))</span>
 
 <span class="c1"># Create some artificial data to fit.</span>
