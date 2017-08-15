@@ -43,9 +43,73 @@
   <div class="section" id="module-veidt.models">
 <span id="veidt-models-module"></span><h1>veidt.models module<a class="headerlink" href="#module-veidt.models" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
+<dt id="veidt.models.LRModel">
+<em class="property">class </em><code class="descclassname">veidt.models.</code><code class="descname">LRModel</code><span class="sig-paren">(</span><em>describer</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.models.LRModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="veidt.abstract.html#veidt.abstract.Model" title="veidt.abstract.Model"><code class="xref py py-class docutils literal"><span class="pre">veidt.abstract.Model</span></code></a></p>
+<p>Basic linear regression model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>describer</strong> – Desciber object to convert input objects to
+descriptors.</li>
+<li><strong>kwargs</strong> – Passthrough to sklearn.linear_models.LinearRegression</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="veidt.models.LRModel.fit">
+<code class="descname">fit</code><span class="sig-paren">(</span><em>inputs</em>, <em>outputs</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.models.LRModel.fit" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>inputs</strong> – List of inputs</li>
+<li><strong>outputs</strong> – List of outputs</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="veidt.models.LRModel.predict">
+<code class="descname">predict</code><span class="sig-paren">(</span><em>inputs</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.models.LRModel.predict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="veidt.models.LRModel.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>model_fname</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.models.LRModel.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="veidt.models.NeuralNet">
 <em class="property">class </em><code class="descclassname">veidt.models.</code><code class="descname">NeuralNet</code><span class="sig-paren">(</span><em>layer_sizes</em>, <em>describer</em>, <em>preprocessor=StandardScaler(copy=True</em>, <em>with_mean=True</em>, <em>with_std=True)</em>, <em>activation='relu'</em>, <em>loss='mae'</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.models.NeuralNet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="veidt.abstract.html#veidt.abstract.Model" title="veidt.abstract.Model"><code class="xref py py-class docutils literal"><span class="pre">veidt.abstract.Model</span></code></a></p>
+<p>Basic neural network model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>layer_sizes</strong> – Hidden layer sizes, e.g., [3, 3]</li>
+<li><strong>describer</strong> – Desciber object to convert input objects to
+descriptors.</li>
+<li><strong>preprocessor</strong> – : Processor to use. Defaults to StandardScaler</li>
+<li><strong>activation</strong> – Activation function</li>
+<li><strong>loss</strong> – Loss function. Defaults to mae</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
 <dt id="veidt.models.NeuralNet.fit">
 <code class="descname">fit</code><span class="sig-paren">(</span><em>inputs</em>, <em>outputs</em>, <em>test_size=0.2</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.models.NeuralNet.fit" title="Permalink to this definition">¶</a></dt>

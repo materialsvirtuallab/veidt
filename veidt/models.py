@@ -9,20 +9,23 @@ from sklearn.preprocessing import StandardScaler
 from keras.optimizers import Adam
 from keras.models import Sequential
 from keras.layers import Dense
+from sklearn.linear_model import LinearRegression
 
 
 class NeuralNet(Model):
+    """
+    Basic neural network model.
+
+    :param layer_sizes: Hidden layer sizes, e.g., [3, 3]
+    :param describer: Desciber object to convert input objects to
+        descriptors.
+    :param preprocessor: : Processor to use. Defaults to StandardScaler
+    :param activation: Activation function
+    :param loss: Loss function. Defaults to mae
+    """
 
     def __init__(self, layer_sizes, describer, preprocessor=StandardScaler(),
                  activation="relu", loss="mae"):
-        """
-        :param layer_sizes: Hidden layer sizes, e.g., [3, 3]
-        :param describer: Desciber object to convert input objects to
-            descriptors.
-        :param preprocessor: : Processor to use. Defaults to StandardScaler
-        :param activation: Activation function
-        :param loss: Loss function. Defaults to mae
-        """
         self.layer_sizes = layer_sizes
         self.desciber = describer
         self.preprocessor = preprocessor
@@ -58,6 +61,35 @@ class NeuralNet(Model):
         descriptors = self.desciber.describe_all(inputs)
         scaled_descriptors = self.preprocessor.transform(descriptors)
         return self.model.predict(scaled_descriptors)
+
+    def save(self, model_fname):
+        self.model.save(model_fname)
+
+
+class LRModel(Model):
+    """
+    Basic linear regression model.
+
+    :param describer: Desciber object to convert input objects to
+        descriptors.
+    :param kwargs: Passthrough to sklearn.linear_models.LinearRegression
+    """
+
+    def __init__(self, describer, **kwargs):
+        self.desciber = describer
+        self.model = LinearRegression(**kwargs)
+
+    def fit(self, inputs, outputs):
+        """
+        :param inputs: List of inputs
+        :param outputs: List of outputs
+        """
+        descriptors = self.desciber.describe_all(inputs)
+        self.model.fit(descriptors, outputs)
+
+    def predict(self, inputs):
+        descriptors = self.desciber.describe_all(inputs)
+        return self.model.predict(descriptors)
 
     def save(self, model_fname):
         self.model.save(model_fname)
