@@ -10,7 +10,7 @@ import numpy as np
 from pymatgen import Structure
 
 from veidt.descriptors import DistinctSiteProperty
-from veidt.models import NeuralNet, LRModel
+from veidt.models import NeuralNet, LinearModel
 
 
 class NeuralNetTest(unittest.TestCase):
@@ -32,10 +32,10 @@ class NeuralNetTest(unittest.TestCase):
 
 
 
-class LRModelTest(unittest.TestCase):
+class LinearModelTest(unittest.TestCase):
 
     def setUp(self):
-        self.model = LRModel(
+        self.model = LinearModel(
             describer=DistinctSiteProperty(['8c'], ["Z"]), fit_intercept=True)
 
     def test_fit_evaluate(self):

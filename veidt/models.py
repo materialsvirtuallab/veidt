@@ -66,7 +66,7 @@ class NeuralNet(Model):
         self.model.save(model_fname)
 
 
-class LRModel(Model):
+class LinearModel(Model):
     """
     Basic linear regression model.
 
