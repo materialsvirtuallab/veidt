@@ -67,19 +67,22 @@ class NeuralNet(Model):
 
 class LinearModel(Model):
     """
-    Basic linear regression model.
+    Linear model.
 
     :param describer: Desciber object to convert input objects to
         descriptors.
-    :param model: An instance of LinearModel estimator in
-        sklearn.linear_model. Default to LinearRegression(), i.e.,
+    :param regressor (str): Name of LinearModel from
+        sklearn.linear_model. Default to "LinearRegression", i.e.,
         ordinary least squares.
+    :param kwargs: kwargs to be passed to regressor.
     """
-    from sklearn.linear_model import LinearRegression
 
-    def __init__(self, describer, model=LinearRegression()):
+    def __init__(self, describer, regressor="LinearRegression", **kwargs):
+        from sklearn.linear_model import LinearRegression
         self.describer = describer
-        self.model = model
+        self.regressor = regressor
+        self.kwargs = kwargs
+        self.model = eval(regressor)(**kwargs)
 
     def fit(self, inputs, outputs):
         """
