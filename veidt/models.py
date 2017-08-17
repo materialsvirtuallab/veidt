@@ -2,6 +2,8 @@
 # Copyright (c) Materials Virtual Lab
 # Distributed under the terms of the BSD License.
 
+import sys
+
 from veidt.abstract import Model
 
 from sklearn.model_selection import train_test_split
@@ -78,11 +80,13 @@ class LinearModel(Model):
     """
 
     def __init__(self, describer, regressor="LinearRegression", **kwargs):
-        from sklearn.linear_model import LinearRegression
+        import sklearn.linear_model
         self.describer = describer
         self.regressor = regressor
         self.kwargs = kwargs
-        self.model = eval(regressor)(**kwargs)
+        lm = sys.modules["sklearn.linear_model"]
+        lr = getattr(lm, regressor)
+        self.model = lr(**kwargs)
 
     def fit(self, inputs, outputs):
         """
