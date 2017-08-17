@@ -72,12 +72,13 @@ class LinearModel(Model):
 
     :param describer: Desciber object to convert input objects to
         descriptors.
-    :param kwargs: Passthrough to sklearn.linear_models.LinearRegression
+    :param regressor: An instance of LinearModel estimator in
+        sklearn.linear_models.
     """
 
-    def __init__(self, describer, **kwargs):
+    def __init__(self, describer, regressor=LinearRegression()):
         self.desciber = describer
-        self.model = LinearRegression(**kwargs)
+        self.model = regressor
 
     def fit(self, inputs, outputs):
         """

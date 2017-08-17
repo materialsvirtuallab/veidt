@@ -31,12 +31,11 @@ class NeuralNetTest(unittest.TestCase):
         self.assertEqual(round(self.model.predict([na2o])[0][0]), 4, 3)
 
 
-
 class LinearModelTest(unittest.TestCase):
 
     def setUp(self):
         self.model = LinearModel(
-            describer=DistinctSiteProperty(['8c'], ["Z"]), fit_intercept=True)
+            describer=DistinctSiteProperty(['8c'], ["Z"]))
 
     def test_fit_evaluate(self):
         li2o = Structure.from_file(os.path.join(os.path.dirname(__file__),
