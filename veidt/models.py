@@ -77,7 +77,7 @@ class LinearModel(Model):
     """
 
     def __init__(self, describer, regressor=LinearRegression()):
-        self.desciber = describer
+        self.describer = describer
         self.model = regressor
 
     def fit(self, inputs, outputs):
@@ -85,11 +85,11 @@ class LinearModel(Model):
         :param inputs: List of inputs
         :param outputs: List of outputs
         """
-        descriptors = self.desciber.describe_all(inputs)
+        descriptors = self.describer.describe_all(inputs)
         self.model.fit(descriptors, outputs)
 
     def predict(self, inputs):
-        descriptors = self.desciber.describe_all(inputs)
+        descriptors = self.describer.describe_all(inputs)
         return self.model.predict(descriptors)
 
     def save(self, model_fname):
