@@ -76,9 +76,9 @@ class LinearModel(Model):
         sklearn.linear_models.
     """
 
-    def __init__(self, describer, regressor=LinearRegression()):
+    def __init__(self, describer, model=LinearRegression()):
         self.describer = describer
-        self.model = regressor
+        self.model = model
 
     def fit(self, inputs, outputs):
         """
