@@ -6,10 +6,6 @@ from veidt.abstract import Model
 
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from keras.optimizers import Adam
-from keras.models import Sequential
-from keras.layers import Dense
-from sklearn.linear_model import LinearRegression
 
 
 class NeuralNet(Model):
@@ -40,6 +36,9 @@ class NeuralNet(Model):
         :param test_size: Size of test set. Defaults to 0.2.
         :param kwargs: Passthrough to fit function in keras.models
         """
+        from keras.optimizers import Adam
+        from keras.models import Sequential
+        from keras.layers import Dense
         descriptors = self.desciber.describe_all(inputs)
         scaled_descriptors = self.preprocessor.fit_transform(descriptors)
         adam = Adam(1e-2)
@@ -72,9 +71,11 @@ class LinearModel(Model):
 
     :param describer: Desciber object to convert input objects to
         descriptors.
-    :param regressor: An instance of LinearModel estimator in
-        sklearn.linear_models.
+    :param model: An instance of LinearModel estimator in
+        sklearn.linear_model. Default to LinearRegression(), i.e.,
+        ordinary least squares.
     """
+    from sklearn.linear_model import LinearRegression
 
     def __init__(self, describer, model=LinearRegression()):
         self.describer = describer
@@ -91,6 +92,3 @@ class LinearModel(Model):
     def predict(self, inputs):
         descriptors = self.describer.describe_all(inputs)
         return self.model.predict(descriptors)
-
-    def save(self, model_fname):
-        self.model.save(model_fname)
