@@ -6,10 +6,36 @@ from __future__ import division, print_function, unicode_literals, \
 import unittest
 import os
 
+import numpy as np
 import pandas as pd
 from pymatgen import Structure
 
-from veidt.descriptors import DistinctSiteProperty
+from veidt.descriptors import Generator, DistinctSiteProperty
+
+
+class GeneratorTest(unittest.TestCase):
+
+    def setUp(self):
+        self.obj = pd.DataFrame(np.random.rand(4, 2), columns=['x', 'y'])
+        self.labels = ["sum", "diff", "prod", "quot"]
+        funcs = []
+        funcs.append(lambda d: d['x'] + d['y'])
+        funcs.append(lambda d: d['x'] - d['y'])
+        funcs.append(lambda d: d['x'] * d['y'])
+        funcs.append(lambda d: d['x'] / d['y'])
+        self.funcs = funcs
+        self.generator = Generator(funcs=funcs, labels=self.labels)
+
+    def test_describe(self):
+        results = self.generator.describe(self.obj)
+        np.testing.assert_array_almost_equal(self.obj['x'] + self.obj['y'],
+                                             results['sum'])
+        np.testing.assert_array_almost_equal(self.obj['x'] - self.obj['y'],
+                                             results['diff'])
+        np.testing.assert_array_almost_equal(self.obj['x'] * self.obj['y'],
+                                             results['prod'])
+        np.testing.assert_array_almost_equal(self.obj['x'] / self.obj['y'],
+                                             results['quot'])
 
 
 class DistinctSitePropertyTest(unittest.TestCase):

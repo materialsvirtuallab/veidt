@@ -11,6 +11,33 @@ from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 from veidt.abstract import Describer
 
 
+class Generator(Describer):
+
+    def __init__(self, funcs, labels):
+        """
+        :param funcs [func]: List of functions to map inputs to a
+            single output value.
+        :param labels [str]: List of strings to label the output
+            of each function.
+        """
+        assert len(funcs) == len(labels), \
+            "No. of functions and labels UNEQUAL."
+        self.funcs = funcs
+        self.labels = labels
+
+    def describe(self, obj):
+        """
+        Returns description of an object based on all functions.
+
+        :param obj: Object to be described.
+        :return: {label: value} dict.
+        """
+        output = {}
+        for f, l in zip(self.funcs, self.labels):
+            output[l] = f(obj)
+        return output
+
+
 class DistinctSiteProperty(Describer):
     """
     Constructs a descriptor based on properties of distinct sites in a
