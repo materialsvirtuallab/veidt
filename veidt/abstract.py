@@ -6,9 +6,13 @@
 Define abstract base classes.
 """
 
-import six
 import abc
+import warnings
+
+import six
 from monty.json import MSONable
+import numpy as np
+import pandas as pd
 
 
 class Describer(six.with_metaclass(abc.ABCMeta, MSONable)):
@@ -41,16 +45,42 @@ class Describer(six.with_metaclass(abc.ABCMeta, MSONable)):
         """
         pass
 
-    def describe_all(self, objs):
+    def describe_all(self, objs, fmt='list'):
         """
         Convenience method to convert a list of objects to a list of
         descriptors. Default implementation simply loops a call to describe, but
         in some instances, a batch implementation may be more efficient.
 
         :param objs: List of objects
-        :return: List of descriptors
+        :param fmt: (Str) output format, Choose among "list" as regular
+            list, "arr" as NumPy array or "df" as pandas DataFrame.
+        :return: Concatenated descriptions for all objects.
         """
-        return [self.describe(o) for o in objs]
+        descriptions = [self.describe(o) for o in objs]
+        concat = None
+        if fmt == 'list':
+            concat = descriptions
+        elif fmt == 'arr':
+            dim = len(np.array(descriptions[0]).shape)
+            if dim > 1:
+                warnings.warn("High dimensional (%d)" % dim +
+                              " data to be concatenated, original index of"
+                              " input list NOT preserved.")
+            concat = np.vstack(descriptions)
+        elif fmt == 'df':
+            if isinstance(descriptions[0], pd.Series):
+                concat = pd.concat(descriptions, axis=1,
+                                   keys=range(len(objs))).T
+            elif isinstance(descriptions[0], pd.DataFrame):
+                concat = pd.concat(descriptions, axis=0,
+                                   keys=range(len(objs)),
+                                   names=["input_index", None])
+        else:
+            raise RuntimeError('Unsupported output format. '
+                               'Choose among "list" as regular list, '
+                               '"arr" as NumPy array or '
+                               '"df" as pandas DataFrame.')
+        return concat
 
 
 class Model(six.with_metaclass(abc.ABCMeta, MSONable)):
