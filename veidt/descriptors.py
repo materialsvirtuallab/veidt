@@ -5,10 +5,47 @@
 from __future__ import division, print_function, unicode_literals, \
     absolute_import
 
+import importlib
+
 import pandas as pd
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 
 from veidt.abstract import Describer
+
+
+class Generator(Describer):
+
+    def __init__(self, func_dict):
+        """
+        :param funcs_dict (Dict): Dict with labels as keys and
+            stringified function as values. The functions are
+            recovered using eval() method.
+        """
+        self.func_dict = func_dict
+
+    def describe(self, obj):
+        """
+        Returns description of an object based on all functions.
+
+        :param obj: Object to be described.
+        :return: {label: value} dict.
+        """
+        def get_func(name):
+            try:
+                breakdown = name.split(".")
+                f_name = breakdown[-1]
+                mod_name = ".".join(name.split(".")[:-1])
+                mod = importlib.import_module(mod_name)
+                func = getattr(mod, f_name)
+            except:
+                func = eval(name)
+            return func
+
+        output = {}
+        for k, v in self.func_dict.items():
+            func = get_func(v)
+            output[k] = func(obj)
+        return output
 
 
 class DistinctSiteProperty(Describer):

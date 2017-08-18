@@ -5,8 +5,9 @@ from __future__ import division, print_function, unicode_literals, \
 
 import unittest
 import os
-import numpy as np
+import json
 
+import numpy as np
 from pymatgen import Structure
 
 from veidt.descriptors import DistinctSiteProperty
@@ -31,12 +32,11 @@ class NeuralNetTest(unittest.TestCase):
         self.assertEqual(round(self.model.predict([na2o])[0][0]), 4, 3)
 
 
-
 class LinearModelTest(unittest.TestCase):
 
     def setUp(self):
         self.model = LinearModel(
-            describer=DistinctSiteProperty(['8c'], ["Z"]), fit_intercept=True)
+            describer=DistinctSiteProperty(['8c'], ["Z"]))
 
     def test_fit_evaluate(self):
         li2o = Structure.from_file(os.path.join(os.path.dirname(__file__),
@@ -49,6 +49,11 @@ class LinearModelTest(unittest.TestCase):
         self.model.fit(inputs=structures, outputs=energies)
         # Given this is a fairly simple model, we should get close to exact.
         self.assertEqual(round(self.model.predict([na2o])[0]), 4, 3)
+
+    def test_serialize(self):
+        json_str = json.dumps(self.model.as_dict())
+        recover = LinearModel.from_dict(json.loads(json_str))
+        self.assert_(True)
 
 if __name__ == "__main__":
     unittest.main()
