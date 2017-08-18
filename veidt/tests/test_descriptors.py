@@ -81,9 +81,8 @@ class MultiDescriberTest(unittest.TestCase):
         self.assertAlmostEqual(results.loc["8c-atomic_radius"]["exp"],
                                np.exp(1.45))
 
-        df = d.describe_all([li2o, na2o], fmt="arr")
-        print(np.array(df))
-
+        df = d.describe_all([li2o, na2o])
+        print(df)
 
 
 if __name__ == "__main__":

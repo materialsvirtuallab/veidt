@@ -35,6 +35,12 @@ class MultiDescriber(Describer):
             desc = d.describe(desc)
         return desc
 
+    def describe_all(self, objs):
+        descs = objs
+        for d in self.describers:
+            descs = d.describe_all(descs)
+        return descs
+
 
 class FuncGenerator(Describer):
     """
