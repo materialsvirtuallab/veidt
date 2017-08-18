@@ -18,15 +18,21 @@ class GeneratorTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.obj = np.random.rand(10) * 10 - 5
-        cls.func = "lambda x: x + 0.1"
-        func_dict = {"np": "numpy.exp", "lambda": cls.func}
+        cls.data = np.random.rand(100, 3) * 10 - 5
+        cls.df = pd.DataFrame(cls.data, columns=["x", "y", "z"])
+        func_dict = {"sin": "np.sin",
+                     "sum": "lambda d: d.sum(axis=1)",
+                     "nest": "lambda d: np.log(np.exp(d['x']))"}
         cls.generator = Generator(func_dict=func_dict)
 
     def test_describe(self):
-        results = self.generator.describe(self.obj)
-        np.testing.assert_array_equal(np.exp(self.obj), results["np"])
-        np.testing.assert_array_equal(self.obj + 0.1, results["lambda"])
+        results = self.generator.describe(self.df)
+        np.testing.assert_array_equal(np.sin(self.data),
+                                      results[["sin x", "sin y", "sin z"]])
+        np.testing.assert_array_equal(np.sum(self.data, axis=1),
+                                      results["sum"])
+        np.testing.assert_array_almost_equal(self.data[:, 0],
+                                             results["nest"])
 
     def test_serialize(self):
         json_str = json.dumps(self.generator.as_dict())

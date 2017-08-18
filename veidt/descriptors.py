@@ -5,8 +5,7 @@
 from __future__ import division, print_function, unicode_literals, \
     absolute_import
 
-import importlib
-
+import numpy as np
 import pandas as pd
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 
@@ -14,38 +13,46 @@ from veidt.abstract import Describer
 
 
 class Generator(Describer):
+    """
+    General transformer for arrays. In principle, any numerical
+    operations can be done as long as each involved function has a
+    NumPy.ufunc implementation, e.g., np.sin, np.exp...
+    """
 
     def __init__(self, func_dict):
         """
-        :param funcs_dict (Dict): Dict with labels as keys and
-            stringified function as values. The functions are
-            recovered using eval() method.
+        :param func_dict: Dict with labels as keys and stringified
+            function as values. The functions arerecovered from strings
+            using eval() built-in function. All functions should be
+            pointing to a NumPy.ufunc since the calculations will be
+            performed on array-like objects. For functions implemented
+            elsewhere other than in NumPy, e.g., functions in
+            scipy.special, please make sure the module is imported.
         """
         self.func_dict = func_dict
 
-    def describe(self, obj):
+    def describe(self, df, append=True):
         """
         Returns description of an object based on all functions.
 
-        :param obj: Object to be described.
-        :return: {label: value} dict.
+        :param df: DataFrame with input data.
+        :param append: Whether return the full DataFrame with inputs.
+            Default to True.
+        :return: DataFrame with transformed data.
         """
-        def get_func(name):
-            try:
-                breakdown = name.split(".")
-                f_name = breakdown[-1]
-                mod_name = ".".join(name.split(".")[:-1])
-                mod = importlib.import_module(mod_name)
-                func = getattr(mod, f_name)
-            except:
-                func = eval(name)
-            return func
-
-        output = {}
+        collector = []
         for k, v in self.func_dict.items():
-            func = get_func(v)
-            output[k] = func(obj)
-        return output
+            data = eval(v)(df)
+            if isinstance(data, pd.Series):
+                data.name = k
+            elif isinstance(data, pd.DataFrame):
+                columns = [k + " " + c for c in data.columns]
+                data.columns = columns
+            collector.append(data)
+        new_df = pd.concat(collector, axis=1)
+        if append:
+            new_df = df.join(new_df)
+        return new_df
 
 
 class DistinctSiteProperty(Describer):
