@@ -15,7 +15,7 @@ class NeuralNet(Model):
     Basic neural network model.
 
     :param layer_sizes: Hidden layer sizes, e.g., [3, 3]
-    :param describer: Desciber object to convert input objects to
+    :param describer: Describer object to convert input objects to
         descriptors.
     :param preprocessor: : Processor to use. Defaults to StandardScaler
     :param activation: Activation function
@@ -25,7 +25,7 @@ class NeuralNet(Model):
     def __init__(self, layer_sizes, describer, preprocessor=StandardScaler(),
                  activation="relu", loss="mae"):
         self.layer_sizes = layer_sizes
-        self.desciber = describer
+        self.describer = describer
         self.preprocessor = preprocessor
         self.activation = activation
         self.loss = loss
@@ -41,7 +41,7 @@ class NeuralNet(Model):
         from keras.optimizers import Adam
         from keras.models import Sequential
         from keras.layers import Dense
-        descriptors = self.desciber.describe_all(inputs)
+        descriptors = self.describer.describe_all(inputs)
         scaled_descriptors = self.preprocessor.fit_transform(descriptors)
         adam = Adam(1e-2)
         x_train, x_test, y_train, y_test = train_test_split(
@@ -59,7 +59,7 @@ class NeuralNet(Model):
         self.model = model
 
     def predict(self, inputs):
-        descriptors = self.desciber.describe_all(inputs)
+        descriptors = self.describer.describe_all(inputs)
         scaled_descriptors = self.preprocessor.transform(descriptors)
         return self.model.predict(scaled_descriptors)
 

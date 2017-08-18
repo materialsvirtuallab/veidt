@@ -11,7 +11,8 @@ import numpy as np
 import pandas as pd
 from pymatgen import Structure
 
-from veidt.descriptors import Generator, DistinctSiteProperty
+from veidt.descriptors import FuncGenerator, DistinctSiteProperty,  \
+    MultiDescriber
 
 
 class GeneratorTest(unittest.TestCase):
@@ -23,7 +24,7 @@ class GeneratorTest(unittest.TestCase):
         func_dict = {"sin": "np.sin",
                      "sum": "lambda d: d.sum(axis=1)",
                      "nest": "lambda d: np.log(np.exp(d['x']))"}
-        cls.generator = Generator(func_dict=func_dict)
+        cls.generator = FuncGenerator(func_dict=func_dict)
 
     def test_describe(self):
         results = self.generator.describe(self.df)
@@ -36,7 +37,7 @@ class GeneratorTest(unittest.TestCase):
 
     def test_serialize(self):
         json_str = json.dumps(self.generator.as_dict())
-        recover = Generator.from_dict(json.loads(json_str))
+        recover = FuncGenerator.from_dict(json.loads(json_str))
         self.assert_(True)
 
 
@@ -62,6 +63,27 @@ class DistinctSitePropertyTest(unittest.TestCase):
         df = pd.DataFrame(self.describer.describe_all([self.li2o, self.na2o]))
         self.assertEqual(df.iloc[0]["8c-Z"], 3)
         self.assertEqual(df.iloc[0]["8c-atomic_radius"], 1.45)
+
+
+class MultiDescriberTest(unittest.TestCase):
+
+    def test_describe(self):
+        li2o = Structure.from_file(os.path.join(os.path.dirname(__file__),
+                                                "Li2O.cif"))
+        na2o = Structure.from_file(os.path.join(os.path.dirname(__file__),
+                                                "Na2O.cif"))
+        d1 = DistinctSiteProperty(['8c', '4a'], ["Z", "atomic_radius"])
+        d2 = FuncGenerator(func_dict={"exp": "np.exp"}, append=False)
+        d = MultiDescriber([d1, d2])
+
+        results = d.describe(li2o)
+        self.assertAlmostEqual(results.loc["8c-Z"]["exp"], np.exp(3))
+        self.assertAlmostEqual(results.loc["8c-atomic_radius"]["exp"],
+                               np.exp(1.45))
+
+        df = d.describe_all([li2o, na2o], fmt="arr")
+        print(np.array(df))
+
 
 
 if __name__ == "__main__":

@@ -82,6 +82,9 @@ class Describer(six.with_metaclass(abc.ABCMeta, MSONable)):
                                '"df" as pandas DataFrame.')
         return concat
 
+    def __repr__(self):
+        return self.__name__
+
 
 class Model(six.with_metaclass(abc.ABCMeta, MSONable)):
     """
@@ -110,3 +113,6 @@ class Model(six.with_metaclass(abc.ABCMeta, MSONable)):
         :return: List of output objects
         """
         pass
+
+    def __repr__(self):
+        return self.__name__
