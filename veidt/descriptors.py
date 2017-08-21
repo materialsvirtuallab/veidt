@@ -35,12 +35,6 @@ class MultiDescriber(Describer):
             desc = d.describe(desc)
         return desc
 
-    def describe_all(self, objs):
-        descs = objs
-        for d in self.describers:
-            descs = d.describe_all(descs)
-        return descs
-
 
 class FuncGenerator(Describer):
     """
@@ -97,7 +91,10 @@ class DistinctSiteProperty(Describer):
     def __init__(self, wyckoffs, properties, symprec=0.1):
         """
         :param wyckoffs: List of wyckoff symbols. E.g., ["48a", "24c"]
-        :param properties: Sequence of specie properties. E.g., ["atomic_radius"]
+        :param properties: Sequence of specie properties. E.g.,
+            ["atomic_radius"]. Look at pymatgen.core.periodic_table.Element and
+            pymatgen.core.periodic_table.Specie for support properties (there
+            are a lot!)
         :param symprec: Symmetry precision for spacegroup determination.
         """
         self.wyckoffs = wyckoffs
@@ -114,5 +111,7 @@ class DistinctSiteProperty(Describer):
             for p in self.properties:
                 data.append(getattr(site.specie, p))
                 names.append("%s-%s" % (w, p))
-        return pd.Series(data, index=names)
+        return pd.DataFrame([data], columns=names)
 
+    def describe_all(self, objs):
+        return pd.concat([self.describe(o) for o in objs])

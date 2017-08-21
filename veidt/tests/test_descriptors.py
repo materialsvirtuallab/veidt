@@ -53,14 +53,15 @@ class DistinctSitePropertyTest(unittest.TestCase):
 
     def test_describe(self):
         descriptor = self.describer.describe(self.li2o)
-        self.assertAlmostEqual(descriptor["8c-Z"], 3)
-        self.assertAlmostEqual(descriptor["8c-atomic_radius"], 1.45)
+        self.assertAlmostEqual(descriptor.iloc[0]["8c-Z"], 3)
+        self.assertAlmostEqual(descriptor.iloc[0]["8c-atomic_radius"], 1.45)
         descriptor = self.describer.describe(self.na2o)
-        self.assertEqual(descriptor["4a-Z"], 8)
-        self.assertEqual(descriptor["4a-atomic_radius"], 0.6)
+        self.assertEqual(descriptor.iloc[0]["4a-Z"], 8)
+        self.assertEqual(descriptor.iloc[0]["4a-atomic_radius"], 0.6)
 
     def test_describe_all(self):
         df = pd.DataFrame(self.describer.describe_all([self.li2o, self.na2o]))
+        print(df)
         self.assertEqual(df.iloc[0]["8c-Z"], 3)
         self.assertEqual(df.iloc[0]["8c-atomic_radius"], 1.45)
 
@@ -77,12 +78,13 @@ class MultiDescriberTest(unittest.TestCase):
         d = MultiDescriber([d1, d2])
 
         results = d.describe(li2o)
-        self.assertAlmostEqual(results.loc["8c-Z"]["exp"], np.exp(3))
-        self.assertAlmostEqual(results.loc["8c-atomic_radius"]["exp"],
+        self.assertAlmostEqual(results.iloc[0]["exp 8c-Z"], np.exp(3))
+        self.assertAlmostEqual(results.iloc[0]["exp 8c-atomic_radius"],
                                np.exp(1.45))
 
         df = d.describe_all([li2o, na2o])
-        print(df)
+        self.assertAlmostEqual(df.iloc[0]["exp 8c-Z"], np.exp(3))
+        self.assertAlmostEqual(df.iloc[1]["exp 8c-Z"], np.exp(11))
 
 
 if __name__ == "__main__":
