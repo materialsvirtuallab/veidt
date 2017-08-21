@@ -18,7 +18,7 @@ class NeuralNetTest(unittest.TestCase):
 
     def setUp(self):
         self.model = NeuralNet(
-            [20], describer=DistinctSiteProperty(['8c'], ["Z"]))
+            [20, 2], describer=DistinctSiteProperty(['8c'], ["Z"]))
 
     def test_fit_evaluate(self):
         li2o = Structure.from_file(os.path.join(os.path.dirname(__file__),
@@ -30,6 +30,10 @@ class NeuralNetTest(unittest.TestCase):
         self.model.fit(inputs=structures, outputs=energies, epochs=100)
         # Given this is a fairly simple model, we should get close to exact.
         self.assertEqual(round(self.model.predict([na2o])[0][0]), 4, 3)
+
+        self.model.save("nntest.h5")
+        self.assertTrue(os.path.exists("nntest.h5"))
+        os.remove("nntest.h5")
 
 
 class LinearModelTest(unittest.TestCase):
