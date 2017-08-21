@@ -8,17 +8,22 @@ jobs:
       - checkout
       - run:
           command: |
+            mkdir coverage_reports
             python -m venv venv
             . venv/bin/activate
             pip install -q numpy
             pip install -q -r requirements.txt
+            pip install -q -r requirements-ci.txt
       - run:
           command: |
             . venv/bin/activate
             python setup.py develop
-            nosetests
+            nosetests --cover-html --cover-html-dir=coverage_reports
+            coveralls
           no_output_timeout: 3600
-
+      - store_artifacts:
+          path: coverage_reports/
+          destination: tr1
 workflows:
   version: 2
   build_and_test:
