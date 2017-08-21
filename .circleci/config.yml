@@ -18,7 +18,7 @@ jobs:
           command: |
             . venv/bin/activate
             python setup.py develop
-            nosetests --cover-html --cover-html-dir=coverage_reports
+            nosetests --config=nose.cfg --cover-html --cover-html-dir=coverage_reports
             coveralls
           no_output_timeout: 3600
       - store_artifacts:
