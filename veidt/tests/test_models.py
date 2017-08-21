@@ -12,13 +12,14 @@ from pymatgen import Structure
 
 from veidt.descriptors import DistinctSiteProperty
 from veidt.models import NeuralNet, LinearModel
+from monty.serialization import MontyEncoder, MontyDecoder
 
 
 class NeuralNetTest(unittest.TestCase):
 
     def setUp(self):
         self.model = NeuralNet(
-            [20, 2], describer=DistinctSiteProperty(['8c'], ["Z"]))
+            [25, 5], describer=DistinctSiteProperty(['8c'], ["Z"]))
 
     def test_fit_evaluate(self):
         li2o = Structure.from_file(os.path.join(os.path.dirname(__file__),
@@ -34,6 +35,11 @@ class NeuralNetTest(unittest.TestCase):
         self.model.save("nntest.h5")
         self.assertTrue(os.path.exists("nntest.h5"))
         os.remove("nntest.h5")
+
+    # def test_serialize(self):
+    #     json_str = json.dumps(self.model, cls=MontyEncoder)
+    #     recover = LinearModel.from_dict(json.loads(json_str, cls=MontyDecoder))
+    #     self.assertIsNotNone(recover)
 
 
 class LinearModelTest(unittest.TestCase):
@@ -57,7 +63,7 @@ class LinearModelTest(unittest.TestCase):
     def test_serialize(self):
         json_str = json.dumps(self.model.as_dict())
         recover = LinearModel.from_dict(json.loads(json_str))
-        self.assert_(True)
+        self.assertIsNotNone(recover)
 
 if __name__ == "__main__":
     unittest.main()
