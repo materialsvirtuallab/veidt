@@ -28,10 +28,10 @@ class Describer(six.with_metaclass(abc.ABCMeta, MSONable)):
 
         :param obj: Object
         :return: Descriptor for a structure. Recommended format is a pandas
-            Dataframe object for easy manipulation. For example, a
-            simple site descriptor of the fractional coordinates (this is
-            usually a bad descriptor, so it is just for illustration purposes)
-            can be generated as::
+            Dataframe object with the column names as intuitive names.
+            For example, a simple site descriptor of the fractional coordinates
+            (this is usually a bad descriptor, so it is just for illustration
+            purposes) can be generated as::
 
                 print(pd.DataFrame(s.frac_coords, columns=["a", "b", "c"]))
                           a         b         c
@@ -40,7 +40,9 @@ class Describer(six.with_metaclass(abc.ABCMeta, MSONable)):
                 2  0.249822  0.249822  0.249822
 
             Pandas dataframes can be dumped to a variety of formats (json, csv,
-            etc.) easily.
+            etc.) easily. Note that a dataframe should be used even if you have
+            only one line, i.e., do not use Series objects unless you know
+            what you are doing.
         """
         pass
 
