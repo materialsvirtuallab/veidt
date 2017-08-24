@@ -2,28 +2,32 @@
 
 from __future__ import division, print_function, unicode_literals, \
     absolute_import
-import shutil, tempfile
+
 import unittest
 import os
 import json
 
 import numpy as np
+import pandas as pd
 from pymatgen import Structure
 
+from veidt.abstract import Describer
 from veidt.descriptors import DistinctSiteProperty
 from veidt.models import NeuralNet, LinearModel
+from monty.serialization import MontyEncoder, MontyDecoder
+import shutil, tempfile
 
 
 class NeuralNetTest(unittest.TestCase):
     def setUp(self):
         self.nn = NeuralNet(
-            [20], describer=DistinctSiteProperty(['8c'], ["Z"]))
+            [25, 5], describer=DistinctSiteProperty(['8c'], ["Z"]))
         self.nn2 = NeuralNet(
-            [20], describer=DistinctSiteProperty(['8c'], ["Z"]))
+            [25, 5], describer=DistinctSiteProperty(['8c'], ["Z"]))
         self.li2o = Structure.from_file(os.path.join(os.path.dirname(__file__),
-                                                "Li2O.cif"))
+                                                     "Li2O.cif"))
         self.na2o = Structure.from_file(os.path.join(os.path.dirname(__file__),
-                                                "Na2O.cif"))
+                                                     "Na2O.cif"))
         self.structures = [self.li2o] * 100 + [self.na2o] * 100
         self.energies = [3] * 100 + [4] * 100
         self.test_dir = tempfile.mkdtemp()
@@ -33,8 +37,7 @@ class NeuralNetTest(unittest.TestCase):
         shutil.rmtree(self.test_dir)
 
     def test_fit_evaluate(self):
-
-        self.nn.fit(inputs=self.structures, outputs=self.energies, epochs=100)
+        self.nn.fit(inputs=self.structures, outputs=self.energies, nb_epoch=100)
         # Given this is a fairly simple model, we should get close to exact.
         self.assertEqual(round(self.nn.predict([self.na2o])[0][0]), 4, 3)
 
@@ -48,39 +51,54 @@ class NeuralNetTest(unittest.TestCase):
 
 
 class LinearModelTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.x_train = np.random.rand(10, 2)
+        cls.coef = np.random.rand(2)
+        cls.intercept = np.random.rand()
+        cls.y_train = cls.x_train.dot(cls.coef) + cls.intercept
+
     def setUp(self):
-        self.lm = LinearModel(
-            describer=DistinctSiteProperty(['8c'], ["Z"]))
+        class DummyDescriber(Describer):
+            def describe(self, obj):
+                pass
+
+            def describe_all(self, n):
+                return pd.DataFrame(n)
+
+        self.lm = LinearModel(DummyDescriber())
+
         self.test_dir = tempfile.mkdtemp()
 
     def tearDown(self):
         # Remove the directory after the test
         shutil.rmtree(self.test_dir)
 
-    def test_fit_evaluate(self):
-        li2o = Structure.from_file(os.path.join(os.path.dirname(__file__),
-                                                "Li2O.cif"))
-        na2o = Structure.from_file(os.path.join(os.path.dirname(__file__),
-                                                "Na2O.cif"))
-        structures = [li2o] * 100 + [na2o] * 100
-        energies = [3] * 100 + [4] * 100
-        energies += np.random.randn(200)
-        self.lm.fit(inputs=structures, outputs=energies)
-        # Given this is a fairly simple model, we should get close to exact.
-        self.assertEqual(round(self.lm.predict([na2o])[0]), 4, 3)
+    def test_fit_predict(self):
+        self.lm.fit(inputs=self.x_train, outputs=self.y_train)
+        x_test = np.random.rand(10, 2)
+        y_test = x_test.dot(self.coef) + self.intercept
+        y_pred = self.lm.predict(x_test)
+        np.testing.assert_array_almost_equal(y_test, y_pred)
+        np.testing.assert_array_almost_equal(self.coef, self.lm.coef)
+        self.assertAlmostEqual(self.intercept, self.lm.intercept)
+
+    def test_evaluate_fit(self):
+        self.lm.fit(inputs=self.x_train, outputs=self.y_train)
+        y_pred = self.lm.evaluate_fit()
+        np.testing.assert_array_almost_equal(y_pred, self.y_train)
 
     def test_serialize(self):
         json_str = json.dumps(self.lm.as_dict())
         recover = LinearModel.from_dict(json.loads(json_str))
-        self.assert_(True)
+        self.assertIsNotNone(recover)
 
     def model_save_load(self):
         self.lm.model_save(os.path.join(self.test_dir, 'test_lm.save'))
         ori = self.lm.model.coef_
-        load_m = self.lm.model_load(os.path.join(self.test_dir, 'test_lm.save'))
+        self.lm.model_load(os.path.join(self.test_dir, 'test_lm.save'))
         loaded = self.lm.model.coef_
         self.assertAlmostEqual(ori, loaded)
-
 
 
 if __name__ == "__main__":
