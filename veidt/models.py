@@ -147,3 +147,11 @@ class LinearModel(Model):
         """
         self._xtest = self._xtrain
         return self.predict(inputs=None, override=False)
+
+    @property
+    def coef(self):
+        return self.model.coef_
+
+    @property
+    def intercept(self):
+        return self.model.intercept_
