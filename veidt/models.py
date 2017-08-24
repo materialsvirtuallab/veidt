@@ -3,6 +3,7 @@
 # Distributed under the terms of the BSD License.
 
 import sys
+import warnings
 
 from veidt.abstract import Model
 
@@ -23,7 +24,7 @@ class NeuralNet(Model):
     """
 
     def __init__(self, layer_sizes, describer, preprocessor=StandardScaler(),
-                 activation="relu", loss="mse"):
+                 activation="relu", loss="mae"):
         self.layer_sizes = layer_sizes
         self.describer = describer
         self.preprocessor = preprocessor
@@ -71,9 +72,9 @@ class LinearModel(Model):
     """
     Linear model.
 
-    :param describer: Desciber object to convert input objects to
+    :param describer: Describer To convert input objects to
         descriptors.
-    :param regressor (str): Name of LinearModel from
+    :param regressor: (str) Name of LinearModel from
         sklearn.linear_model. Default to "LinearRegression", i.e.,
         ordinary least squares.
     :param kwargs: kwargs to be passed to regressor.
@@ -87,15 +88,62 @@ class LinearModel(Model):
         lm = sys.modules["sklearn.linear_model"]
         lr = getattr(lm, regressor)
         self.model = lr(**kwargs)
+        self._xtrain = None
+        self._xtest = None
 
-    def fit(self, inputs, outputs):
+    def fit(self, inputs, outputs, weights=None, override=False):
         """
-        :param inputs: List of inputs
-        :param outputs: List of outputs
-        """
-        descriptors = self.describer.describe_all(inputs)
-        self.model.fit(descriptors, outputs)
+        Fit model.
 
-    def predict(self, inputs):
-        descriptors = self.describer.describe_all(inputs)
-        return self.model.predict(descriptors)
+        :param inputs: List of input training objects.
+        :param outputs: List/Array of output values (supervisory
+            signals).
+        :param weights: List/Array of weights. Default to None, i.e.,
+            unweighted.
+        :param override: (bool) Whether to calculate the feature
+            vectors from given inputs. Default to False. Set to True if
+            you want to retrain the model with a different set of
+            training inputs.
+        """
+        if self._xtrain is None or override:
+            xtrain = self.describer.describe_all(inputs)
+        else:
+            warnings.warn("Feature vectors retrieved from cache "
+                          "and input training objects ignored. "
+                          "To override the old cache with feature vectors "
+                          "of new training objects, set override=True.")
+            xtrain = self._xtrain
+        self.model.fit(xtrain, outputs, weights)
+        self._xtrain = xtrain
+
+    def predict(self, inputs, override=False):
+        """
+        Predict outputs with fitted model.
+
+        :param inputs: List of input testing objects.
+        :param override: (bool) Whether to calculate the feature
+            vectors from given inputs. Default to False. Set to True if
+            you want to test the model with a different set of testing
+            inputs.
+        :return: Predicted output array from inputs.
+        """
+        if self._xtest is None or override:
+            xtest = self.describer.describe_all(inputs)
+        else:
+            warnings.warn("Feature vectors retrieved from cache "
+                          "and input testing objects ignored. "
+                          "To override the old cache with feature vectors "
+                          "of new testing objects, set override=True.")
+            xtest = self._xtest
+        self._xtest = xtest
+        return self.model.predict(xtest)
+
+    def evaluate_fit(self):
+        """
+        Efficient method to obtain prediction on training inputs w/o
+        calculating the features of inputs again.
+
+        :return: Predicted output array from training inputs.
+        """
+        self._xtest = self._xtrain
+        return self.predict(inputs=None, override=False)
