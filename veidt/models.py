@@ -11,6 +11,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.externals import joblib
 
+
 class NeuralNet(Model):
     """
     Basic neural network model.
@@ -32,7 +33,7 @@ class NeuralNet(Model):
         self.loss = loss
         self.model = None
 
-    def fit(self, inputs, outputs, test_size=0.2, adam_lr = 1e-2, **kwargs):
+    def fit(self, inputs, outputs, test_size=0.2, adam_lr=1e-2, **kwargs):
         """
         :param inputs: List of inputs
         :param outputs: List of outputs
