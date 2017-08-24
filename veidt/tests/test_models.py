@@ -30,7 +30,7 @@ class NeuralNetTest(unittest.TestCase):
                                                 "Na2O.cif"))
         structures = [li2o] * 100 + [na2o] * 100
         energies = [3] * 100 + [4] * 100
-        self.model.fit(inputs=structures, outputs=energies, epochs=100)
+        self.model.fit(inputs=structures, outputs=energies, nb_epoch=100)
         # Given this is a fairly simple model, we should get close to exact.
         self.assertEqual(round(self.model.predict([na2o])[0][0]), 4, 3)
 

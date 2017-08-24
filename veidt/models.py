@@ -23,7 +23,7 @@ class NeuralNet(Model):
     :param loss: Loss function. Defaults to mae
     """
 
-    def __init__(self, layer_sizes, describer, preprocessor=StandardScaler(),
+    def __init__(self, layer_sizes, describer, preprocessor=None,
                  activation="relu", loss="mae"):
         self.layer_sizes = layer_sizes
         self.describer = describer
@@ -43,7 +43,11 @@ class NeuralNet(Model):
         from keras.models import Sequential
         from keras.layers import Dense
         descriptors = self.describer.describe_all(inputs)
-        scaled_descriptors = self.preprocessor.fit_transform(descriptors)
+        if self.preprocessor is None:
+            self.preprocessor = StandardScaler()
+            scaled_descriptors = self.preprocessor.fit_transform(descriptors)
+        else:
+            scaled_descriptors = self.preprocessor.transform(descriptors)
         adam = Adam(1e-2)
         x_train, x_test, y_train, y_test = train_test_split(
             scaled_descriptors, outputs, test_size=test_size)
