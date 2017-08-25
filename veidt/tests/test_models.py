@@ -45,8 +45,8 @@ class NeuralNetTest(unittest.TestCase):
         model_fname = os.path.join(self.test_dir, 'test_nnmodel.h5')
         scaler_fname = os.path.join(self.test_dir, 'test_nnscaler.save')
         self.nn.fit(inputs=self.structures, outputs=self.energies, epochs=100)
-        self.nn.model_save(model_fname=model_fname, scaler_fname=scaler_fname)
-        self.nn2.model_load(model_fname=model_fname, scaler_fname=scaler_fname)
+        self.nn.save(model_fname=model_fname, scaler_fname=scaler_fname)
+        self.nn2.load(model_fname=model_fname, scaler_fname=scaler_fname)
         self.assertEqual(self.nn.predict([self.na2o])[0][0], self.nn2.predict([self.na2o])[0][0])
 
 
@@ -94,9 +94,9 @@ class LinearModelTest(unittest.TestCase):
         self.assertIsNotNone(recover)
 
     def model_save_load(self):
-        self.lm.model_save(os.path.join(self.test_dir, 'test_lm.save'))
+        self.lm.save(os.path.join(self.test_dir, 'test_lm.save'))
         ori = self.lm.model.coef_
-        self.lm.model_load(os.path.join(self.test_dir, 'test_lm.save'))
+        self.lm.load(os.path.join(self.test_dir, 'test_lm.save'))
         loaded = self.lm.model.coef_
         self.assertAlmostEqual(ori, loaded)
 

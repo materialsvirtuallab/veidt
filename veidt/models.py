@@ -70,7 +70,7 @@ class NeuralNet(Model):
         scaled_descriptors = self.preprocessor.transform(descriptors)
         return self.model.predict(scaled_descriptors)
 
-    def save_model(self, model_fname, scaler_fname):
+    def save(self, model_fname, scaler_fname):
         """
         use kears model.save method to save model in .h5
         use scklearn.external.joblib to save scaler(the .save
@@ -83,7 +83,7 @@ class NeuralNet(Model):
         self.model.save(model_fname)
         joblib.dump(self.preprocessor, scaler_fname)
 
-    def load_model(self, model_fname, scaler_fname):
+    def load(self, model_fname, scaler_fname):
         from keras.models import load_model
         self.model = load_model(model_fname)
         self.preprocessor = joblib.load(scaler_fname)
@@ -177,8 +177,8 @@ class LinearModel(Model):
     def intercept(self):
         return self.model.intercept_
 
-    def save_model(self, model_fname):
+    def save(self, model_fname):
         joblib.dump(self.model, '%s.pkl' % model_fname)
 
-    def load_model(self, model_fname):
+    def load(self, model_fname):
         self.model = joblib.load(model_fname)
