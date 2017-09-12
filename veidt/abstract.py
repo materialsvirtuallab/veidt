@@ -74,7 +74,7 @@ class Model(six.with_metaclass(abc.ABCMeta, MSONable)):
     """
 
     @abc.abstractmethod
-    def fit(self, features, targets):
+    def fit(self, features, targets, **kwargs):
         """
 
         :param features: Numerical input feature list or numpy array with dim (m, n)
@@ -94,14 +94,13 @@ class Model(six.with_metaclass(abc.ABCMeta, MSONable)):
         """
         pass
 
-    def fit_object(self, inputs, outputs, describer=None):
+    def fit_object(self, inputs, outputs, describer=None, **kwargs):
         """
         Fit the model with objects as inputs and outputs
 
         :param inputs: List of input objects
         :param outputs: List of output objects or target outputs
-        :param input_describer: (Describer) Input Describer
-        :param output_describer: (Describer) Output Describer
+        :param describer: (Describer) Input Describer
         """
         
         try:
@@ -109,13 +108,13 @@ class Model(six.with_metaclass(abc.ABCMeta, MSONable)):
         except AttributeError:
             self.describer = None
 
-        #update describer if provided
+        # update describer if provided
         if describer is not None:
             self.describer = describer
 
         # Convert the inputs to numerical values with describer
-        # for the model fitting otherwise just use the raw inputs and outputs assuming they are
-        # already numerical values
+        # for the model fitting otherwise just use the raw inputs
+        # and outputs assuming they are already numerical values
         if self.describer is not None:
             features = self.describer.describe_all(inputs)
         else:
@@ -123,7 +122,7 @@ class Model(six.with_metaclass(abc.ABCMeta, MSONable)):
             features = inputs
 
         # call the fit method to get the model coefficients
-        self.fit(features, outputs)
+        self.fit(features, outputs, **kwargs)
 
     def __repr__(self):
         return self.__name__
