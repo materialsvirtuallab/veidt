@@ -69,8 +69,6 @@ class Model(six.with_metaclass(abc.ABCMeta, MSONable)):
     Abstract Base class for a Model. Basically, it usually wraps around a deep
     learning package, e.g., the Sequential Model in Keras, but provides for
     transparent conversion of arbitrary input and outputs.
-
-    Subclasses require `fit` and `predict` methods, and `input_describer` and `output_describer` attributes.
     """
 
     @abc.abstractmethod
