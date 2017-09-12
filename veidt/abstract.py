@@ -94,23 +94,18 @@ class Model(six.with_metaclass(abc.ABCMeta, MSONable)):
         """
         pass
 
-    def fit_object(self, inputs, outputs, describer=None, **kwargs):
+    def fit_object(self, inputs, outputs, **kwargs):
         """
         Fit the model with objects as inputs and outputs
 
         :param inputs: List of input objects
         :param outputs: List of output objects or target outputs
-        :param describer: (Describer) Input Describer
         """
         
         try:
             getattr(self, "describer")
         except AttributeError:
             self.describer = None
-
-        # update describer if provided
-        if describer is not None:
-            self.describer = describer
 
         # Convert the inputs to numerical values with describer
         # for the model fitting otherwise just use the raw inputs
