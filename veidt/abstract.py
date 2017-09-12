@@ -7,7 +7,7 @@ Define abstract base classes.
 """
 
 import abc
-
+import warnings
 import six
 from monty.json import MSONable
 
@@ -69,15 +69,17 @@ class Model(six.with_metaclass(abc.ABCMeta, MSONable)):
     Abstract Base class for a Model. Basically, it usually wraps around a deep
     learning package, e.g., the Sequential Model in Keras, but provides for
     transparent conversion of arbitrary input and outputs.
+
+    Subclasses require `fit` and `predict` methods, and `input_describer` and `output_describer` attributes.
     """
 
     @abc.abstractmethod
-    def fit(self, inputs, outputs):
+    def fit(self, features, targets):
         """
-        Fit the model.
 
-        :param inputs: List of input objects
-        :param outputs: List of output objects
+        :param features: Numerical input feature list or numpy array with dim (m, n)
+            where m is the number of data and n is the feature dimension
+        :param targets: Numerical output target list, or numpy array with dim (m, )
         """
         pass
 
@@ -91,6 +93,37 @@ class Model(six.with_metaclass(abc.ABCMeta, MSONable)):
         :return: List of output objects
         """
         pass
+
+    def fit_object(self, inputs, outputs, describer=None):
+        """
+        Fit the model with objects as inputs and outputs
+
+        :param inputs: List of input objects
+        :param outputs: List of output objects or target outputs
+        :param input_describer: (Describer) Input Describer
+        :param output_describer: (Describer) Output Describer
+        """
+        
+        try:
+            getattr(self, "describer")
+        except AttributeError:
+            self.describer = None
+
+        #update describer if provided
+        if describer is not None:
+            self.describer = describer
+
+        # Convert the inputs to numerical values with describer
+        # for the model fitting otherwise just use the raw inputs and outputs assuming they are
+        # already numerical values
+        if self.describer is not None:
+            features = self.describer.describe_all(inputs)
+        else:
+            warnings.warn("Describer not found, assuming the inputs are already numerical values.")
+            features = inputs
+
+        # call the fit method to get the model coefficients
+        self.fit(features, outputs)
 
     def __repr__(self):
         return self.__name__
