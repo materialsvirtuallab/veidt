@@ -44,7 +44,7 @@ class NeuralNetTest(unittest.TestCase):
     def test_model_save_load(self):
         model_fname = os.path.join(self.test_dir, 'test_nnmodel.h5')
         scaler_fname = os.path.join(self.test_dir, 'test_nnscaler.save')
-        self.nn.fit(inputs=self.structures, outputs=self.energies, epochs=100)
+        self.nn.fit(inputs=self.structures, outputs=self.energies, nb_epoch=100)
         self.nn.save(model_fname=model_fname, scaler_fname=scaler_fname)
         self.nn2.load(model_fname=model_fname, scaler_fname=scaler_fname)
         self.assertEqual(self.nn.predict([self.na2o])[0][0], self.nn2.predict([self.na2o])[0][0])
