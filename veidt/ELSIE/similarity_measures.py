@@ -21,14 +21,16 @@ class SimilarityMeasure(MSONable):
 
     def __init__(self, coeff_1, coeff_2):
         """
-        :param coeff_1: numpy array with dimension (n, 1), n corresponding to number of
+        Args:
+            coeff_1: numpy array with dimension (n, 1), n corresponding to number of
                         wavelength, column corresponding to the absorption coefficiency
                         The spectrum need to be normalized to obtain meaningful result, i.e.
                         the under curve area of spectrum need equal to 1
-        :param coeff_2: numpy array with dimension (n, 1). The row and column definition
+            coeff_2: numpy array with dimension (n, 1). The row and column definition
                         is the same as spectrum 1. The spectrum need to be normalized to
                         obtain meaningful result, i.e. the under curve area of spectrum need equal to 1
         """
+
         if len(coeff_1) != len(coeff_2):
             raise ValueError('Two spectrum have different wavelength number')
 
@@ -42,19 +44,21 @@ class SimilarityMeasure(MSONable):
 
     def distance_measure(self):
         """
-        Compute the distance measures of two spectrum
-        :return: distance measure between two spectrum
+        Compute the distance measures of two spectrum, need to implement in each similarity measure class
+        Returns: Distance measure between two spectrum
+
         """
         raise NotImplementedError()
 
     def similarity_measure(self, dist_conversion='bin'):
         """
         Compute the similarity measure of two spectrum
-
-        :param: dist_conversion: algorithm used to convert distance measure to similarity
+        Args:
+            dist_conversion: algorithm used to convert distance measure to similarity
                 exponential conversion are more sensitive for detecting extremely fine changes
-                in spectrum difference
-        :return: similarity measure between two spectrum
+                in spectrum difference. Avaliable option: ['bin', 'exp']
+        Returns: similarity measure between two spectrum
+
         """
         coeff_dist = self.distance_measure()
 
@@ -110,10 +114,20 @@ class Cityblock(SimilarityMeasure):
 class Minkowski(SimilarityMeasure):
     """
     Minkowski similarity to calculate the Cityblock, i.e. Manhattan, similarity
-    :param p: The order of the norm of the difference
     """
 
     def __init__(self, coeff_1, coeff_2, p=4):
+        """
+        Args:
+            coeff_1: numpy array with dimension (n, 1), n corresponding to number of
+                        wavelength, column corresponding to the absorption coefficiency
+                        The spectrum need to be normalized to obtain meaningful result, i.e.
+                        the under curve area of spectrum need equal to 1
+            coeff_2: numpy array with dimension (n, 1). The row and column definition
+                        is the same as spectrum 1. The spectrum need to be normalized to
+                        obtain meaningful result, i.e. the under curve area of spectrum need equal to 1
+            p: The order of the norm of the difference
+        """
         super().__init__(coeff_1, coeff_2)
         self.p = p
         self.d_max = np.power(2, 1.0 / p)
@@ -551,9 +565,6 @@ class JensenShannon(SimilarityMeasure):
         right_log_term = np.abs(np.divide(2 * self.coeff_1, np.add(self.coeff_1, self.coeff_2)))
         right_no_zero_index = np.where(right_log_term != 0)
         right_term = np.multiply(self.coeff_2[right_no_zero_index], np.log(right_log_term[right_no_zero_index]))
-
-        # left_term = np.multiply(self.coeff_1, np.log(np.abs(np.divide(2 * self.coeff_1, np.add(self.coeff_1, self.coeff_2)))))
-        # right_term = np.multiply(self.coeff_2, np.log(np.abs(np.divide(2 * self.coeff_2, np.add(self.coeff_1, self.coeff_2)))))
 
         left_term = np.sum(left_term)
         right_term = np.sum(right_term)
