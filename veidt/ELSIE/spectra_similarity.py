@@ -3,6 +3,7 @@ import numpy as np
 import warnings
 from pymatgen.core.spectrum import Spectrum
 from copy import deepcopy
+from veidt.ELSIE.preprocessing import Preprocessing
 from veidt.ELSIE import similarity_measures
 from scipy.interpolate import interp1d
 
@@ -20,6 +21,8 @@ class SpectraSimilarity(MSONable):
 
         self.spect1 = spect1
         self.spect2 = spect2
+        self.shifted_spect1 = None
+        self.shifted_spect2 = None
         self.interp_points = interp_points
         self._energy_validation()
 
@@ -64,9 +67,10 @@ class SpectraSimilarity(MSONable):
             self.shifted_spect1, self.shifted_spect2, self.shifted_energy, self.abs_onset = absorption_onset_shift(
                 self.spect1, self.spect2, intensity_threshold)
 
-    def get_shifted_similarity(self, similarity_metric, energy_variation=None, **kwargs):
+    def get_shifted_similarity(self, similarity_metric, energy_variation=None, spect_preprocess=None, **kwargs):
 
-        self._spectrum_shift(**kwargs)
+        if (self.shifted_spect1 is None) and (self.shifted_spect2 is None):
+            self._spectrum_shift(**kwargs)
         simi_class = getattr(similarity_measures, similarity_metric)
 
         if energy_variation is not None:
@@ -100,7 +104,21 @@ class SpectraSimilarity(MSONable):
 
                 if similarity_value > max_simi:
                     max_simi = similarity_value
+                    self.interp_shifted_spect1 = shifted_spect1_interp
+                    self.interp_scaled_shift_spect2 = scaled_shifted_spect2_interp
                     self.max_scale_energy = scale_energy  # max_scale_energy<0 means the spect2 should be squeeze for maximum matching
+
+            if spect_preprocess is not None:
+                pre_shifted_spect1_interp = Preprocessing(self.interp_shifted_spect1)
+                pre_scaled_shifted_spect2_interp = Preprocessing(self.interp_scaled_shift_spect2)
+
+                pre_shifted_spect1_interp.spectrum_process(spect_preprocess)
+                pre_scaled_shifted_spect2_interp.spectrum_process(spect_preprocess)
+
+                shifted_spect1_interp = pre_shifted_spect1_interp.spectrum
+                scaled_shifted_spect2_interp = pre_scaled_shifted_spect2_interp.spectrum
+                similarity_obj = simi_class(shifted_spect1_interp.y, scaled_shifted_spect2_interp.y)
+                max_simi = similarity_obj.similarity_measure()
 
             return max_simi
 
@@ -109,6 +127,17 @@ class SpectraSimilarity(MSONable):
             overlap_energy_grid = np.linspace(overlap_energy[0], overlap_energy[1], self.interp_points)
             shifted_spect1_interp = spectra_energy_interpolate(self.shifted_spect1, overlap_energy_grid)
             shifted_spect2_interp = spectra_energy_interpolate(self.shifted_spect2, overlap_energy_grid)
+
+            if spect_preprocess is not None:
+                pre_shifted_spect1_interp = Preprocessing(shifted_spect1_interp)
+                pre_shifted_spect2_interp = Preprocessing(shifted_spect2_interp)
+
+                pre_shifted_spect1_interp.spectrum_process(spect_preprocess)
+                pre_shifted_spect2_interp.spectrum_process(spect_preprocess)
+
+                shifted_spect1_interp = pre_shifted_spect1_interp.spectrum
+                shifted_spect2_interp = pre_shifted_spect2_interp.spectrum
+
             similarity_obj = simi_class(shifted_spect1_interp.y, shifted_spect2_interp.y)
 
             try:
