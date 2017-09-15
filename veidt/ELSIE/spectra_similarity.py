@@ -67,10 +67,10 @@ class SpectraSimilarity(MSONable):
             self.shifted_spect1, self.shifted_spect2, self.shifted_energy, self.abs_onset = absorption_onset_shift(
                 self.spect1, self.spect2, intensity_threshold)
 
-    def get_shifted_similarity(self, similarity_metric, energy_variation=None, spect_preprocess=None, **kwargs):
+    def get_shifted_similarity(self, similarity_metric, energy_variation=None, spect_preprocess=None):
 
         if (self.shifted_spect1 is None) and (self.shifted_spect2 is None):
-            self._spectrum_shift(**kwargs)
+            self._spectrum_shift()
         simi_class = getattr(similarity_measures, similarity_metric)
 
         if energy_variation is not None:

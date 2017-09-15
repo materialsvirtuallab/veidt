@@ -95,7 +95,7 @@ class SpectraSimilarityTest(unittest.TestCase):
         self.assertEqual(broaden_simi.max_scale_energy, -2)
 
         squeezed_simi = SpectraSimilarity(self.Al2O3_xane_1, squeezed_spect)
-        squeezed_simi_max = squeezed_simi.get_shifted_similarity('PearsonCorrMeasure', energy_variation=[-2, 2, 0.01],
+        squeezed_simi_max = squeezed_simi.get_shifted_similarity('Cosine', energy_variation=[-2, 2, 0.01],
                                                                  spect_preprocess=(('areanorm', 'sigmoid', 'intnorm')))
         self.assertAlmostEqual(squeezed_simi_max, 1.0, 4)
         # Due to the interpolation variation, the squeeze energy scale calculated will show some deviation
@@ -107,7 +107,7 @@ class SpectraSimilarityTest(unittest.TestCase):
         self.assertAlmostEqual(self_simi.max_scale_energy, 0.0)
 
         broaden_simi = SpectraSimilarity(self.Al2O3_xane_1, broaden_spect)
-        broaden_simi_max = broaden_simi.get_shifted_similarity('PearsonCorrMeasure', energy_variation=[-2, 2, 0.01],
+        broaden_simi_max = broaden_simi.get_shifted_similarity('Euclidean', energy_variation=[-2, 2, 0.01],
                                                                spect_preprocess=(('areanorm', 'sigmoid', 'intnorm')))
         self.assertAlmostEqual(broaden_simi_max, 1.0, 4)
         self.assertEqual(broaden_simi.max_scale_energy, -2)
