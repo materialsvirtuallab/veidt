@@ -12,23 +12,23 @@ class EnsembleRank(object):
     Basic ensemble vote algorithm object
     """
 
-    def __init__(self, spect_col_df, spect_column, to_identify_spect, mp_id_column='mp-id'):
+    def __init__(self, spect_col_df, spect_column, target_spect, label_column='mp-id'):
         """
         Create an EnsembleRank object
         Args:
-            spect_col_df: A pandas dataframe object that contains at least two columns, one column with mp-ids, another
+            spect_col_df (pandas.DataFrame): A pandas dataframe object that contains at least two columns, one column with unique label, another
                         column corresponding to computational spectra
-            spect_column: The column name of the column in the dataframe that contains all reference spectra the target
+            spect_column (string): The column in the dataframe that contains all reference spectra the target
                         spectrum needs to compare with
-            to_identify_spect: The target spectrum to be identify, a pymatgen.core.spectrum object
-            mp_id_column: The column name of the dataframe's mp-id column, a unique key to label each reference spectrum
+            target_spect (Nx2 array): The target spectrum to be identify
+            label_column (string): The column contains unique label/key of each reference spectrum. Used for generating rankings
         """
         self.dataframe = spect_col_df
         self.dataframe = self.dataframe.reset_index(drop=True)
         self.spect_column = spect_column
-        self.to_identify_spect = to_identify_spect
-        self.mp_id_col = mp_id_column
-        self.simple_ensem = SimpleEnsemble(self.to_identify_spect, self.dataframe[self.spect_column].tolist())
+        self.target_spect = target_spect
+        self.label_col = label_column
+        self.simple_ensem = SimpleEnsemble(self.target_spect, self.dataframe[self.spect_column].tolist())
         self.dataframe['energy_shift'] = self.simple_ensem.spect_df['energy_shift'].tolist()[:]
 
     def borda_rank_vote(self, ensemble_pair):
@@ -37,12 +37,14 @@ class EnsembleRank(object):
         below it by each individual preprocessing-similarity pair. The Borda count could be referred as a group
         consensus decision
         Args:
-            ensemble_pair: A list of preprocessing-similarity pair with format: [[preproc_1, preproc_2, etc...], similarity_1].
-            Similarity will be calculated using list[1] after preprocessing steps listed in the list[0]
+            ensemble_pair list(list): A list of preprocessing-similarity pair. Each preprocessing-similarity pair with format:
+            [[preproc_1, preproc_2, etc...], similarity_metric].
+            Each target spectrum and reference spectrum will be preprocessed using the preprocess methods listed in the list[0].
+            Pair-wise similarity between target spectrum and each reference spectrum will be computed using similarity_metric in list[1].
 
         """
 
-        mp_vote_pool = defaultdict(int)
+        label_vote_pool = defaultdict(int)
 
         for proc_comb in ensemble_pair:
             copy_simple_ensem = deepcopy(self.simple_ensem)
@@ -51,19 +53,19 @@ class EnsembleRank(object):
             index_rank = copy_simple_ensem.spect_df.index.tolist()
 
             for index, key in enumerate(index_rank):
-                mp_id = self.dataframe.iloc[key][self.mp_id_col]
-                mp_vote_pool[mp_id] += (index + 1)
+                mp_id = self.dataframe.iloc[key][self.label_col]
+                label_vote_pool[mp_id] += (index + 1)
 
-        sorted_borda_rank = sorted(mp_vote_pool.items(), key=operator.itemgetter(1), reverse=True)
-        self.borda_rank = pd.DataFrame.from_records(sorted_borda_rank, columns=[self.mp_id_col, 'borda_rank'])
-        self.dataframe = pd.merge(self.dataframe, self.borda_rank, on=self.mp_id_col)
+        sorted_borda_rank = sorted(label_vote_pool.items(), key=operator.itemgetter(1), reverse=True)
+        self.borda_rank = pd.DataFrame.from_records(sorted_borda_rank, columns=[self.label_col, 'borda_rank'])
+        self.dataframe = pd.merge(self.dataframe, self.borda_rank, on=self.label_col)
 
     def calculate_softmax_prob(self, shift_penalty_alpha=0.05):
         """
         Calculate the softmax probability using the computed Borda count and spectrum shift of each spectrum.
         Shift_penalty_alpha is used to penalize the probability of reference spectrum with large spectrum energy shift
         Args:
-            shift_penalty_alpha: penalize parameter used to adjust the weight of spectrum shift penalization, typical value is
+            shift_penalty_alpha (float): penalize parameter used to adjust the weight of spectrum shift penalization, typical value is
                         between 0.05 to 0.15.
 
         """
@@ -71,14 +73,13 @@ class EnsembleRank(object):
         self.dataframe['exp_normalized_count'] = np.exp(
             self.dataframe['borda_rank'] / self.dataframe['borda_rank'].sum())
         self.dataframe['exp_no_penalty_prob'] = self.dataframe['exp_normalized_count'] / (
-            self.dataframe['exp_normalized_count'].sum())
+        self.dataframe['exp_normalized_count'].sum())
         self.dataframe['abs_shift'] = np.abs(self.dataframe['energy_shift'] - self.dataframe['energy_shift'].mean())
         self.dataframe['neg_shift_alpha'] = np.exp(
             np.negative(shift_penalty_alpha * self.dataframe['abs_shift']) / (self.dataframe['energy_shift'].std()))
-        #         self.dataframe['neg_shift_alpha'] = np.exp(np.negative(shift_penalty_alpha*self.dataframe['abs_shift'])/(np.std(self.dataframe['energy_shift'])))
         self.dataframe['exp_count_penalty'] = self.dataframe['exp_normalized_count'] * self.dataframe['neg_shift_alpha']
         self.dataframe['exp_prob_penalty'] = self.dataframe['exp_count_penalty'] / (
-            self.dataframe['exp_count_penalty'].sum())
+        self.dataframe['exp_count_penalty'].sum())
 
 
 class SimpleEnsemble(object):
@@ -91,8 +92,8 @@ class SimpleEnsemble(object):
         """
         Create a SimpleEnsemble object
         Args:
-            unknown_spectrum: Target spectrum to be compared with reference spectra, N x 2 dimension numpy array.
-            refdb_spectrum: Reference spectrum, each reference spectrum is an M x 2 dimension numpy array
+            unknown_spectrum (Nx2 array): Target spectrum to be compared with reference spectra, N x 2 dimension numpy array.
+            refdb_spectrum list(Mx2 array): Reference spectrum, each reference spectrum is an M x 2 dimension numpy array
                 with first column corresponding to wavelength and second column corresponding to absorption
         """
         self.u_spect = [unknown_spectrum]
@@ -127,8 +128,8 @@ class SimpleEnsemble(object):
         """
         For each row, compute the similarity measure between the target and reference spectra.
         Args:
-            preprocess: Preprocessing steps need to taken for each spectrum
-            similarity_metric: The similarity metric used for comparison.
+            preprocess (list/tuple): Preprocessing steps need to taken for each spectrum
+            similarity_metric (string): The similarity metric used for comparison.
 
         Returns:
 
