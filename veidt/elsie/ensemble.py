@@ -80,7 +80,7 @@ class EnsembleRank(object):
         self.dataframe = pd.merge(self.dataframe, self.borda_rank,
                                   on=self.label_col)
 
-    def calculate_softmax_prob(self, shift_penalty_alpha=0.01):
+    def calculate_softmax_prob(self, shift_penalty_alpha=0.01, prob_sort=True):
         """
         Calculate the softmax probability using the computed Borda count and
         spectrum shift of each spectrum. Shift_penalty_alpha is used to
@@ -91,6 +91,8 @@ class EnsembleRank(object):
             shift_penalty_alpha (float): penalize parameter used to adjust the
                 weight of spectrum shift penalization, typical value is
                 between 0.05 to 0.15.
+            prob_sort (bool): sort the EnsembleRank object's dataframe using the
+                computed softmax probability in descending order
 
         """
 
@@ -107,6 +109,8 @@ class EnsembleRank(object):
         self.dataframe['exp_count_penalty'] = self.dataframe['exp_normalized_count'] * self.dataframe['neg_shift_alpha']
         self.dataframe['exp_prob_penalty'] = self.dataframe['exp_count_penalty'] / (
             self.dataframe['exp_count_penalty'].sum())
+        if prob_sort:
+            self.dataframe.sort_values('exp_prob_penalty', ascending=False, inplace=True)
 
 
 class SimpleEnsemble(object):
@@ -116,40 +120,41 @@ class SimpleEnsemble(object):
     spectrum
     """
 
-    def __init__(self, unknown_spectrum, refdb_spectrum):
+    def __init__(self, target_spectrum, refdb_spectrum):
         """
         Create a SimpleEnsemble object
         Args:
-            unknown_spectrum (Nx2 array): Target spectrum to be compared with
+            target_spectrum (Nx2 array): Target spectrum to be compared with
                 reference spectra, N x 2 dimension numpy array.
             refdb_spectrum list(Mx2 array): Reference spectrum, each reference
                 spectrum is an M x 2 dimension numpy array with first column
                 corresponding to wavelength and second column corresponding to
                 absorption
         """
-        self.u_spect = [unknown_spectrum]
+        self.u_spect = [target_spectrum]
         self.ref_spect = refdb_spectrum
         self.dataframe_init()
 
     def dataframe_init(self):
         """
-        Initialize the comparison pandas dataframe, column 'Unknown_spect' is
+        Initialize the comparison pandas dataframe, column 'Target_spect' is
         corresponding to the target spectrum object column 'Ref_spect' contains
         all reference spectrum object
         """
         u_spect_list = self.u_spect * len(self.ref_spect)
-        self.spect_df = pd.DataFrame({'Unknown_spect': u_spect_list,
+        self.spect_df = pd.DataFrame({'Target_spect': u_spect_list,
                                       'Ref_spect': self.ref_spect
                                       })
         spect_simi_list = []
         spect_shift_energy = []
 
         for index, row in self.spect_df.iterrows():
-            unknown_spect = Spectrum(row['Unknown_spect'][:, 0],
-                                     row['Unknown_spect'][:, 1])
-            ref_spect = Spectrum(row['Ref_spect'][:, 0], row['Ref_spect'][:, 1])
+            target_spect = np.array(row['Target_spect'])
+            target_spect = Spectrum(target_spect[:, 0], target_spect[:, 1])
+            ref_spect = np.array(row['Ref_spect'])
+            ref_spect = Spectrum(ref_spect[:, 0], ref_spect[:, 1])
 
-            spect_simi_obj = SpectraSimilarity(unknown_spect, ref_spect)
+            spect_simi_obj = SpectraSimilarity(target_spect, ref_spect)
             spect_simi_obj._spectrum_shift()
             spect_shift_energy.append(spect_simi_obj.shifted_energy)
             spect_simi_list.append(spect_simi_obj)
