@@ -18,6 +18,18 @@ Veidt should be easily installable via pip on most systems::
 
     pip install veidt
 
+Changes
+=======
+
+v0.0.2
+------
+* ELSIE spectrum matching algorithm.
+* Improvements to NeuralNetwork and new LinearModel.
+
+v0.0.1
+------
+* Initial release of basic abstract models and implementation of neural net.
+
 General concepts
 ================
 

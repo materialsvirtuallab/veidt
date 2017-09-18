@@ -47,7 +47,8 @@ class NeuralNetTest(unittest.TestCase):
         self.nn.fit(inputs=self.structures, outputs=self.energies, nb_epoch=100)
         self.nn.save(model_fname=model_fname, scaler_fname=scaler_fname)
         self.nn2.load(model_fname=model_fname, scaler_fname=scaler_fname)
-        self.assertEqual(self.nn.predict([self.na2o])[0][0], self.nn2.predict([self.na2o])[0][0])
+        self.assertEqual(self.nn.predict([self.na2o])[0][0],
+                         self.nn2.predict([self.na2o])[0][0])
 
 
 class LinearModelTest(unittest.TestCase):
