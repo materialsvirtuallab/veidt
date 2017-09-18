@@ -1,0 +1,201 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>veidt.elsie.ensemble module &#8212; veidt  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="veidt.elsie.preprocessing module" href="veidt.elsie.preprocessing.html" />
+    <link rel="prev" title="veidt.elsie package" href="veidt.elsie.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-veidt.elsie.ensemble">
+<span id="veidt-elsie-ensemble-module"></span><h1>veidt.elsie.ensemble module<a class="headerlink" href="#module-veidt.elsie.ensemble" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="veidt.elsie.ensemble.EnsembleRank">
+<em class="property">class </em><code class="descclassname">veidt.elsie.ensemble.</code><code class="descname">EnsembleRank</code><span class="sig-paren">(</span><em>spect_col_df</em>, <em>spect_column</em>, <em>target_spect</em>, <em>label_column='mp-id'</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.ensemble.EnsembleRank" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Basic ensemble vote algorithm object</p>
+<dl class="method">
+<dt id="veidt.elsie.ensemble.EnsembleRank.borda_rank_vote">
+<code class="descname">borda_rank_vote</code><span class="sig-paren">(</span><em>ensemble_pair</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.ensemble.EnsembleRank.borda_rank_vote" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use the Borda count method, the Borda count for a spectrum is the sum
+of the number of spectra ranked below it by each individual
+preprocessing-similarity pair. The Borda count could be referred as a
+group consensus decision.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>ensemble_pair list(list): A list of preprocessing-similarity pair.</dt>
+<dd>Each preprocessing-similarity pair with format:
+[[preproc_1, preproc_2, etc…], similarity_metric].
+Each target spectrum and reference spectrum will be
+preprocessed using the preprocess methods listed in the list[0].
+Pair-wise similarity between target spectrum and each reference
+spectrum will be computed using similarity_metric in list[1].</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="veidt.elsie.ensemble.EnsembleRank.calculate_softmax_prob">
+<code class="descname">calculate_softmax_prob</code><span class="sig-paren">(</span><em>shift_penalty_alpha=0.01</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.ensemble.EnsembleRank.calculate_softmax_prob" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the softmax probability using the computed Borda count and
+spectrum shift of each spectrum. Shift_penalty_alpha is used to
+penalize the probability of reference spectrum with large spectrum
+energy shift</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>shift_penalty_alpha (float): penalize parameter used to adjust the</dt>
+<dd>weight of spectrum shift penalization, typical value is
+between 0.05 to 0.15.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.elsie.ensemble.SimpleEnsemble">
+<em class="property">class </em><code class="descclassname">veidt.elsie.ensemble.</code><code class="descname">SimpleEnsemble</code><span class="sig-paren">(</span><em>unknown_spectrum</em>, <em>refdb_spectrum</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.ensemble.SimpleEnsemble" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Simple ensemble classifier object used for spectrum shift, preprocessing
+and similarity computation between computed reference spectra and target
+spectrum</p>
+<dl class="method">
+<dt id="veidt.elsie.ensemble.SimpleEnsemble.dataframe_init">
+<code class="descname">dataframe_init</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.ensemble.SimpleEnsemble.dataframe_init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the comparison pandas dataframe, column ‘Unknown_spect’ is
+corresponding to the target spectrum object column ‘Ref_spect’ contains
+all reference spectrum object</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="veidt.elsie.ensemble.SimpleEnsemble.preprocess_similarity_compute">
+<code class="descname">preprocess_similarity_compute</code><span class="sig-paren">(</span><em>preprocess</em>, <em>similarity_metric</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.ensemble.SimpleEnsemble.preprocess_similarity_compute" title="Permalink to this definition">¶</a></dt>
+<dd><p>For each row, compute the similarity measure between the target and
+reference spectra.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>preprocess (list/tuple): Preprocessing steps need to taken for each spectrum
+similarity_metric (string): The similarity metric used for comparison.</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">veidt</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="veidt.html">veidt package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="veidt.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="veidt.elsie.html">veidt.elsie package</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="veidt.elsie.html#subpackages">Subpackages</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="veidt.elsie.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="veidt.elsie.html#module-veidt.elsie">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="veidt.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="veidt.html#module-veidt">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="veidt.html">veidt package</a><ul>
+  <li><a href="veidt.elsie.html">veidt.elsie package</a><ul>
+      <li>Previous: <a href="veidt.elsie.html" title="previous chapter">veidt.elsie package</a></li>
+      <li>Next: <a href="veidt.elsie.preprocessing.html" title="next chapter">veidt.elsie.preprocessing module</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Materials Virtual Lab.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/veidt.elsie.ensemble.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

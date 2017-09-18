@@ -6,6 +6,7 @@ Subpackages
 
 .. toctree::
 
+    veidt.elsie
     veidt.tests
 
 Submodules

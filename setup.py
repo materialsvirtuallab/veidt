@@ -7,7 +7,7 @@ from setuptools import setup, find_packages
 setup(
     name="veidt",
     packages=find_packages(),
-    version="0.0.1",
+    version="0.0.2",
     install_requires=["numpy", "scipy", "monty", "keras", "tensorflow",
                       "scikit-learn", "pymatgen"],
     author="Materials Virtual Lab",
