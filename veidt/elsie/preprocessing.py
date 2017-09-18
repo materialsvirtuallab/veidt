@@ -13,9 +13,10 @@ class Preprocessing(object):
     def __init__(self, spectrum):
         """
         Create an Preprocessing object
+
         Args:
-            spectrum (pymatgen.core.spectrum.Spectrum): Spectrum object used to initialize
-             preprocessing class.
+            spectrum (pymatgen.core.spectrum.Spectrum): Spectrum object used to
+                initialize preprocessing class.
         """
         self.spectrum = spectrum
         self.process_tag = []
@@ -59,14 +60,16 @@ class Preprocessing(object):
         Return weighted first derivative spectrum as spectrum
         """
         deriv_x, deriv_y = self.derivative_spect(self.spectrum, 1)
-        self.spectrum.x, self.spectrum.y = deriv_x, np.multiply(self.spectrum.y[:-1], deriv_y)
+        self.spectrum.x, self.spectrum.y = deriv_x, np.multiply(
+            self.spectrum.y[:-1], deriv_y)
 
     def weighted_second_derivative(self):
         """
         Return weighted second derivative spectrum as spectrum
         """
         deriv_x, deriv_y = self.derivative_spect(self.spectrum, 2)
-        self.spectrum.x, self.spectrum.y = deriv_x, np.multiply(self.spectrum.y[:-2], deriv_y)
+        self.spectrum.x, self.spectrum.y = deriv_x, np.multiply(
+            self.spectrum.y[:-2], deriv_y)
 
     def intensity_normalize(self):
         """
@@ -89,21 +92,23 @@ class Preprocessing(object):
 
     def area_normalize(self):
         """
-        Normalize the peak intensity using under curve area, i.e. normalized curve's under curve
-        area should equals 1
+        Normalize the peak intensity using under curve area, i.e. normalized
+        curve's under curve area should equals 1
         """
         under_curve_area = np.trapz(self.spectrum.y, self.spectrum.x)
         self.spectrum.y /= under_curve_area
 
     def snv_norm(self):
         """
-        Normalize with repect to the variance of the spectrum intensity and return abs. spectrum
+        Normalize with repect to the variance of the spectrum intensity and
+        return abs. spectrum
         """
         inten_mean = np.mean(self.spectrum.y)
         inten_std = np.mean(self.spectrum.y)
         normalized_mu = np.divide(np.subtract(self.spectrum.y, inten_mean), inten_std)
 
-        # Since snv norm will return negative absorption value after normalization, need to add
+        # Since snv norm will return negative absorption value after
+        # normalization, need to add
         # the minimum absorption value and shift the baseline back to zero
         min_norm_mu = np.abs(np.min(normalized_mu))
         normalized_mu = np.add(normalized_mu, min_norm_mu)
@@ -118,20 +123,24 @@ class Preprocessing(object):
 
     def sigmoid_squashing(self):
         """
-        Squashing the spectrum using the sigmoid funtion, i.e. squashed_y = (1 - cos(pi*spectrum.y))/2
+        Squashing the spectrum using the sigmoid funtion, i.e.
+        squashed_y = (1 - cos(pi*spectrum.y))/2
         """
-        squashed_mu = np.divide(np.subtract(1, np.cos(np.pi * self.spectrum.y)), 2)
+        squashed_mu = np.divide(np.subtract(1, np.cos(np.pi * self.spectrum.y)),
+                                2)
         self.spectrum.y = squashed_mu
 
     def derivative_spect(self, spect1, order):
         """
-        Calculate derivative of a given spectrum, to keep returned spectrum dimension consistent, endpoints are
-        not pad with endvalues
-        Args:
-            spect1: Given spectrum with spect1.x corresponding to energy. spect1.y corresponding to absorption
-            order: The number of times the spectrum are differenced
-        Returns: Differenciated x and y
+        Calculate derivative of a given spectrum, to keep returned spectrum
+        dimension consistent, endpoints are not pad with endvalues
 
+        Args:
+            spect1: Given spectrum with spect1.x corresponding to energy.
+                spect1.y corresponding to absorption
+            order: The number of times the spectrum are differenced
+
+        Returns: Differenciated x and y
         """
         deriv_x = np.copy(spect1.x)
         deriv_y = np.copy(spect1.y)
@@ -148,13 +157,14 @@ class Preprocessing(object):
 
     def spectrum_process(self, process_seq):
         """
-        Preprocess the self.spectrum object using the preprocess method listed in process_seq
+        Preprocess the self.spectrum object using the preprocess method listed
+        in process_seq
+
         Args:
             process_seq (list/tuple/string): preprocessing methods
-        Returns:
-
         """
-        if (process_seq is not None) and (isinstance(process_seq, list) or isinstance(process_seq, tuple)):
+        if (process_seq is not None) and (isinstance(process_seq, list) or
+                                              isinstance(process_seq, tuple)):
             for pro in process_seq:
                 getattr(self, self.proc_dict[pro])()
                 self.process_tag.append(pro)

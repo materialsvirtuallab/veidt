@@ -2,18 +2,18 @@
 # Copyright (c) Materials Virtual Lab
 # Distributed under the terms of the BSD License.
 
+import sklearn.metrics.pairwise as smp
+from monty.json import MSONable
+from scipy.stats import pearsonr
+import scipy.spatial.distance as spd
+import numpy as np
+
 __author__ = "Chen Zheng, Hanmei Tang"
 __copyright__ = "Copyright 2012, The Materials Project"
 __version__ = "0.1"
 __maintainer__ = "Chen Zheng"
 __email__ = "chz022@eng.ucsd.edu"
 __date__ = "May 11, 2017"
-
-import sklearn.metrics.pairwise as smp
-from monty.json import MSONable
-from scipy.stats import pearsonr
-import scipy.spatial.distance as spd
-import numpy as np
 
 
 class SimilarityMeasure(MSONable):
@@ -26,13 +26,15 @@ class SimilarityMeasure(MSONable):
     def __init__(self, coeff_1, coeff_2):
         """
         Args:
-            coeff_1: numpy array with dimension (n, 1), n corresponding to number of
-                        wavelength, column corresponding to the absorption coefficiency
-                        The spectrum need to be normalized to obtain meaningful result, i.e.
-                        the under curve area of spectrum need equal to 1
-            coeff_2: numpy array with dimension (n, 1). The row and column definition
-                        is the same as spectrum 1. The spectrum need to be normalized to
-                        obtain meaningful result, i.e. the under curve area of spectrum need equal to 1
+            coeff_1: numpy array with dimension (n, 1), n corresponding to
+                number of wavelength, column corresponding to the absorption
+                coefficiency. The spectrum need to be normalized to obtain
+                meaningful result, i.e. the under curve area of spectrum need
+                equal to 1
+            coeff_2: numpy array with dimension (n, 1). The row and column
+                definition is the same as spectrum 1. The spectrum need to be
+                normalized to obtain meaningful result, i.e. the under curve
+                area of spectrum need equal to 1
         """
 
         if len(coeff_1) != len(coeff_2):
@@ -48,21 +50,25 @@ class SimilarityMeasure(MSONable):
 
     def distance_measure(self):
         """
-        Compute the distance measures of two spectrum, need to implement in each similarity measure class
-        Returns: Distance measure between two spectrum
+        Compute the distance measures of two spectrum, need to implement in
+        each similarity measure class
 
+        Returns: Distance measure between two spectrum
         """
         raise NotImplementedError()
 
     def similarity_measure(self, dist_conversion='bin'):
         """
         Compute the similarity measure of two spectrum
-        Args:
-            dist_conversion: algorithm used to convert distance measure to similarity
-                exponential conversion are more sensitive for detecting extremely fine changes
-                in spectrum difference. Avaliable option: ['bin', 'exp']
-        Returns: similarity measure between two spectrum
 
+        Args:
+            dist_conversion: algorithm used to convert distance measure to
+                similarity exponential conversion are more sensitive for
+                detecting extremely fine changes in spectrum difference.
+                Avaliable options: ['bin', 'exp']
+
+        Returns:
+            Similarity measure between two spectrum
         """
         coeff_dist = self.distance_measure()
 
@@ -72,19 +78,9 @@ class SimilarityMeasure(MSONable):
             simi_measure = np.exp(-(coeff_dist / (self.d_max - coeff_dist)))
         return simi_measure
 
-    def as_dict(self):
-        return {"init_args": {"absorbing_coeff1": self.coeff_1,
-                              "absorbing_coeff2": self.coeff_2},
-                "version": __version__,
-                "@module": self.__class__.__module__,
-                "@class": self.__class__.__name__}
-
-    @classmethod
-    def from_dict(cls, d):
-        return cls(**d["init_args"])
-
 
 class Euclidean(SimilarityMeasure):
+
     def __init__(self, coeff_1, coeff_2):
         """
         Class to calculate the Euclidean similarity
@@ -123,13 +119,15 @@ class Minkowski(SimilarityMeasure):
     def __init__(self, coeff_1, coeff_2, p=4):
         """
         Args:
-            coeff_1: numpy array with dimension (n, 1), n corresponding to number of
-                        wavelength, column corresponding to the absorption coefficiency
-                        The spectrum need to be normalized to obtain meaningful result, i.e.
-                        the under curve area of spectrum need equal to 1
-            coeff_2: numpy array with dimension (n, 1). The row and column definition
-                        is the same as spectrum 1. The spectrum need to be normalized to
-                        obtain meaningful result, i.e. the under curve area of spectrum need equal to 1
+            coeff_1: numpy array with dimension (n, 1), n corresponding to
+                number of wavelength, column corresponding to the absorption
+                coefficiency. The spectrum need to be normalized to obtain
+                meaningful result, i.e. the under curve area of spectrum need
+                equal to 1
+            coeff_2: numpy array with dimension (n, 1). The row and column
+                definition is the same as spectrum 1. The spectrum need to be
+                normalized to obtain meaningful result, i.e. the under curve
+                area of spectrum nee
             p: The order of the norm of the difference
         """
         super().__init__(coeff_1, coeff_2)
@@ -209,7 +207,8 @@ class Lorentzian(SimilarityMeasure):
         self.d_max = 2 * np.log(2)
 
     def distance_measure(self):
-        return np.sum(np.log(1 + np.absolute(np.subtract(self.coeff_1, self.coeff_2))))
+        return np.sum(np.log(1 + np.absolute(np.subtract(self.coeff_1,
+                                                         self.coeff_2))))
 
     def __str__(self):
         return "LorentzianSimilarity"
@@ -291,7 +290,8 @@ class Tanimoto(SimilarityMeasure):
         self.d_max = 1
 
     def distance_measure(self):
-        nominator = np.sum(np.subtract(np.maximum(self.coeff_1, self.coeff_2), np.minimum(self.coeff_1, self.coeff_2)))
+        nominator = np.sum(np.subtract(np.maximum(self.coeff_1, self.coeff_2),
+                                       np.minimum(self.coeff_1, self.coeff_2)))
         denominator = np.sum(np.maximum(self.coeff_1, self.coeff_2))
         return nominator / denominator
 
@@ -321,7 +321,8 @@ class HarmonicMean(SimilarityMeasure):
         denominator = np.add(self.coeff_1, self.coeff_2)
         deno_no_zero_index = np.where(denominator != 0)
 
-        return 2 * np.sum(nominator[deno_no_zero_index] / denominator[deno_no_zero_index])
+        return 2 * np.sum(nominator[deno_no_zero_index] /
+                          denominator[deno_no_zero_index])
 
     def __str__(self):
         return "HarmonicMeanSimilarity"
@@ -329,11 +330,13 @@ class HarmonicMean(SimilarityMeasure):
 
 class Cosine(SimilarityMeasure):
     """
-    Cosine similarity: in similarity_measure the default setting returns standard cosine_similarity
+    Cosine similarity: in similarity_measure the default setting returns
+    standard cosine_similarity
     """
 
     def similarity_measure(self):
-        return smp.cosine_similarity(self.coeff_1.reshape(1, -1), self.coeff_2.reshape(1, -1))[0][0]
+        return smp.cosine_similarity(self.coeff_1.reshape(1, -1),
+                                     self.coeff_2.reshape(1, -1))[0][0]
 
     def __str__(self):
         return "CosineSimilarity"
@@ -350,11 +353,13 @@ class Jaccard(SimilarityMeasure):
 
     def similarity_measure(self):
         """
-        The distance measure is the Kumar-Hassebrook similarity between two vectors
+        The distance measure is the Kumar-Hassebrook similarity between two
+        vectors
         """
         nominator = np.dot(self.coeff_1, self.coeff_2)
-        denominator = np.sum(np.subtract(np.add(np.square(self.coeff_1), np.square(self.coeff_2)),
-                                         np.multiply(self.coeff_1, self.coeff_2)))
+        denominator = np.sum(np.subtract(
+            np.add(np.square(self.coeff_1), np.square(self.coeff_2)),
+            np.multiply(self.coeff_1, self.coeff_2)))
         return nominator / denominator
 
     def __str__(self):
@@ -376,7 +381,8 @@ class Dice(SimilarityMeasure):
 
     def similarity_measure(self):
         nominator = 2 * np.dot(self.coeff_1, self.coeff_2)
-        denominator = np.sum(np.add(np.square(self.coeff_1), np.square(self.coeff_2)))
+        denominator = np.sum(np.add(np.square(self.coeff_1),
+                                    np.square(self.coeff_2)))
         return nominator / denominator
 
     def __str__(self):
@@ -405,7 +411,8 @@ class Hellinger(SimilarityMeasure):
         self.d_max = 2
 
     def distance_measure(self):
-        inter_result = np.subtract(np.sqrt(np.abs(self.coeff_1)), np.sqrt(np.abs(self.coeff_2)))
+        inter_result = np.subtract(np.sqrt(np.abs(self.coeff_1)),
+                                   np.sqrt(np.abs(self.coeff_2)))
         return np.sqrt(2 * np.sum(np.square(inter_result)))
 
     def __str__(self):
@@ -422,7 +429,8 @@ class Matusita(SimilarityMeasure):
         self.d_max = np.sqrt(2)
 
     def distance_measure(self):
-        inter_result = np.subtract(np.sqrt(np.abs(self.coeff_1)), np.sqrt(np.abs(self.coeff_2)))
+        inter_result = np.subtract(np.sqrt(np.abs(self.coeff_1)),
+                                   np.sqrt(np.abs(self.coeff_2)))
         return np.sqrt(np.sum(np.square(inter_result)))
 
     def __str__(self):
@@ -439,7 +447,8 @@ class Squaredchord(SimilarityMeasure):
         self.d_max = 2
 
     def distance_measure(self):
-        inter_result = np.subtract(np.sqrt(np.abs(self.coeff_1)), np.sqrt(np.abs(self.coeff_2)))
+        inter_result = np.subtract(np.sqrt(np.abs(self.coeff_1)),
+                                   np.sqrt(np.abs(self.coeff_2)))
         return np.sum(np.square(inter_result))
 
     def __str__(self):
@@ -515,7 +524,8 @@ class Kdivergence(SimilarityMeasure):
         denominator = np.add(self.coeff_1, self.coeff_2)
         deno_no_zero = np.where(denominator != 0)
 
-        left_log_term = np.abs(np.divide(2 * self.coeff_1[deno_no_zero], denominator[deno_no_zero]))
+        left_log_term = np.abs(np.divide(2 * self.coeff_1[deno_no_zero],
+                                         denominator[deno_no_zero]))
         left_no_zero_index = np.where(left_log_term != 0)
         left_term = np.multiply(self.coeff_1[deno_no_zero][left_no_zero_index],
                                 np.log(left_log_term)[left_no_zero_index])
@@ -536,13 +546,17 @@ class Topsoe(SimilarityMeasure):
         self.d_max = 2 * np.log(2)
 
     def distance_measure(self):
-        left_log_term = np.abs(np.divide(2 * self.coeff_1, np.add(self.coeff_1, self.coeff_2)))
+        left_log_term = np.abs(np.divide(2 * self.coeff_1,
+                                         np.add(self.coeff_1, self.coeff_2)))
         left_no_zero_index = np.where(left_log_term != 0)
-        left_term = np.multiply(self.coeff_1[left_no_zero_index], np.log(left_log_term[left_no_zero_index]))
+        left_term = np.multiply(self.coeff_1[left_no_zero_index],
+                                np.log(left_log_term[left_no_zero_index]))
 
-        right_log_term = np.abs(np.divide(2 * self.coeff_1, np.add(self.coeff_1, self.coeff_2)))
+        right_log_term = np.abs(np.divide(2 * self.coeff_1,
+                                          np.add(self.coeff_1, self.coeff_2)))
         right_no_zero_index = np.where(right_log_term != 0)
-        right_term = np.multiply(self.coeff_2[right_no_zero_index], np.log(right_log_term[right_no_zero_index]))
+        right_term = np.multiply(self.coeff_2[right_no_zero_index],
+                                 np.log(right_log_term[right_no_zero_index]))
 
         left_term = np.sum(left_term)
         right_term = np.sum(right_term)
@@ -562,13 +576,17 @@ class JensenShannon(SimilarityMeasure):
         self.d_max = np.log(2)
 
     def distance_measure(self):
-        left_log_term = np.abs(np.divide(2 * self.coeff_1, np.add(self.coeff_1, self.coeff_2)))
+        left_log_term = np.abs(np.divide(2 * self.coeff_1,
+                                         np.add(self.coeff_1, self.coeff_2)))
         left_no_zero_index = np.where(left_log_term != 0)
-        left_term = np.multiply(self.coeff_1[left_no_zero_index], np.log(left_log_term[left_no_zero_index]))
+        left_term = np.multiply(self.coeff_1[left_no_zero_index],
+                                np.log(left_log_term[left_no_zero_index]))
 
-        right_log_term = np.abs(np.divide(2 * self.coeff_1, np.add(self.coeff_1, self.coeff_2)))
+        right_log_term = np.abs(np.divide(2 * self.coeff_1,
+                                          np.add(self.coeff_1, self.coeff_2)))
         right_no_zero_index = np.where(right_log_term != 0)
-        right_term = np.multiply(self.coeff_2[right_no_zero_index], np.log(right_log_term[right_no_zero_index]))
+        right_term = np.multiply(self.coeff_2[right_no_zero_index],
+                                 np.log(right_log_term[right_no_zero_index]))
 
         left_term = np.sum(left_term)
         right_term = np.sum(right_term)
@@ -591,7 +609,8 @@ class JensenDifference(SimilarityMeasure):
     def distance_measure(self):
         left_term = np.add(np.multiply(self.coeff_1, np.log(self.coeff_1)),
                            np.multiply(self.coeff_2, np.log(self.coeff_2))) / 2
-        right_term = np.multiply(np.add(self.coeff_1, self.coeff_2) / 2, np.log(np.add(self.coeff_1, self.coeff_2) / 2))
+        right_term = np.multiply(np.add(self.coeff_1, self.coeff_2) / 2,
+                                 np.log(np.add(self.coeff_1, self.coeff_2) / 2))
         return np.sum(np.subtract(left_term, right_term))
 
     def __str__(self):
@@ -629,7 +648,8 @@ class VicisSymmetricChi(SimilarityMeasure):
         nominator = np.square(np.subtract(self.coeff_1, self.coeff_2))
         denominator = np.maximum(self.coeff_1, self.coeff_2)
         non_zero_deno = np.where(denominator != 0)
-        return np.sum(np.divide(nominator[non_zero_deno], denominator[non_zero_deno]))
+        return np.sum(np.divide(nominator[non_zero_deno],
+                                denominator[non_zero_deno]))
 
     def __str__(self):
         return "VicisSymmetricChi Similarity"
@@ -648,9 +668,11 @@ class MinSymmetricChi(SimilarityMeasure):
         coeff_1_non_zero = np.where(self.coeff_1 != 0)
         coeff_2_non_zero = np.where(self.coeff_2 != 0)
 
-        left_term = np.sum(np.divide(np.square(np.subtract(self.coeff_1, self.coeff_2))[coeff_1_non_zero],
+        left_term = np.sum(np.divide(np.square(
+            np.subtract(self.coeff_1, self.coeff_2))[coeff_1_non_zero],
                                      self.coeff_1[coeff_1_non_zero]))
-        right_term = np.sum(np.divide(np.square(np.subtract(self.coeff_1, self.coeff_2))[coeff_2_non_zero],
+        right_term = np.sum(np.divide(np.square(
+            np.subtract(self.coeff_1, self.coeff_2))[coeff_2_non_zero],
                                       self.coeff_2[coeff_2_non_zero]))
         return np.minimum(left_term, right_term)
 
