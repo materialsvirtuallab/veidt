@@ -7,8 +7,8 @@ import numpy as np
 import warnings
 from pymatgen.core.spectrum import Spectrum
 from copy import deepcopy
-from veidt.ELSIE.preprocessing import Preprocessing
-from veidt.ELSIE import similarity_measures
+from veidt.elsie.preprocessing import Preprocessing
+from veidt.elsie import similarity_measures
 from scipy.interpolate import interp1d
 
 

@@ -1,4 +1,4 @@
-from veidt.ELSIE.preprocessing import Preprocessing
+from veidt.elsie.preprocessing import Preprocessing
 from pymatgen.core.spectrum import Spectrum
 import numpy as np
 import unittest

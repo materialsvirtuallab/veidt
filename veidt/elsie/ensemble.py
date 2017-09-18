@@ -2,7 +2,7 @@
 # Copyright (c) Materials Virtual Lab
 # Distributed under the terms of the BSD License.
 
-from veidt.ELSIE.spectra_similarity import SpectraSimilarity
+from veidt.elsie.spectra_similarity import SpectraSimilarity
 import operator
 import numpy as np
 from copy import deepcopy

@@ -1,4 +1,4 @@
-from veidt.ELSIE import similarity_measures
+from veidt.elsie import similarity_measures
 import sklearn.metrics.pairwise as smp
 import numpy as np
 import unittest

@@ -1,5 +1,5 @@
 import numpy as np
-from veidt.ELSIE.ensemble import SimpleEnsemble, EnsembleRank
+from veidt.elsie.ensemble import SimpleEnsemble, EnsembleRank
 from copy import deepcopy
 import json, os
 import unittest

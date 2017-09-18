@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from pymatgen import Structure, Element
 from copy import deepcopy
-from veidt.ELSIE.spectra_similarity import *
+from veidt.elsie.spectra_similarity import *
 from pymatgen.analysis.xas.spectrum import XANES
 
 test_df = pd.read_json('test_df.json')
