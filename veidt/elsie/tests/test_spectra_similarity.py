@@ -1,21 +1,26 @@
-import unittest
-import pandas as pd
+import unittest, json, os
 import numpy as np
 from pymatgen import Structure, Element
 from copy import deepcopy
 from veidt.elsie.spectra_similarity import *
 from pymatgen.analysis.xas.spectrum import XANES
 
-test_df = pd.read_json('test_df.json')
-Al2O3_stru = Structure.from_file('alpha_Al2O3.cif')
-LiCoO2_stru = Structure.from_file('LiCoO2_mp24850.cif')
+Al2O3_cif = os.path.join(os.path.dirname(__file__), 'alpha_Al2O3.cif')
+LiCoO2_cif = os.path.join(os.path.dirname(__file__), 'LiCoO2_mp24850.cif')
+Al2O3_spect_file = os.path.join(os.path.dirname(__file__), 'Al2O3_spectrum.json')
+LiCoO2_spect_file = os.path.join(os.path.dirname(__file__), 'LiCoO2_spectrum.json')
+
+Al2O3_stru = Structure.from_file(Al2O3_cif)
+LiCoO2_stru = Structure.from_file(LiCoO2_cif)
+with open(LiCoO2_spect_file, 'r') as f:
+    LiCoO2_spect = json.load(f)
+with open(Al2O3_spect_file, 'r') as f:
+    Al2O3_spect = json.load(f)
 
 
 class SpectraSimilarityTest(unittest.TestCase):
     def setUp(self):
-        Al2O3_spectrum = np.array(test_df.loc[test_df['Formula'] == 'Al2O3']['Exp.spectrum'].values[0])
-        LiCoO2_spectrum = np.array(test_df.loc[test_df['Formula'] == 'LiCoO2']['Exp.spectrum'].values[0])
-        self.Al2O3_xane_1 = XANES(Al2O3_spectrum[:, 0], Al2O3_spectrum[:, 1], Al2O3_stru, Element('Al'), 'K')
+        self.Al2O3_xane_1 = XANES(Al2O3_spect['x'], Al2O3_spect['y'], Al2O3_stru, Element('Al'), 'K')
 
         self.Al2O3_xane_2 = deepcopy(self.Al2O3_xane_1)
         self.Al2O3_xane_2.x = self.Al2O3_xane_2.x - 40
@@ -26,7 +31,7 @@ class SpectraSimilarityTest(unittest.TestCase):
         self.Al2O3_xane_right_shift5 = deepcopy(self.Al2O3_xane_1)
         self.Al2O3_xane_right_shift5.x = self.Al2O3_xane_right_shift5.x + 5
 
-        self.LiCoO2_xane = XANES(LiCoO2_spectrum[:, 0], LiCoO2_spectrum[:, 1], LiCoO2_stru, Element('Co'), 'K')
+        self.LiCoO2_xane = XANES(LiCoO2_spect['x'], LiCoO2_spect['y'], LiCoO2_stru, Element('Co'), 'K')
 
     def test_energy_range_warning(self):
         with self.assertWarnsRegex(UserWarning, 'less than 30 meV'):
