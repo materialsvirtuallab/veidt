@@ -1,3 +1,7 @@
+# coding: utf-8
+# Copyright (c) Materials Virtual Lab
+# Distributed under the terms of the BSD License.
+
 __author__ = "Chen Zheng, Hanmei Tang"
 __copyright__ = "Copyright 2012, The Materials Project"
 __version__ = "0.1"

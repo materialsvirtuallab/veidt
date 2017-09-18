@@ -1,5 +1,9 @@
+# coding: utf-8
+# Copyright (c) Materials Virtual Lab
+# Distributed under the terms of the BSD License.
+
 from veidt.ELSIE.spectra_similarity import SpectraSimilarity
-import operator, os, json
+import operator
 import numpy as np
 from copy import deepcopy
 import pandas as pd

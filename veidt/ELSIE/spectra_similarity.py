@@ -1,3 +1,7 @@
+# coding: utf-8
+# Copyright (c) Materials Virtual Lab
+# Distributed under the terms of the BSD License.
+
 from monty.json import MSONable
 import numpy as np
 import warnings
