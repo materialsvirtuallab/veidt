@@ -1,0 +1,209 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>veidt.elsie.spectra_similarity module &#8212; veidt  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="veidt.abstract module" href="veidt.abstract.html" />
+    <link rel="prev" title="veidt.elsie.similarity_measures module" href="veidt.elsie.similarity_measures.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-veidt.elsie.spectra_similarity">
+<span id="veidt-elsie-spectra-similarity-module"></span><h1>veidt.elsie.spectra_similarity module<a class="headerlink" href="#module-veidt.elsie.spectra_similarity" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="veidt.elsie.spectra_similarity.SpectraSimilarity">
+<em class="property">class </em><code class="descclassname">veidt.elsie.spectra_similarity.</code><code class="descname">SpectraSimilarity</code><span class="sig-paren">(</span><em>sp1</em>, <em>sp2</em>, <em>interp_points=200</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.spectra_similarity.SpectraSimilarity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">monty.json.MSONable</span></code></p>
+<dl class="method">
+<dt id="veidt.elsie.spectra_similarity.SpectraSimilarity.get_shifted_similarity">
+<code class="descname">get_shifted_similarity</code><span class="sig-paren">(</span><em>similarity_metric</em>, <em>energy_variation=None</em>, <em>spect_preprocess=None</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.spectra_similarity.SpectraSimilarity.get_shifted_similarity" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="veidt.elsie.spectra_similarity.absorption_onset_shift">
+<code class="descclassname">veidt.elsie.spectra_similarity.</code><code class="descname">absorption_onset_shift</code><span class="sig-paren">(</span><em>sp1</em>, <em>sp2</em>, <em>intensity_threshold</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.spectra_similarity.absorption_onset_shift" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shift spectrum 2 with respect to spectrum 1 using the difference between
+two spectra’s onset of absorption.
+The onset is determined by ascertaining the lowest incident energy at which
+the spectra’s absorption intensity reaches the ‘intensity_threshold’ of the
+peak intensity.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">sp1: Spectrum object 1
+sp2: Spectrum object 2
+intensity_threshold: The absorption peak intensity threshold used to</p>
+<blockquote class="last">
+<div>determine the absorption onset. Must be a float between 0 and 1.</div></blockquote>
+</dd>
+<dt>Returns:</dt>
+<dd><p class="first">shifted_sp1: Spectrum object 1
+shifted_sp2: Spectrum object with absorption same as sp2 and</p>
+<blockquote>
+<div>shifted energy range</div></blockquote>
+<dl class="last docutils">
+<dt>energy_diff: Energy difference between sp1 and sp2,</dt>
+<dd>energy_diff &gt; 0 mean sp2 needs to shift left</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="veidt.elsie.spectra_similarity.energy_overlap">
+<code class="descclassname">veidt.elsie.spectra_similarity.</code><code class="descname">energy_overlap</code><span class="sig-paren">(</span><em>sp1</em>, <em>sp2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.spectra_similarity.energy_overlap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the overlap energy range of two spectra, i.e. lower bound is the
+maximum of two spectra’s minimum energy.
+Upper bound is the minimum of two spectra’s maximum energy</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>sp1: Spectrum object 1
+sp2: Spectrum object 2</dd>
+<dt>Returns:</dt>
+<dd>Overlap energy range</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="veidt.elsie.spectra_similarity.spectra_energy_interpolate">
+<code class="descclassname">veidt.elsie.spectra_similarity.</code><code class="descname">spectra_energy_interpolate</code><span class="sig-paren">(</span><em>sp1</em>, <em>energy_range</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.spectra_similarity.spectra_energy_interpolate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use Scipy’s interp1d and returns spectrum object with absorption value
+interpolated with given energy_range</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>sp1: Spectrum object 1
+energy_range: new energy range used in interpolate</dd>
+<dt>Returns:</dt>
+<dd>Spectrum object with given energy range and interpolated absorption value</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="veidt.elsie.spectra_similarity.spectra_lower_extend">
+<code class="descclassname">veidt.elsie.spectra_similarity.</code><code class="descname">spectra_lower_extend</code><span class="sig-paren">(</span><em>sp1</em>, <em>sp2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.spectra_similarity.spectra_lower_extend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extend the energy range of spectra and ensure both spectra has same lower
+bound in energy. The spectrum with higher low energy
+bound with be extended, the first absorption value will be used for
+absorption extension.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>sp1: Spectrum object 1
+sp2: Spectrum object 2</dd>
+<dt>Returns:</dt>
+<dd>Two Spectrum objects with same lower energy bound</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">veidt</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="veidt.html">veidt package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="veidt.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="veidt.elsie.html">veidt.elsie package</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="veidt.elsie.html#subpackages">Subpackages</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="veidt.elsie.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="veidt.elsie.html#module-veidt.elsie">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="veidt.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="veidt.html#module-veidt">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="veidt.html">veidt package</a><ul>
+  <li><a href="veidt.elsie.html">veidt.elsie package</a><ul>
+      <li>Previous: <a href="veidt.elsie.similarity_measures.html" title="previous chapter">veidt.elsie.similarity_measures module</a></li>
+      <li>Next: <a href="veidt.abstract.html" title="next chapter">veidt.abstract module</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Materials Virtual Lab.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/veidt.elsie.spectra_similarity.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

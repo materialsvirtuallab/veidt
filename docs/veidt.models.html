@@ -43,33 +43,64 @@
   <div class="section" id="module-veidt.models">
 <span id="veidt-models-module"></span><h1>veidt.models module<a class="headerlink" href="#module-veidt.models" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
-<dt id="veidt.models.LRModel">
-<em class="property">class </em><code class="descclassname">veidt.models.</code><code class="descname">LRModel</code><span class="sig-paren">(</span><em>describer</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.models.LRModel" title="Permalink to this definition">¶</a></dt>
+<dt id="veidt.models.LinearModel">
+<em class="property">class </em><code class="descclassname">veidt.models.</code><code class="descname">LinearModel</code><span class="sig-paren">(</span><em>describer</em>, <em>regressor='LinearRegression'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.models.LinearModel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="veidt.abstract.html#veidt.abstract.Model" title="veidt.abstract.Model"><code class="xref py py-class docutils literal"><span class="pre">veidt.abstract.Model</span></code></a></p>
-<p>Basic linear regression model.</p>
+<p>Linear model.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>describer</strong> – Desciber object to convert input objects to
+<li><strong>describer</strong> – Describer To convert input objects to
 descriptors.</li>
-<li><strong>kwargs</strong> – Passthrough to sklearn.linear_models.LinearRegression</li>
+<li><strong>regressor</strong> – (str) Name of LinearModel from
+sklearn.linear_model. Default to “LinearRegression”, i.e.,
+ordinary least squares.</li>
+<li><strong>kwargs</strong> – kwargs to be passed to regressor.</li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
+<dl class="attribute">
+<dt id="veidt.models.LinearModel.coef">
+<code class="descname">coef</code><a class="headerlink" href="#veidt.models.LinearModel.coef" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
-<dt id="veidt.models.LRModel.fit">
-<code class="descname">fit</code><span class="sig-paren">(</span><em>inputs</em>, <em>outputs</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.models.LRModel.fit" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
+<dt id="veidt.models.LinearModel.evaluate_fit">
+<code class="descname">evaluate_fit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.models.LinearModel.evaluate_fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Efficient method to obtain prediction on training inputs w/o
+calculating the features of inputs again.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Predicted output array from training inputs.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="veidt.models.LinearModel.fit">
+<code class="descname">fit</code><span class="sig-paren">(</span><em>inputs</em>, <em>outputs</em>, <em>weights=None</em>, <em>override=False</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.models.LinearModel.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit model.</p>
+<table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>inputs</strong> – List of inputs</li>
-<li><strong>outputs</strong> – List of outputs</li>
+<li><strong>inputs</strong> – List of input training objects.</li>
+<li><strong>outputs</strong> – List/Array of output values (supervisory
+signals).</li>
+<li><strong>weights</strong> – List/Array of weights. Default to None, i.e.,
+unweighted.</li>
+<li><strong>override</strong> – (bool) Whether to calculate the feature
+vectors from given inputs. Default to False. Set to True if
+you want to retrain the model with a different set of
+training inputs.</li>
 </ul>
 </td>
 </tr>
@@ -77,21 +108,50 @@ descriptors.</li>
 </table>
 </dd></dl>
 
-<dl class="method">
-<dt id="veidt.models.LRModel.predict">
-<code class="descname">predict</code><span class="sig-paren">(</span><em>inputs</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.models.LRModel.predict" title="Permalink to this definition">¶</a></dt>
+<dl class="attribute">
+<dt id="veidt.models.LinearModel.intercept">
+<code class="descname">intercept</code><a class="headerlink" href="#veidt.models.LinearModel.intercept" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="veidt.models.LRModel.save">
-<code class="descname">save</code><span class="sig-paren">(</span><em>model_fname</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.models.LRModel.save" title="Permalink to this definition">¶</a></dt>
+<dt id="veidt.models.LinearModel.load">
+<code class="descname">load</code><span class="sig-paren">(</span><em>model_fname</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.models.LinearModel.load" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="veidt.models.LinearModel.predict">
+<code class="descname">predict</code><span class="sig-paren">(</span><em>inputs</em>, <em>override=False</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.models.LinearModel.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predict outputs with fitted model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>inputs</strong> – List of input testing objects.</li>
+<li><strong>override</strong> – (bool) Whether to calculate the feature
+vectors from given inputs. Default to False. Set to True if
+you want to test the model with a different set of testing
+inputs.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Predicted output array from inputs.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="veidt.models.LinearModel.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>model_fname</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.models.LinearModel.save" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="veidt.models.NeuralNet">
-<em class="property">class </em><code class="descclassname">veidt.models.</code><code class="descname">NeuralNet</code><span class="sig-paren">(</span><em>layer_sizes</em>, <em>describer</em>, <em>preprocessor=StandardScaler(copy=True</em>, <em>with_mean=True</em>, <em>with_std=True)</em>, <em>activation='relu'</em>, <em>loss='mae'</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.models.NeuralNet" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">veidt.models.</code><code class="descname">NeuralNet</code><span class="sig-paren">(</span><em>layer_sizes</em>, <em>describer</em>, <em>preprocessor=None</em>, <em>activation='relu'</em>, <em>loss='mse'</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.models.NeuralNet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="veidt.abstract.html#veidt.abstract.Model" title="veidt.abstract.Model"><code class="xref py py-class docutils literal"><span class="pre">veidt.abstract.Model</span></code></a></p>
 <p>Basic neural network model.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -100,7 +160,7 @@ descriptors.</li>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>layer_sizes</strong> – Hidden layer sizes, e.g., [3, 3]</li>
-<li><strong>describer</strong> – Desciber object to convert input objects to
+<li><strong>describer</strong> – Describer object to convert input objects to
 descriptors.</li>
 <li><strong>preprocessor</strong> – : Processor to use. Defaults to StandardScaler</li>
 <li><strong>activation</strong> – Activation function</li>
@@ -112,7 +172,7 @@ descriptors.</li>
 </table>
 <dl class="method">
 <dt id="veidt.models.NeuralNet.fit">
-<code class="descname">fit</code><span class="sig-paren">(</span><em>inputs</em>, <em>outputs</em>, <em>test_size=0.2</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.models.NeuralNet.fit" title="Permalink to this definition">¶</a></dt>
+<code class="descname">fit</code><span class="sig-paren">(</span><em>inputs</em>, <em>outputs</em>, <em>test_size=0.2</em>, <em>adam_lr=0.01</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.models.NeuralNet.fit" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -121,6 +181,7 @@ descriptors.</li>
 <li><strong>inputs</strong> – List of inputs</li>
 <li><strong>outputs</strong> – List of outputs</li>
 <li><strong>test_size</strong> – Size of test set. Defaults to 0.2.</li>
+<li><strong>adam_lr</strong> – learning rate of Adam optimizer</li>
 <li><strong>kwargs</strong> – Passthrough to fit function in keras.models</li>
 </ul>
 </td>
@@ -130,14 +191,26 @@ descriptors.</li>
 </dd></dl>
 
 <dl class="method">
+<dt id="veidt.models.NeuralNet.load">
+<code class="descname">load</code><span class="sig-paren">(</span><em>model_fname</em>, <em>scaler_fname</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.models.NeuralNet.load" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="veidt.models.NeuralNet.predict">
 <code class="descname">predict</code><span class="sig-paren">(</span><em>inputs</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.models.NeuralNet.predict" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="veidt.models.NeuralNet.save">
-<code class="descname">save</code><span class="sig-paren">(</span><em>model_fname</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.models.NeuralNet.save" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="descname">save</code><span class="sig-paren">(</span><em>model_fname</em>, <em>scaler_fname</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.models.NeuralNet.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>use kears model.save method to save model in .h5
+use scklearn.external.joblib to save scaler(the .save
+file is supposed to be much smaller than saved as
+pickle file)
+:param model_fname:
+:param scaler_fname:
+:return:None</p>
+</dd></dl>
 
 </dd></dl>
 

@@ -1,0 +1,565 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>veidt.elsie.similarity_measures module &#8212; veidt  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="veidt.elsie.spectra_similarity module" href="veidt.elsie.spectra_similarity.html" />
+    <link rel="prev" title="veidt.elsie.preprocessing module" href="veidt.elsie.preprocessing.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-veidt.elsie.similarity_measures">
+<span id="veidt-elsie-similarity-measures-module"></span><h1>veidt.elsie.similarity_measures module<a class="headerlink" href="#module-veidt.elsie.similarity_measures" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="veidt.elsie.similarity_measures.AvgL1Linf">
+<em class="property">class </em><code class="descclassname">veidt.elsie.similarity_measures.</code><code class="descname">AvgL1Linf</code><span class="sig-paren">(</span><em>coeff_1</em>, <em>coeff_2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.AvgL1Linf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#veidt.elsie.similarity_measures.SimilarityMeasure" title="veidt.elsie.similarity_measures.SimilarityMeasure"><code class="xref py py-class docutils literal"><span class="pre">veidt.elsie.similarity_measures.SimilarityMeasure</span></code></a></p>
+<p>Average L1 L_inf similarity</p>
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.AvgL1Linf.distance_measure">
+<code class="descname">distance_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.AvgL1Linf.distance_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.elsie.similarity_measures.Chebyshev">
+<em class="property">class </em><code class="descclassname">veidt.elsie.similarity_measures.</code><code class="descname">Chebyshev</code><span class="sig-paren">(</span><em>coeff_1</em>, <em>coeff_2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Chebyshev" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#veidt.elsie.similarity_measures.SimilarityMeasure" title="veidt.elsie.similarity_measures.SimilarityMeasure"><code class="xref py py-class docutils literal"><span class="pre">veidt.elsie.similarity_measures.SimilarityMeasure</span></code></a></p>
+<p>Chebyshev similarity</p>
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.Chebyshev.distance_measure">
+<code class="descname">distance_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Chebyshev.distance_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.elsie.similarity_measures.Cityblock">
+<em class="property">class </em><code class="descclassname">veidt.elsie.similarity_measures.</code><code class="descname">Cityblock</code><span class="sig-paren">(</span><em>coeff_1</em>, <em>coeff_2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Cityblock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#veidt.elsie.similarity_measures.SimilarityMeasure" title="veidt.elsie.similarity_measures.SimilarityMeasure"><code class="xref py py-class docutils literal"><span class="pre">veidt.elsie.similarity_measures.SimilarityMeasure</span></code></a></p>
+<p>Cityblock similarity to calculate the Cityblock, i.e. Manhattan, similarity</p>
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.Cityblock.distance_measure">
+<code class="descname">distance_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Cityblock.distance_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.elsie.similarity_measures.Cosine">
+<em class="property">class </em><code class="descclassname">veidt.elsie.similarity_measures.</code><code class="descname">Cosine</code><span class="sig-paren">(</span><em>coeff_1</em>, <em>coeff_2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Cosine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#veidt.elsie.similarity_measures.SimilarityMeasure" title="veidt.elsie.similarity_measures.SimilarityMeasure"><code class="xref py py-class docutils literal"><span class="pre">veidt.elsie.similarity_measures.SimilarityMeasure</span></code></a></p>
+<p>Cosine similarity: in similarity_measure the default setting returns
+standard cosine_similarity</p>
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.Cosine.similarity_measure">
+<code class="descname">similarity_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Cosine.similarity_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.elsie.similarity_measures.Czekanowski">
+<em class="property">class </em><code class="descclassname">veidt.elsie.similarity_measures.</code><code class="descname">Czekanowski</code><span class="sig-paren">(</span><em>coeff_1</em>, <em>coeff_2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Czekanowski" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#veidt.elsie.similarity_measures.SimilarityMeasure" title="veidt.elsie.similarity_measures.SimilarityMeasure"><code class="xref py py-class docutils literal"><span class="pre">veidt.elsie.similarity_measures.SimilarityMeasure</span></code></a></p>
+<p>Czekanowski similarity</p>
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.Czekanowski.distance_measure">
+<code class="descname">distance_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Czekanowski.distance_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.elsie.similarity_measures.Dice">
+<em class="property">class </em><code class="descclassname">veidt.elsie.similarity_measures.</code><code class="descname">Dice</code><span class="sig-paren">(</span><em>coeff_1</em>, <em>coeff_2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Dice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#veidt.elsie.similarity_measures.SimilarityMeasure" title="veidt.elsie.similarity_measures.SimilarityMeasure"><code class="xref py py-class docutils literal"><span class="pre">veidt.elsie.similarity_measures.SimilarityMeasure</span></code></a></p>
+<p>Dice similarity measure</p>
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.Dice.distance_measure">
+<code class="descname">distance_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Dice.distance_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.Dice.similarity_measure">
+<code class="descname">similarity_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Dice.similarity_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.elsie.similarity_measures.Euclidean">
+<em class="property">class </em><code class="descclassname">veidt.elsie.similarity_measures.</code><code class="descname">Euclidean</code><span class="sig-paren">(</span><em>coeff_1</em>, <em>coeff_2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Euclidean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#veidt.elsie.similarity_measures.SimilarityMeasure" title="veidt.elsie.similarity_measures.SimilarityMeasure"><code class="xref py py-class docutils literal"><span class="pre">veidt.elsie.similarity_measures.SimilarityMeasure</span></code></a></p>
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.Euclidean.distance_measure">
+<code class="descname">distance_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Euclidean.distance_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.elsie.similarity_measures.Fidelity">
+<em class="property">class </em><code class="descclassname">veidt.elsie.similarity_measures.</code><code class="descname">Fidelity</code><span class="sig-paren">(</span><em>coeff_1</em>, <em>coeff_2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Fidelity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#veidt.elsie.similarity_measures.SimilarityMeasure" title="veidt.elsie.similarity_measures.SimilarityMeasure"><code class="xref py py-class docutils literal"><span class="pre">veidt.elsie.similarity_measures.SimilarityMeasure</span></code></a></p>
+<p>Fidelity similarity measure</p>
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.Fidelity.similarity_measure">
+<code class="descname">similarity_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Fidelity.similarity_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.elsie.similarity_measures.HarmonicMean">
+<em class="property">class </em><code class="descclassname">veidt.elsie.similarity_measures.</code><code class="descname">HarmonicMean</code><span class="sig-paren">(</span><em>coeff_1</em>, <em>coeff_2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.HarmonicMean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#veidt.elsie.similarity_measures.SimilarityMeasure" title="veidt.elsie.similarity_measures.SimilarityMeasure"><code class="xref py py-class docutils literal"><span class="pre">veidt.elsie.similarity_measures.SimilarityMeasure</span></code></a></p>
+<p>Harmonic Mean similarity</p>
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.HarmonicMean.similarity_measure">
+<code class="descname">similarity_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.HarmonicMean.similarity_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.elsie.similarity_measures.Hellinger">
+<em class="property">class </em><code class="descclassname">veidt.elsie.similarity_measures.</code><code class="descname">Hellinger</code><span class="sig-paren">(</span><em>coeff_1</em>, <em>coeff_2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Hellinger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#veidt.elsie.similarity_measures.SimilarityMeasure" title="veidt.elsie.similarity_measures.SimilarityMeasure"><code class="xref py py-class docutils literal"><span class="pre">veidt.elsie.similarity_measures.SimilarityMeasure</span></code></a></p>
+<p>Hellinger similarity measure</p>
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.Hellinger.distance_measure">
+<code class="descname">distance_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Hellinger.distance_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.elsie.similarity_measures.InnerProduct">
+<em class="property">class </em><code class="descclassname">veidt.elsie.similarity_measures.</code><code class="descname">InnerProduct</code><span class="sig-paren">(</span><em>coeff_1</em>, <em>coeff_2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.InnerProduct" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#veidt.elsie.similarity_measures.SimilarityMeasure" title="veidt.elsie.similarity_measures.SimilarityMeasure"><code class="xref py py-class docutils literal"><span class="pre">veidt.elsie.similarity_measures.SimilarityMeasure</span></code></a></p>
+<p>Inner product similarity</p>
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.InnerProduct.similarity_measure">
+<code class="descname">similarity_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.InnerProduct.similarity_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.elsie.similarity_measures.Intersection">
+<em class="property">class </em><code class="descclassname">veidt.elsie.similarity_measures.</code><code class="descname">Intersection</code><span class="sig-paren">(</span><em>coeff_1</em>, <em>coeff_2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Intersection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#veidt.elsie.similarity_measures.SimilarityMeasure" title="veidt.elsie.similarity_measures.SimilarityMeasure"><code class="xref py py-class docutils literal"><span class="pre">veidt.elsie.similarity_measures.SimilarityMeasure</span></code></a></p>
+<p>Intersection similarity</p>
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.Intersection.distance_measure">
+<code class="descname">distance_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Intersection.distance_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.elsie.similarity_measures.Jaccard">
+<em class="property">class </em><code class="descclassname">veidt.elsie.similarity_measures.</code><code class="descname">Jaccard</code><span class="sig-paren">(</span><em>coeff_1</em>, <em>coeff_2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Jaccard" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#veidt.elsie.similarity_measures.SimilarityMeasure" title="veidt.elsie.similarity_measures.SimilarityMeasure"><code class="xref py py-class docutils literal"><span class="pre">veidt.elsie.similarity_measures.SimilarityMeasure</span></code></a></p>
+<p>KumarHassebrook similarity</p>
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.Jaccard.distance_measure">
+<code class="descname">distance_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Jaccard.distance_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.Jaccard.similarity_measure">
+<code class="descname">similarity_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Jaccard.similarity_measure" title="Permalink to this definition">¶</a></dt>
+<dd><p>The distance measure is the Kumar-Hassebrook similarity between two
+vectors</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.elsie.similarity_measures.JensenDifference">
+<em class="property">class </em><code class="descclassname">veidt.elsie.similarity_measures.</code><code class="descname">JensenDifference</code><span class="sig-paren">(</span><em>coeff_1</em>, <em>coeff_2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.JensenDifference" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#veidt.elsie.similarity_measures.SimilarityMeasure" title="veidt.elsie.similarity_measures.SimilarityMeasure"><code class="xref py py-class docutils literal"><span class="pre">veidt.elsie.similarity_measures.SimilarityMeasure</span></code></a></p>
+<p>Jensen Difference Similarity</p>
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.JensenDifference.distance_measure">
+<code class="descname">distance_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.JensenDifference.distance_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.elsie.similarity_measures.JensenShannon">
+<em class="property">class </em><code class="descclassname">veidt.elsie.similarity_measures.</code><code class="descname">JensenShannon</code><span class="sig-paren">(</span><em>coeff_1</em>, <em>coeff_2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.JensenShannon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#veidt.elsie.similarity_measures.SimilarityMeasure" title="veidt.elsie.similarity_measures.SimilarityMeasure"><code class="xref py py-class docutils literal"><span class="pre">veidt.elsie.similarity_measures.SimilarityMeasure</span></code></a></p>
+<p>JensenShannon Similarity</p>
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.JensenShannon.distance_measure">
+<code class="descname">distance_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.JensenShannon.distance_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.elsie.similarity_measures.Kdivergence">
+<em class="property">class </em><code class="descclassname">veidt.elsie.similarity_measures.</code><code class="descname">Kdivergence</code><span class="sig-paren">(</span><em>coeff_1</em>, <em>coeff_2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Kdivergence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#veidt.elsie.similarity_measures.SimilarityMeasure" title="veidt.elsie.similarity_measures.SimilarityMeasure"><code class="xref py py-class docutils literal"><span class="pre">veidt.elsie.similarity_measures.SimilarityMeasure</span></code></a></p>
+<p>K divergence similarity</p>
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.Kdivergence.distance_measure">
+<code class="descname">distance_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Kdivergence.distance_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.elsie.similarity_measures.Kulczynski">
+<em class="property">class </em><code class="descclassname">veidt.elsie.similarity_measures.</code><code class="descname">Kulczynski</code><span class="sig-paren">(</span><em>coeff_1</em>, <em>coeff_2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Kulczynski" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#veidt.elsie.similarity_measures.SimilarityMeasure" title="veidt.elsie.similarity_measures.SimilarityMeasure"><code class="xref py py-class docutils literal"><span class="pre">veidt.elsie.similarity_measures.SimilarityMeasure</span></code></a></p>
+<p>Kulczyniski similarity</p>
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.Kulczynski.distance_measure">
+<code class="descname">distance_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Kulczynski.distance_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.Kulczynski.similarity_measure">
+<code class="descname">similarity_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Kulczynski.similarity_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.elsie.similarity_measures.Lorentzian">
+<em class="property">class </em><code class="descclassname">veidt.elsie.similarity_measures.</code><code class="descname">Lorentzian</code><span class="sig-paren">(</span><em>coeff_1</em>, <em>coeff_2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Lorentzian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#veidt.elsie.similarity_measures.SimilarityMeasure" title="veidt.elsie.similarity_measures.SimilarityMeasure"><code class="xref py py-class docutils literal"><span class="pre">veidt.elsie.similarity_measures.SimilarityMeasure</span></code></a></p>
+<p>Lorentzian similarity</p>
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.Lorentzian.distance_measure">
+<code class="descname">distance_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Lorentzian.distance_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.elsie.similarity_measures.Matusita">
+<em class="property">class </em><code class="descclassname">veidt.elsie.similarity_measures.</code><code class="descname">Matusita</code><span class="sig-paren">(</span><em>coeff_1</em>, <em>coeff_2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Matusita" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#veidt.elsie.similarity_measures.SimilarityMeasure" title="veidt.elsie.similarity_measures.SimilarityMeasure"><code class="xref py py-class docutils literal"><span class="pre">veidt.elsie.similarity_measures.SimilarityMeasure</span></code></a></p>
+<p>Matusita similarity measure</p>
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.Matusita.distance_measure">
+<code class="descname">distance_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Matusita.distance_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.elsie.similarity_measures.MinSymmetricChi">
+<em class="property">class </em><code class="descclassname">veidt.elsie.similarity_measures.</code><code class="descname">MinSymmetricChi</code><span class="sig-paren">(</span><em>coeff_1</em>, <em>coeff_2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.MinSymmetricChi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#veidt.elsie.similarity_measures.SimilarityMeasure" title="veidt.elsie.similarity_measures.SimilarityMeasure"><code class="xref py py-class docutils literal"><span class="pre">veidt.elsie.similarity_measures.SimilarityMeasure</span></code></a></p>
+<p>MinSymmetric Chisquare similarity</p>
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.MinSymmetricChi.distance_measure">
+<code class="descname">distance_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.MinSymmetricChi.distance_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.elsie.similarity_measures.Minkowski">
+<em class="property">class </em><code class="descclassname">veidt.elsie.similarity_measures.</code><code class="descname">Minkowski</code><span class="sig-paren">(</span><em>coeff_1</em>, <em>coeff_2</em>, <em>p=4</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Minkowski" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#veidt.elsie.similarity_measures.SimilarityMeasure" title="veidt.elsie.similarity_measures.SimilarityMeasure"><code class="xref py py-class docutils literal"><span class="pre">veidt.elsie.similarity_measures.SimilarityMeasure</span></code></a></p>
+<p>Minkowski similarity to calculate the Cityblock, i.e. Manhattan, similarity</p>
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.Minkowski.distance_measure">
+<code class="descname">distance_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Minkowski.distance_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.elsie.similarity_measures.Motyka">
+<em class="property">class </em><code class="descclassname">veidt.elsie.similarity_measures.</code><code class="descname">Motyka</code><span class="sig-paren">(</span><em>coeff_1</em>, <em>coeff_2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Motyka" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#veidt.elsie.similarity_measures.SimilarityMeasure" title="veidt.elsie.similarity_measures.SimilarityMeasure"><code class="xref py py-class docutils literal"><span class="pre">veidt.elsie.similarity_measures.SimilarityMeasure</span></code></a></p>
+<p>Motyka similarity</p>
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.Motyka.distance_measure">
+<code class="descname">distance_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Motyka.distance_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.elsie.similarity_measures.PearsonCorrMeasure">
+<em class="property">class </em><code class="descclassname">veidt.elsie.similarity_measures.</code><code class="descname">PearsonCorrMeasure</code><span class="sig-paren">(</span><em>coeff_1</em>, <em>coeff_2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.PearsonCorrMeasure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#veidt.elsie.similarity_measures.SimilarityMeasure" title="veidt.elsie.similarity_measures.SimilarityMeasure"><code class="xref py py-class docutils literal"><span class="pre">veidt.elsie.similarity_measures.SimilarityMeasure</span></code></a></p>
+<p>Pearson Correlation Measure</p>
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.PearsonCorrMeasure.similarity_measure">
+<code class="descname">similarity_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.PearsonCorrMeasure.similarity_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.elsie.similarity_measures.ProbabilisticSymmetricChiS">
+<em class="property">class </em><code class="descclassname">veidt.elsie.similarity_measures.</code><code class="descname">ProbabilisticSymmetricChiS</code><span class="sig-paren">(</span><em>coeff_1</em>, <em>coeff_2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.ProbabilisticSymmetricChiS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#veidt.elsie.similarity_measures.SimilarityMeasure" title="veidt.elsie.similarity_measures.SimilarityMeasure"><code class="xref py py-class docutils literal"><span class="pre">veidt.elsie.similarity_measures.SimilarityMeasure</span></code></a></p>
+<p>Squared Probabilistic Symmetric ChiSquare similarity measure</p>
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.ProbabilisticSymmetricChiS.distance_measure">
+<code class="descname">distance_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.ProbabilisticSymmetricChiS.distance_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.elsie.similarity_measures.Ruzicka">
+<em class="property">class </em><code class="descclassname">veidt.elsie.similarity_measures.</code><code class="descname">Ruzicka</code><span class="sig-paren">(</span><em>coeff_1</em>, <em>coeff_2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Ruzicka" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#veidt.elsie.similarity_measures.SimilarityMeasure" title="veidt.elsie.similarity_measures.SimilarityMeasure"><code class="xref py py-class docutils literal"><span class="pre">veidt.elsie.similarity_measures.SimilarityMeasure</span></code></a></p>
+<p>Ruzicka similarity</p>
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.Ruzicka.similarity_measure">
+<code class="descname">similarity_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Ruzicka.similarity_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.elsie.similarity_measures.SimilarityMeasure">
+<em class="property">class </em><code class="descclassname">veidt.elsie.similarity_measures.</code><code class="descname">SimilarityMeasure</code><span class="sig-paren">(</span><em>coeff_1</em>, <em>coeff_2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.SimilarityMeasure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">monty.json.MSONable</span></code></p>
+<p>Abstract class used to define the various methods that must be implemented by
+similarity measurement class. All measurement class must also implement the
+standard MSONable as_dict() and from_dict() API</p>
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.SimilarityMeasure.distance_measure">
+<code class="descname">distance_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.SimilarityMeasure.distance_measure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the distance measures of two spectrum, need to implement in
+each similarity measure class</p>
+<p>Returns: Distance measure between two spectrum</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.SimilarityMeasure.normalize_spectrum">
+<code class="descname">normalize_spectrum</code><span class="sig-paren">(</span><em>spec_1</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.SimilarityMeasure.normalize_spectrum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.SimilarityMeasure.similarity_measure">
+<code class="descname">similarity_measure</code><span class="sig-paren">(</span><em>dist_conversion='bin'</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.SimilarityMeasure.similarity_measure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the similarity measure of two spectrum</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>dist_conversion: algorithm used to convert distance measure to</dt>
+<dd>similarity exponential conversion are more sensitive for
+detecting extremely fine changes in spectrum difference.
+Avaliable options: [‘bin’, ‘exp’]</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd>Similarity measure between two spectrum</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.elsie.similarity_measures.Sorensen">
+<em class="property">class </em><code class="descclassname">veidt.elsie.similarity_measures.</code><code class="descname">Sorensen</code><span class="sig-paren">(</span><em>coeff_1</em>, <em>coeff_2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Sorensen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#veidt.elsie.similarity_measures.SimilarityMeasure" title="veidt.elsie.similarity_measures.SimilarityMeasure"><code class="xref py py-class docutils literal"><span class="pre">veidt.elsie.similarity_measures.SimilarityMeasure</span></code></a></p>
+<p>Sorensen similarity</p>
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.Sorensen.distance_measure">
+<code class="descname">distance_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Sorensen.distance_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.elsie.similarity_measures.SquaredChiSquare">
+<em class="property">class </em><code class="descclassname">veidt.elsie.similarity_measures.</code><code class="descname">SquaredChiSquare</code><span class="sig-paren">(</span><em>coeff_1</em>, <em>coeff_2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.SquaredChiSquare" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#veidt.elsie.similarity_measures.SimilarityMeasure" title="veidt.elsie.similarity_measures.SimilarityMeasure"><code class="xref py py-class docutils literal"><span class="pre">veidt.elsie.similarity_measures.SimilarityMeasure</span></code></a></p>
+<p>Squared ChiSquare similarity measure</p>
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.SquaredChiSquare.distance_measure">
+<code class="descname">distance_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.SquaredChiSquare.distance_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.elsie.similarity_measures.SquaredEuclidean">
+<em class="property">class </em><code class="descclassname">veidt.elsie.similarity_measures.</code><code class="descname">SquaredEuclidean</code><span class="sig-paren">(</span><em>coeff_1</em>, <em>coeff_2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.SquaredEuclidean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#veidt.elsie.similarity_measures.SimilarityMeasure" title="veidt.elsie.similarity_measures.SimilarityMeasure"><code class="xref py py-class docutils literal"><span class="pre">veidt.elsie.similarity_measures.SimilarityMeasure</span></code></a></p>
+<p>Class to calculate the Squared Euclidean similarity</p>
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.SquaredEuclidean.distance_measure">
+<code class="descname">distance_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.SquaredEuclidean.distance_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.elsie.similarity_measures.Squaredchord">
+<em class="property">class </em><code class="descclassname">veidt.elsie.similarity_measures.</code><code class="descname">Squaredchord</code><span class="sig-paren">(</span><em>coeff_1</em>, <em>coeff_2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Squaredchord" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#veidt.elsie.similarity_measures.SimilarityMeasure" title="veidt.elsie.similarity_measures.SimilarityMeasure"><code class="xref py py-class docutils literal"><span class="pre">veidt.elsie.similarity_measures.SimilarityMeasure</span></code></a></p>
+<p>Squaredchord similarity measure</p>
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.Squaredchord.distance_measure">
+<code class="descname">distance_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Squaredchord.distance_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.elsie.similarity_measures.Tanimoto">
+<em class="property">class </em><code class="descclassname">veidt.elsie.similarity_measures.</code><code class="descname">Tanimoto</code><span class="sig-paren">(</span><em>coeff_1</em>, <em>coeff_2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Tanimoto" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#veidt.elsie.similarity_measures.SimilarityMeasure" title="veidt.elsie.similarity_measures.SimilarityMeasure"><code class="xref py py-class docutils literal"><span class="pre">veidt.elsie.similarity_measures.SimilarityMeasure</span></code></a></p>
+<p>Tanimoto similarity</p>
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.Tanimoto.distance_measure">
+<code class="descname">distance_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Tanimoto.distance_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.elsie.similarity_measures.Topsoe">
+<em class="property">class </em><code class="descclassname">veidt.elsie.similarity_measures.</code><code class="descname">Topsoe</code><span class="sig-paren">(</span><em>coeff_1</em>, <em>coeff_2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Topsoe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#veidt.elsie.similarity_measures.SimilarityMeasure" title="veidt.elsie.similarity_measures.SimilarityMeasure"><code class="xref py py-class docutils literal"><span class="pre">veidt.elsie.similarity_measures.SimilarityMeasure</span></code></a></p>
+<p>Topsoe Similarity</p>
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.Topsoe.distance_measure">
+<code class="descname">distance_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.Topsoe.distance_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.elsie.similarity_measures.VicisSymmetricChi">
+<em class="property">class </em><code class="descclassname">veidt.elsie.similarity_measures.</code><code class="descname">VicisSymmetricChi</code><span class="sig-paren">(</span><em>coeff_1</em>, <em>coeff_2</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.VicisSymmetricChi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#veidt.elsie.similarity_measures.SimilarityMeasure" title="veidt.elsie.similarity_measures.SimilarityMeasure"><code class="xref py py-class docutils literal"><span class="pre">veidt.elsie.similarity_measures.SimilarityMeasure</span></code></a></p>
+<p>Vicis-Symmetric Chi square similarity</p>
+<dl class="method">
+<dt id="veidt.elsie.similarity_measures.VicisSymmetricChi.distance_measure">
+<code class="descname">distance_measure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.similarity_measures.VicisSymmetricChi.distance_measure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">veidt</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="veidt.html">veidt package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="veidt.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="veidt.elsie.html">veidt.elsie package</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="veidt.elsie.html#subpackages">Subpackages</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="veidt.elsie.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="veidt.elsie.html#module-veidt.elsie">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="veidt.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="veidt.html#module-veidt">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="veidt.html">veidt package</a><ul>
+  <li><a href="veidt.elsie.html">veidt.elsie package</a><ul>
+      <li>Previous: <a href="veidt.elsie.preprocessing.html" title="previous chapter">veidt.elsie.preprocessing module</a></li>
+      <li>Next: <a href="veidt.elsie.spectra_similarity.html" title="next chapter">veidt.elsie.spectra_similarity module</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Materials Virtual Lab.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/veidt.elsie.similarity_measures.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

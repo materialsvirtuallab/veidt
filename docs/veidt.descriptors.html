@@ -55,6 +55,49 @@ a particular Wyckoff site.</p>
 <code class="descname">describe</code><span class="sig-paren">(</span><em>structure</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.descriptors.DistinctSiteProperty.describe" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="method">
+<dt id="veidt.descriptors.DistinctSiteProperty.describe_all">
+<code class="descname">describe_all</code><span class="sig-paren">(</span><em>objs</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.descriptors.DistinctSiteProperty.describe_all" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.descriptors.FuncGenerator">
+<em class="property">class </em><code class="descclassname">veidt.descriptors.</code><code class="descname">FuncGenerator</code><span class="sig-paren">(</span><em>func_dict</em>, <em>append=True</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.descriptors.FuncGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="veidt.abstract.html#veidt.abstract.Describer" title="veidt.abstract.Describer"><code class="xref py py-class docutils literal"><span class="pre">veidt.abstract.Describer</span></code></a></p>
+<p>General transformer for arrays. In principle, any numerical
+operations can be done as long as each involved function has a
+NumPy.ufunc implementation, e.g., np.sin, np.exp…</p>
+<dl class="method">
+<dt id="veidt.descriptors.FuncGenerator.describe">
+<code class="descname">describe</code><span class="sig-paren">(</span><em>df</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.descriptors.FuncGenerator.describe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns description of an object based on all functions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>df</strong> – DataFrame with input data.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">DataFrame with transformed data.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="veidt.descriptors.MultiDescriber">
+<em class="property">class </em><code class="descclassname">veidt.descriptors.</code><code class="descname">MultiDescriber</code><span class="sig-paren">(</span><em>describers</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.descriptors.MultiDescriber" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="veidt.abstract.html#veidt.abstract.Describer" title="veidt.abstract.Describer"><code class="xref py py-class docutils literal"><span class="pre">veidt.abstract.Describer</span></code></a></p>
+<p>This is a generic multiple describer that allows one to combine multiple
+describers.</p>
+<dl class="method">
+<dt id="veidt.descriptors.MultiDescriber.describe">
+<code class="descname">describe</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.descriptors.MultiDescriber.describe" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </div>

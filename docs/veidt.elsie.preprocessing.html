@@ -1,0 +1,234 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>veidt.elsie.preprocessing module &#8212; veidt  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="veidt.elsie.similarity_measures module" href="veidt.elsie.similarity_measures.html" />
+    <link rel="prev" title="veidt.elsie.ensemble module" href="veidt.elsie.ensemble.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-veidt.elsie.preprocessing">
+<span id="veidt-elsie-preprocessing-module"></span><h1>veidt.elsie.preprocessing module<a class="headerlink" href="#module-veidt.elsie.preprocessing" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="veidt.elsie.preprocessing.Preprocessing">
+<em class="property">class </em><code class="descclassname">veidt.elsie.preprocessing.</code><code class="descname">Preprocessing</code><span class="sig-paren">(</span><em>spectrum</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.preprocessing.Preprocessing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Preprocessing class used for spectrum preprocessing.</p>
+<dl class="method">
+<dt id="veidt.elsie.preprocessing.Preprocessing.area_normalize">
+<code class="descname">area_normalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.preprocessing.Preprocessing.area_normalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalize the peak intensity using under curve area, i.e. normalized
+curve’s under curve area should equals 1</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="veidt.elsie.preprocessing.Preprocessing.derivative_spect">
+<code class="descname">derivative_spect</code><span class="sig-paren">(</span><em>spect1</em>, <em>order</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.preprocessing.Preprocessing.derivative_spect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate derivative of a given spectrum, to keep returned spectrum
+dimension consistent, endpoints are not pad with endvalues</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first docutils">
+<dt>spect1: Given spectrum with spect1.x corresponding to energy.</dt>
+<dd>spect1.y corresponding to absorption</dd>
+</dl>
+<p class="last">order: The number of times the spectrum are differenced</p>
+</dd>
+</dl>
+<p>Returns: Differenciated x and y</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="veidt.elsie.preprocessing.Preprocessing.first_derivative">
+<code class="descname">first_derivative</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.preprocessing.Preprocessing.first_derivative" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return first derivative as spectrum</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="veidt.elsie.preprocessing.Preprocessing.intensity_normalize">
+<code class="descname">intensity_normalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.preprocessing.Preprocessing.intensity_normalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalize with respect to the intensity sum</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="veidt.elsie.preprocessing.Preprocessing.maximum_intensity_norm">
+<code class="descname">maximum_intensity_norm</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.preprocessing.Preprocessing.maximum_intensity_norm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalize with respect to the maximum intensity</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="veidt.elsie.preprocessing.Preprocessing.preprocessing_method">
+<code class="descname">preprocessing_method</code><a class="headerlink" href="#veidt.elsie.preprocessing.Preprocessing.preprocessing_method" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns: a list of available preprocessing methods</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="veidt.elsie.preprocessing.Preprocessing.second_derivative">
+<code class="descname">second_derivative</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.preprocessing.Preprocessing.second_derivative" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return second derivative as spectrum</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="veidt.elsie.preprocessing.Preprocessing.sigmoid_squashing">
+<code class="descname">sigmoid_squashing</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.preprocessing.Preprocessing.sigmoid_squashing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Squashing the spectrum using the sigmoid funtion, i.e.
+squashed_y = (1 - cos(pi*spectrum.y))/2</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="veidt.elsie.preprocessing.Preprocessing.snv_norm">
+<code class="descname">snv_norm</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.preprocessing.Preprocessing.snv_norm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalize with repect to the variance of the spectrum intensity and
+return abs. spectrum</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="veidt.elsie.preprocessing.Preprocessing.spectrum_process">
+<code class="descname">spectrum_process</code><span class="sig-paren">(</span><em>process_seq</em><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.preprocessing.Preprocessing.spectrum_process" title="Permalink to this definition">¶</a></dt>
+<dd><p>Preprocess the self.spectrum object using the preprocess method listed
+in process_seq</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>process_seq (list/tuple/string): preprocessing methods</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="veidt.elsie.preprocessing.Preprocessing.square_root_squashing">
+<code class="descname">square_root_squashing</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.preprocessing.Preprocessing.square_root_squashing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Squashing the spectrum using square root of the spectrum</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="veidt.elsie.preprocessing.Preprocessing.vector_norm_normalize">
+<code class="descname">vector_norm_normalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.preprocessing.Preprocessing.vector_norm_normalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalize with respect to the norm of the spectrum as a vector</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="veidt.elsie.preprocessing.Preprocessing.weighted_first_derivative">
+<code class="descname">weighted_first_derivative</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.preprocessing.Preprocessing.weighted_first_derivative" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return weighted first derivative spectrum as spectrum</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="veidt.elsie.preprocessing.Preprocessing.weighted_second_derivative">
+<code class="descname">weighted_second_derivative</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#veidt.elsie.preprocessing.Preprocessing.weighted_second_derivative" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return weighted second derivative spectrum as spectrum</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">veidt</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="veidt.html">veidt package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="veidt.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="veidt.elsie.html">veidt.elsie package</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="veidt.elsie.html#subpackages">Subpackages</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="veidt.elsie.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="veidt.elsie.html#module-veidt.elsie">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="veidt.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="veidt.html#module-veidt">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="veidt.html">veidt package</a><ul>
+  <li><a href="veidt.elsie.html">veidt.elsie package</a><ul>
+      <li>Previous: <a href="veidt.elsie.ensemble.html" title="previous chapter">veidt.elsie.ensemble module</a></li>
+      <li>Next: <a href="veidt.elsie.similarity_measures.html" title="next chapter">veidt.elsie.similarity_measures module</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Materials Virtual Lab.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/veidt.elsie.preprocessing.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
