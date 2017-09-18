@@ -55,3 +55,11 @@ class PreprocessingTest(unittest.TestCase):
 
         self.assertAlmostEqual(spec_preprocessing.spectrum.y.sum(), 1)
         self.assertTrue(np.allclose(spec_preprocessing.spectrum.y, to_compare, atol=1.5e-4))
+
+    def test_property(self):
+        spec_preprocessing = Preprocessing(self.spectrum)
+        self.assertTrue(set(spec_preprocessing.preprocessing_method) == set(
+            ['first_derivative', 'second_derivative', 'vector_norm_normalize', 'maximum_intensity_norm',
+             'area_normalize',
+             'snv_norm', 'square_root_squashing', 'sigmoid_squashing', 'weighted_first_derivative',
+             'weighted_second_derivative', 'intensity_normalize']))

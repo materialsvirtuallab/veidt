@@ -1,13 +1,18 @@
 import numpy as np
-from pymatgen.core.spectrum import Spectrum
-from scipy import sparse
-from scipy.sparse import linalg as splin
-from scipy.signal import wiener, medfilt, savgol_filter
-import re
 
 
 class Preprocessing(object):
+    """
+    Preprocessing class used for spectrum preprocessing.
+    """
+
     def __init__(self, spectrum):
+        """
+        Create an Preprocessing object
+        Args:
+            spectrum (pymatgen.core.spectrum.Spectrum): Spectrum object used to initialize
+             preprocessing class.
+        """
         self.spectrum = spectrum
         self.process_tag = []
         self.proc_dict = {
@@ -23,6 +28,13 @@ class Preprocessing(object):
             '2nd_wt': 'weighted_second_derivative',
             'intnorm': 'intensity_normalize'
         }
+
+    @property
+    def preprocessing_method(self):
+        """
+        Returns: a list of available preprocessing methods
+        """
+        return list(self.proc_dict.values())
 
     def first_derivative(self):
         """
@@ -131,6 +143,13 @@ class Preprocessing(object):
         return deriv_x, deriv_y
 
     def spectrum_process(self, process_seq):
+        """
+        Preprocess the self.spectrum object using the preprocess method listed in process_seq
+        Args:
+            process_seq (list/tuple/string): preprocessing methods
+        Returns:
+
+        """
         if (process_seq is not None) and (isinstance(process_seq, list) or isinstance(process_seq, tuple)):
             for pro in process_seq:
                 getattr(self, self.proc_dict[pro])()
@@ -139,5 +158,3 @@ class Preprocessing(object):
         if (process_seq is not None) and isinstance(process_seq, str):
             getattr(self, self.proc_dict[process_seq])()
             self.process_tag.append(process_seq)
-
-
