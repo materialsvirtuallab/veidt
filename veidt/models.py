@@ -25,9 +25,10 @@ class NeuralNet(Model):
     """
 
     def __init__(self, layer_sizes, describer, preprocessor=None,
-                 activation="relu", loss="mae"):
+                 activation="relu", loss="mse"):
         self.layer_sizes = layer_sizes
         self.describer = describer
+        self.output_describer = None
         self.preprocessor = preprocessor
         self.activation = activation
         self.loss = loss
