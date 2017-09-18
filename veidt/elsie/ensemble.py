@@ -91,8 +91,8 @@ class EnsembleRank(object):
             shift_penalty_alpha (float): penalize parameter used to adjust the
                 weight of spectrum shift penalization, typical value is
                 between 0.05 to 0.15.
-            prob_sort (bool): sort the EnsembleRank's dataframe using the computed
-                softmax probability in descending order
+            prob_sort (bool): sort the EnsembleRank object's dataframe using the
+                computed softmax probability in descending order
 
         """
 
@@ -109,7 +109,8 @@ class EnsembleRank(object):
         self.dataframe['exp_count_penalty'] = self.dataframe['exp_normalized_count'] * self.dataframe['neg_shift_alpha']
         self.dataframe['exp_prob_penalty'] = self.dataframe['exp_count_penalty'] / (
             self.dataframe['exp_count_penalty'].sum())
-        self.dataframe.sort_values('exp_prob_penalty', ascending=False, inplace=True)
+        if prob_sort:
+            self.dataframe.sort_values('exp_prob_penalty', ascending=False, inplace=True)
 
 
 class SimpleEnsemble(object):
@@ -149,9 +150,9 @@ class SimpleEnsemble(object):
 
         for index, row in self.spect_df.iterrows():
             target_spect = np.array(row['Target_spect'])
-            target_spect = Spectrum(target_spect[:, 0],target_spect[:, 1])
+            target_spect = Spectrum(target_spect[:, 0], target_spect[:, 1])
             ref_spect = np.array(row['Ref_spect'])
-            ref_spect = Spectrum(ref_spect[:,0], ref_spect[:,1])
+            ref_spect = Spectrum(ref_spect[:, 0], ref_spect[:, 1])
 
             spect_simi_obj = SpectraSimilarity(target_spect, ref_spect)
             spect_simi_obj._spectrum_shift()
