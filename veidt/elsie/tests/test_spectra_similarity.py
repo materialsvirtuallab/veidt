@@ -1,15 +1,20 @@
-import unittest, json
+import unittest, json, os
 import numpy as np
 from pymatgen import Structure, Element
 from copy import deepcopy
 from veidt.elsie.spectra_similarity import *
 from pymatgen.analysis.xas.spectrum import XANES
 
-Al2O3_stru = Structure.from_file('alpha_Al2O3.cif')
-LiCoO2_stru = Structure.from_file('LiCoO2_mp24850.cif')
-with open('LiCoO2_spectrum.json', 'r') as f:
+Al2O3_cif = os.path.join(os.path.dirname(__file__), 'alpha_Al2O3.cif')
+LiCoO2_cif = os.path.join(os.path.dirname(__file__), 'LiCoO2_mp24850.cif')
+Al2O3_spect_file = os.path.join(os.path.dirname(__file__), 'Al2O3_spectrum.json')
+LiCoO2_spect_file = os.path.join(os.path.dirname(__file__), 'LiCoO2_spectrum.json')
+
+Al2O3_stru = Structure.from_file(Al2O3_cif)
+LiCoO2_stru = Structure.from_file(LiCoO2_cif)
+with open(LiCoO2_spect_file, 'r') as f:
     LiCoO2_spect = json.load(f)
-with open('Al2O3_spectrum.json', 'r') as f:
+with open(Al2O3_spect_file, 'r') as f:
     Al2O3_spect = json.load(f)
 
 
