@@ -47,7 +47,7 @@ class EnsembleRank(object):
         label_vote_pool = defaultdict(int)
 
         for proc_comb in ensemble_pair:
-            copy_simple_ensem = deepcopy(self.simple_ensem)
+            copy_simple_ensem = SimpleEnsemble(self.target_spect, self.dataframe[self.spect_column].tolist())
             copy_simple_ensem.preprocess_similarity_compute(proc_comb[0], proc_comb[1])
             copy_simple_ensem.spect_df.sort_values('Similarity', ascending=True, inplace=True)
             index_rank = copy_simple_ensem.spect_df.index.tolist()
@@ -60,7 +60,7 @@ class EnsembleRank(object):
         self.borda_rank = pd.DataFrame.from_records(sorted_borda_rank, columns=[self.label_col, 'borda_rank'])
         self.dataframe = pd.merge(self.dataframe, self.borda_rank, on=self.label_col)
 
-    def calculate_softmax_prob(self, shift_penalty_alpha=0.05):
+    def calculate_softmax_prob(self, shift_penalty_alpha=0.01):
         """
         Calculate the softmax probability using the computed Borda count and spectrum shift of each spectrum.
         Shift_penalty_alpha is used to penalize the probability of reference spectrum with large spectrum energy shift
@@ -73,13 +73,13 @@ class EnsembleRank(object):
         self.dataframe['exp_normalized_count'] = np.exp(
             self.dataframe['borda_rank'] / self.dataframe['borda_rank'].sum())
         self.dataframe['exp_no_penalty_prob'] = self.dataframe['exp_normalized_count'] / (
-        self.dataframe['exp_normalized_count'].sum())
+            self.dataframe['exp_normalized_count'].sum())
         self.dataframe['abs_shift'] = np.abs(self.dataframe['energy_shift'] - self.dataframe['energy_shift'].mean())
         self.dataframe['neg_shift_alpha'] = np.exp(
             np.negative(shift_penalty_alpha * self.dataframe['abs_shift']) / (self.dataframe['energy_shift'].std()))
         self.dataframe['exp_count_penalty'] = self.dataframe['exp_normalized_count'] * self.dataframe['neg_shift_alpha']
         self.dataframe['exp_prob_penalty'] = self.dataframe['exp_count_penalty'] / (
-        self.dataframe['exp_count_penalty'].sum())
+            self.dataframe['exp_count_penalty'].sum())
 
 
 class SimpleEnsemble(object):

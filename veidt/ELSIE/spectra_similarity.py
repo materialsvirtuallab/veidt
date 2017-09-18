@@ -48,7 +48,7 @@ class SpectraSimilarity(MSONable):
         else:
             self.valid_comparison = True
 
-    def _spectrum_shift(self, algo='threshold_shift', intensity_threshold=0.1):
+    def _spectrum_shift(self, algo='threshold_shift', intensity_threshold=0.06):
         """
         Shift self.spect2 with respect to self.spec1. Self.spec1 will be untouched.
         Args:
