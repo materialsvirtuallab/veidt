@@ -59,22 +59,16 @@ def publish(ctx):
 
 @task
 def release_github(ctx):
-    with open("CHANGES.rst") as f:
-        contents = f.read()
-    toks = re.split("\-+", contents)
-    desc = toks[1].strip()
-    toks = desc.split("\n")
-    desc = "\n".join(toks[:-1]).strip()
     payload = {
         "tag_name": "v" + VERSION,
         "target_commitish": "master",
         "name": "v" + VERSION,
-        "body": desc,
+        "body": "Release",
         "draft": False,
         "prerelease": False
     }
     response = requests.post(
-        "https://api.github.com/repos/materialsproject/pymatgen/releases",
+        "https://api.github.com/repos/materialsvirtuallalb/veidt/releases",
         data=json.dumps(payload),
         headers={"Authorization": "token " + os.environ["GITHUB_RELEASES_TOKEN"]})
     print(response.text)
