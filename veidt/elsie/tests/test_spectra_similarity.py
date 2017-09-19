@@ -43,7 +43,8 @@ class SpectraSimilarityTest(unittest.TestCase):
             self.assertFalse(Co_Al_SpecSimi.valid_comparison)
             self.assertTrue(Co_Al_SpecSimi.get_shifted_similarity('Cosine') == 0)
             self.assertTrue(
-                Co_Al_SpecSimi.get_shifted_similarity('Cosine',spect_preprocess=['areanorm', 'sigmoid', 'intnorm']) == 0)
+                Co_Al_SpecSimi.get_shifted_similarity('Cosine',
+                                                      spect_preprocess=['areanorm', 'sigmoid', 'intnorm']) == 0)
 
     def test_spectra_lower_extend(self):
         temp_spect1, temp_spect2 = spectra_lower_extend(deepcopy(self.Al2O3_xane_1),
@@ -60,6 +61,9 @@ class SpectraSimilarityTest(unittest.TestCase):
                                     temp_spect2.y[np.where(temp_spect2.x == 1555)][0]))
         self.assertTrue(temp_spect1.x[0] == temp_spect2.x[0])
         self.assertTrue((temp_spect2.x[-1] - temp_spect1.x[-1]) == 5)
+
+        self.assertRaisesRegex(ValueError, "intensity threshold",absorption_onset_shift, sp1=self.Al2O3_xane_1, sp2=self.Al2O3_xane_2,
+                          intensity_threshold=2)
 
     def test_absorption_onset_shift(self):
         shifted_spect1, shifted_spect2, shifted_energy, abs_onset = absorption_onset_shift(self.Al2O3_xane_1,
