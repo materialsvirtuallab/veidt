@@ -13,7 +13,6 @@ from scipy.interpolate import interp1d
 
 
 class SpectraSimilarity(MSONable):
-
     def __init__(self, sp1, sp2, interp_points=200):
         """
         Initialization SpectrumSimilarity object to determine the similarity
@@ -79,8 +78,7 @@ class SpectraSimilarity(MSONable):
                 to determine the absorption onset, default set to 0.1
             **kwargs: Other parameters
         """
-        self.sp1, self.sp2 = spectra_lower_extend(self.sp1,
-                                                        self.sp2)
+        self.sp1, self.sp2 = spectra_lower_extend(self.sp1,self.sp2)
 
         if algo == 'threshold_shift':
             self.shifted_sp1, self.shifted_sp2, self.shifted_energy, \
@@ -89,6 +87,20 @@ class SpectraSimilarity(MSONable):
 
     def get_shifted_similarity(self, similarity_metric, energy_variation=None,
                                spect_preprocess=None):
+        """
+        Calculate the similarity between two shifted spectra
+        Args:
+            similarity_metric (string): The similarity metric used for comparison.
+            energy_variation (list): Energy variation value used to squeeze or broaden the candidate
+                spectrum (sp2) beyonds spectrum shift onset point. E.g., [-2, 2, 0.1]
+                specifies sp2's spectrum energy (Es) beyonds onset point will scale from Es - 2 to Es + 2
+                at 0.1 interval. Maximum similarity and its' corresponding scale energy will be returned.
+            spect_preprocess (list/tuple): Preprocessing steps need to taken for each spectrum
+
+        """
+
+        if not self.valid_comparison:
+            return 0
 
         if (self.shifted_sp1 is None) and (self.shifted_sp2 is None):
             self._spectrum_shift()
@@ -115,7 +127,7 @@ class SpectraSimilarity(MSONable):
                     raise ValueError('The scaled energy grid density is '
                                      'different from pre-scaled')
                 scaled_shifted_sp2 = Spectrum(shifted_sp2_scaled_energy,
-                                                 self.shifted_sp2.y)
+                                              self.shifted_sp2.y)
 
                 # Interpolate and calculate the similarity between
                 # scaled_shifted_sp2 and shifted_sp1
@@ -191,7 +203,7 @@ class SpectraSimilarity(MSONable):
             except:
                 warnings.warn("Cannot generate valid similarity value "
                               "for the two spectra")
-                similarity_value = np.NaN
+                similarity_value = 0
 
             return similarity_value
 
@@ -211,7 +223,7 @@ def energy_overlap(sp1, sp2):
 
     """
     overlap_range = [max(sp1.x.min(), sp2.x.min()), min(sp1.x.max(),
-                                                              sp2.x.max())]
+                                                        sp2.x.max())]
     return overlap_range
 
 
@@ -259,7 +271,7 @@ def spectra_lower_extend(sp1, sp2):
                                           retstep=sp1_den)[0][:-1]
         sp1_ext_energy = np.hstack((extend_spec1_energy, sp1.x))
         sp1_ext_mu = np.lib.pad(sp1.y, (len(extend_spec1_energy), 0), 'constant',
-                                   constant_values=(sp1.y[0], 0))
+                                constant_values=(sp1.y[0], 0))
         sp1.x = sp1_ext_energy
         sp1.y = sp1_ext_mu
 
@@ -269,8 +281,8 @@ def spectra_lower_extend(sp1, sp2):
                                           retstep=sp2_den)[0][:-1]
         sp2_ext_energy = np.hstack((extend_spec2_energy, sp2.x))
         sp2_ext_mu = np.lib.pad(sp2.y, (len(extend_spec2_energy), 0),
-                                   'constant',
-                                   constant_values=(sp2.y[0], 0))
+                                'constant',
+                                constant_values=(sp2.y[0], 0))
         sp2.x = sp2_ext_energy
         sp2.y = sp2_ext_mu
 
