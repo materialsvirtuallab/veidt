@@ -80,7 +80,6 @@ class SimilarityMeasure(MSONable):
 
 
 class Euclidean(SimilarityMeasure):
-
     def __init__(self, coeff_1, coeff_2):
         """
         Class to calculate the Euclidean similarity
@@ -511,112 +510,6 @@ class ProbabilisticSymmetricChiS(SimilarityMeasure):
         return "Probabilistic Symmetric ChiSquare Similarity"
 
 
-class Kdivergence(SimilarityMeasure):
-    """
-    K divergence similarity
-    """
-
-    def __init__(self, coeff_1, coeff_2):
-        super().__init__(coeff_1, coeff_2)
-        self.d_max = np.log(2)
-
-    def distance_measure(self):
-        denominator = np.add(self.coeff_1, self.coeff_2)
-        deno_no_zero = np.where(denominator != 0)
-
-        left_log_term = np.abs(np.divide(2 * self.coeff_1[deno_no_zero],
-                                         denominator[deno_no_zero]))
-        left_no_zero_index = np.where(left_log_term != 0)
-        left_term = np.multiply(self.coeff_1[deno_no_zero][left_no_zero_index],
-                                np.log(left_log_term)[left_no_zero_index])
-
-        return np.sum(left_term)
-
-    def __str__(self):
-        return "Kdivergence Similarity"
-
-
-class Topsoe(SimilarityMeasure):
-    """
-    Topsoe Similarity
-    """
-
-    def __init__(self, coeff_1, coeff_2):
-        super().__init__(coeff_1, coeff_2)
-        self.d_max = 2 * np.log(2)
-
-    def distance_measure(self):
-        left_log_term = np.abs(np.divide(2 * self.coeff_1,
-                                         np.add(self.coeff_1, self.coeff_2)))
-        left_no_zero_index = np.where(left_log_term != 0)
-        left_term = np.multiply(self.coeff_1[left_no_zero_index],
-                                np.log(left_log_term[left_no_zero_index]))
-
-        right_log_term = np.abs(np.divide(2 * self.coeff_1,
-                                          np.add(self.coeff_1, self.coeff_2)))
-        right_no_zero_index = np.where(right_log_term != 0)
-        right_term = np.multiply(self.coeff_2[right_no_zero_index],
-                                 np.log(right_log_term[right_no_zero_index]))
-
-        left_term = np.sum(left_term)
-        right_term = np.sum(right_term)
-        return np.sum(np.add(left_term, right_term))
-
-    def __str__(self):
-        return "Topsoe Similarity"
-
-
-class JensenShannon(SimilarityMeasure):
-    """
-    JensenShannon Similarity
-    """
-
-    def __init__(self, coeff_1, coeff_2):
-        super().__init__(coeff_1, coeff_2)
-        self.d_max = np.log(2)
-
-    def distance_measure(self):
-        left_log_term = np.abs(np.divide(2 * self.coeff_1,
-                                         np.add(self.coeff_1, self.coeff_2)))
-        left_no_zero_index = np.where(left_log_term != 0)
-        left_term = np.multiply(self.coeff_1[left_no_zero_index],
-                                np.log(left_log_term[left_no_zero_index]))
-
-        right_log_term = np.abs(np.divide(2 * self.coeff_1,
-                                          np.add(self.coeff_1, self.coeff_2)))
-        right_no_zero_index = np.where(right_log_term != 0)
-        right_term = np.multiply(self.coeff_2[right_no_zero_index],
-                                 np.log(right_log_term[right_no_zero_index]))
-
-        left_term = np.sum(left_term)
-        right_term = np.sum(right_term)
-
-        return 0.5 * (left_term + right_term)
-
-    def __str__(self):
-        return "JensenShannon Similarity"
-
-
-class JensenDifference(SimilarityMeasure):
-    """
-    Jensen Difference Similarity
-    """
-
-    def __init__(self, coeff_1, coeff_2):
-        super().__init__(coeff_1, coeff_2)
-        self.d_max = np.log(1.0 / 2)
-
-    def distance_measure(self):
-        left_term = np.add(np.multiply(self.coeff_1, np.log(self.coeff_1)),
-                           np.multiply(self.coeff_2, np.log(self.coeff_2))) / 2
-        right_term = np.multiply(np.add(self.coeff_1, self.coeff_2) / 2,
-                                 np.log(np.add(self.coeff_1, self.coeff_2) / 2))
-        return np.sum(np.subtract(left_term, right_term))
-
-    def __str__(self):
-        return "JensenDifference Similarity"
-
-
 class AvgL1Linf(SimilarityMeasure):
     """
     Average L1 L_inf similarity
@@ -633,26 +526,6 @@ class AvgL1Linf(SimilarityMeasure):
 
     def __str__(self):
         return "Average L1 L_inf Similarity"
-
-
-class VicisSymmetricChi(SimilarityMeasure):
-    """
-    Vicis-Symmetric Chi square similarity
-    """
-
-    def __init__(self, coeff_1, coeff_2):
-        super().__init__(coeff_1, coeff_2)
-        self.d_max = 1
-
-    def distance_measure(self):
-        nominator = np.square(np.subtract(self.coeff_1, self.coeff_2))
-        denominator = np.maximum(self.coeff_1, self.coeff_2)
-        non_zero_deno = np.where(denominator != 0)
-        return np.sum(np.divide(nominator[non_zero_deno],
-                                denominator[non_zero_deno]))
-
-    def __str__(self):
-        return "VicisSymmetricChi Similarity"
 
 
 class MinSymmetricChi(SimilarityMeasure):
