@@ -65,6 +65,7 @@ class EnsembleRank(object):
                 self.target_spect, self.dataframe[self.spect_column].tolist())
             copy_simple_ensem.preprocess_similarity_compute(proc_comb[0],
                                                             proc_comb[1])
+            copy_simple_ensem.spect_df = copy_simple_ensem.spect_df[copy_simple_ensem.spect_df['Similarity'] != 0]
             copy_simple_ensem.spect_df.sort_values('Similarity', ascending=True,
                                                    inplace=True)
             index_rank = copy_simple_ensem.spect_df.index.tolist()
