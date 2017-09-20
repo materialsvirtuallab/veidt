@@ -9,7 +9,7 @@ setup(
     packages=find_packages(),
     version="0.0.2",
     install_requires=["numpy", "scipy", "monty", "keras", "tensorflow",
-                      "scikit-learn", "pymatgen"],
+                      "scikit-learn", "pandas", "pymatgen"],
     author="Materials Virtual Lab",
     author_email="ongsp@eng.ucsd.edu",
     maintainer="Shyue Ping Ong",
