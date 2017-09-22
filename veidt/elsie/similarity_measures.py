@@ -29,16 +29,22 @@ class SimilarityMeasure(MSONable):
             coeff_1: numpy array with dimension (n, 1), n corresponding to
                 number of wavelength, column corresponding to the absorption
                 coefficiency. The spectrum need to be normalized to obtain
-                meaningful result, i.e. the under curve area of spectrum need
+                meaningful result, i.e. the sum of spectrum's intensity need
                 equal to 1
             coeff_2: numpy array with dimension (n, 1). The row and column
                 definition is the same as spectrum 1. The spectrum need to be
-                normalized to obtain meaningful result, i.e. the under curve
-                area of spectrum need equal to 1
+                normalized to obtain meaningful result, i.e. the sum of spectrum's intensity
+                need equal to 1
         """
 
         if len(coeff_1) != len(coeff_2):
             raise ValueError('Two spectrum have different wavelength number')
+
+        if (not np.allclose(coeff_1.sum(), 1)):
+            raise ValueError('Spectrum 1 has not been normalized properly')
+
+        if (not np.allclose(coeff_2.sum(), 1)):
+            raise ValueError('Spectrum 2 has not been normalized properly')
 
         self.coeff_1 = coeff_1
         self.coeff_2 = coeff_2
@@ -557,6 +563,27 @@ class PearsonCorrMeasure(SimilarityMeasure):
     """
     Pearson Correlation Measure
     """
+
+    def __init__(self, coeff_1, coeff_2):
+        """
+        Args:
+            coeff_1: numpy array with dimension (n, 1), n corresponding to
+                number of wavelength, column corresponding to the absorption
+                coefficiency. The spectrum need to be normalized to obtain
+                meaningful result, i.e. the sum of spectrum's intensity need
+                equal to 1
+            coeff_2: numpy array with dimension (n, 1). The row and column
+                definition is the same as spectrum 1. The spectrum need to be
+                normalized to obtain meaningful result, i.e. the sum of spectrum's intensity
+                need equal to 1
+        """
+
+        if len(coeff_1) != len(coeff_2):
+            raise ValueError('Two spectrum have different wavelength number')
+
+        self.coeff_1 = coeff_1
+        self.coeff_2 = coeff_2
+        self.d_max = None
 
     def similarity_measure(self):
         return pearsonr(self.coeff_1, self.coeff_2)[0]
