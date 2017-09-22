@@ -78,7 +78,7 @@ class SpectraSimilarity(MSONable):
                 to determine the absorption onset, default set to 0.1
             **kwargs: Other parameters
         """
-        self.sp1, self.sp2 = spectra_lower_extend(self.sp1,self.sp2)
+        self.sp1, self.sp2 = spectra_lower_extend(self.sp1, self.sp2)
 
         if algo == 'threshold_shift':
             self.shifted_sp1, self.shifted_sp2, self.shifted_energy, \
@@ -139,6 +139,15 @@ class SpectraSimilarity(MSONable):
                     self.shifted_sp1, overlap_energy_grid)
                 scaled_shifted_sp2_interp = spectra_energy_interpolate(
                     scaled_shifted_sp2, overlap_energy_grid)
+
+                pre_shifted_sp1_interp = Preprocessing(shifted_sp1_interp)
+
+                pre_shifted_sp1_interp.spectrum_process(['intnorm'])
+                pre_scaled_shifted_sp2_interp = Preprocessing(scaled_shifted_sp2_interp)
+
+                pre_scaled_shifted_sp2_interp.spectrum_process(['intnorm'])
+                shifted_sp1_interp = pre_shifted_sp1_interp.spectrum
+                scaled_shifted_sp2_interp = pre_scaled_shifted_sp2_interp.spectrum
 
                 similarity_obj = simi_class(shifted_sp1_interp.y,
                                             scaled_shifted_sp2_interp.y)

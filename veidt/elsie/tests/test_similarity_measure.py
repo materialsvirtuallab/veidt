@@ -8,13 +8,36 @@ class SimilarityMeasureTest(unittest.TestCase):
     def setUp(self):
         self.v1, self.v2 = np.array([1, 0]), np.array([-1, 0])
         self.v3, self.v4 = np.array([0, 1]), np.array([1, 0])
-        self.v5, self.v6 = np.array([0.5, 0.5]), np.array([-0.5, -0.5])
-        self.v7, self.v8 = np.array([1, 0, 0]), np.array([0.2, 0.7])
+        self.v5, self.v6 = np.array([0.5, 0.5]), np.array([0.8, 0.2])
+        self.v7, self.v8 = np.array([1, 0, 0]), np.array([0.3, 0.7])
+        self.v9, self.v10 = np.array([0.2, 0.3]), np.array([0.4, 0.3])
+
+    def test_normal_fail(self):
+        cos_simi = getattr(similarity_measures, 'Cosine')
+        self.assertRaisesRegex(ValueError, "Spectrum 1 .* not.*normalized", cos_simi, coeff_1=self.v9,
+                               coeff_2=self.v1)
+        self.assertRaisesRegex(ValueError, "Spectrum 1 .* not.*normalized", cos_simi, coeff_1=self.v9,
+                               coeff_2=self.v10)
+        self.assertRaisesRegex(ValueError, "Spectrum 2 .* not.*normalized", cos_simi, coeff_1=self.v1,
+                               coeff_2=self.v10)
+        euc_simi = getattr(similarity_measures, 'Euclidean')
+        self.assertRaisesRegex(ValueError, "Spectrum 1 .* not.*normalized", euc_simi, coeff_1=self.v9,
+                               coeff_2=self.v1)
+        self.assertRaisesRegex(ValueError, "Spectrum 1 .* not.*normalized", euc_simi, coeff_1=self.v9,
+                               coeff_2=self.v10)
+        self.assertRaisesRegex(ValueError, "Spectrum 2 .* not.*normalized", euc_simi, coeff_1=self.v1,
+                               coeff_2=self.v10)
+        ruzi_simi = getattr(similarity_measures, 'Ruzicka')
+        self.assertRaisesRegex(ValueError, "Spectrum 1 .* not.*normalized", ruzi_simi, coeff_1=self.v9,
+                               coeff_2=self.v1)
+        self.assertRaisesRegex(ValueError, "Spectrum 1 .* not.*normalized", ruzi_simi, coeff_1=self.v9,
+                               coeff_2=self.v10)
+        self.assertRaisesRegex(ValueError, "Spectrum 2 .* not.*normalized", ruzi_simi, coeff_1=self.v1,
+                               coeff_2=self.v10)
 
     def test_cosine_similarity(self):
         cos_simi = getattr(similarity_measures, 'Cosine')
         self.assertRaisesRegex(ValueError, "different wavelength", cos_simi, coeff_1=self.v1, coeff_2=self.v7)
-        self.assertTrue(cos_simi(self.v1, self.v2).similarity_measure(), -1.0)
         self.assertTrue(cos_simi(self.v1, self.v4).similarity_measure(), 1.0)
         self.assertEqual(cos_simi(self.v1, self.v5).similarity_measure(),
                          smp.cosine_similarity(self.v1.reshape(1, -1), self.v5.reshape(1, -1)))
@@ -34,8 +57,8 @@ class SimilarityMeasureTest(unittest.TestCase):
                          smp.euclidean_distances(self.v1.reshape(1, -1), self.v3.reshape(1, -1)))
         self.assertEqual(euc_simi(self.v1, self.v5).distance_measure(),
                          smp.euclidean_distances(self.v1.reshape(1, -1), self.v5.reshape(1, -1)))
-        self.assertEqual(euc_simi(self.v1, self.v6).distance_measure(),
-                         smp.euclidean_distances(self.v1.reshape(1, -1), self.v6.reshape(1, -1)))
+        self.assertTrue(np.allclose(euc_simi(self.v1, self.v6).distance_measure(),
+                         smp.euclidean_distances(self.v1.reshape(1, -1), self.v6.reshape(1, -1))))
 
     def test_pearson_correlation(self):
         pear_simi = getattr(similarity_measures, 'PearsonCorrMeasure')
