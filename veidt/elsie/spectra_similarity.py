@@ -61,7 +61,7 @@ class SpectraSimilarity(MSONable):
         else:
             self.valid_comparison = True
 
-    def _spectrum_shift(self, algo='threshold_shift', intensity_threshold=0.06):
+    def _spectrum_shift(self, algo='threshold_shift', intensity_threshold=0.06, preset_shift=None):
         """
         Shift self.sp2 with respect to self.spec1. Self.spec1 will be
         untouched.
@@ -73,18 +73,30 @@ class SpectraSimilarity(MSONable):
                 are determined by the intensity_threshold.
                 "cross_correlate": Use the cross correlation function between
                 two spectra to determine the shift energy.
+                "user_specify": User specify the shift energy between the two
+                                spectra. The shift energy value should be set
+                                through the preset_shift.
             intensity_threshold: The absorption peak intensity threshold used
                 to determine the absorption onset, default set to 0.1
+            preset_shift: The energy shift value between the two spectra.
+                    preset_shift > 0 means sp2 needs to shift left w.r.t sp1
         """
-        self.sp1, self.sp2 = spectra_lower_extend(self.sp1, self.sp2)
+        if algo == 'user_specify':
+            if preset_shift is None:
+                raise ValueError('The energy shift value has not been set')
+            self.shifted_sp1, self.shifted_sp2, self.shifted_energy = \
+                preset_value_shift(self.sp1, self.sp2, preset_shift)
 
         if algo == 'threshold_shift':
+            self.sp1, self.sp2 = spectra_lower_extend(self.sp1, self.sp2)
             self.shifted_sp1, self.shifted_sp2, self.shifted_energy, \
             self.abs_onset = absorption_onset_shift(
                 self.sp1, self.sp2, intensity_threshold)
         elif algo == 'cross_correlate':
+            self.sp1, self.sp2 = spectra_lower_extend(self.sp1, self.sp2)
             self.shifted_sp1, self.shifted_sp2, self.shifted_energy = \
                 signal_corre_shift(self.sp1, self.sp2)
+
 
     def get_shifted_similarity(self, similarity_metric, energy_variation=None,
                                spect_preprocess=None, **kwargs):
@@ -391,3 +403,19 @@ def signal_corre_shift(sp1, sp2):
     shifted_sp2 = Spectrum(sp2.x - energy_diff, sp2.y)
 
     return shifted_sp1, shifted_sp2, energy_diff
+
+
+def preset_value_shift(sp1, sp2, preset_shift):
+    """
+    Using the preset value to shift the two spectra
+    Args:
+        sp1: Spectrum object 1
+        sp2: Spectrum object 2
+        preset_shift: Preset energy shift value between two spectra,
+            energy_diff > 0 means sp2 needs to shift left
+
+    """
+
+    shifted_sp1 = Spectrum(sp1.x, sp1.y)
+    shifted_sp2 = Spectrum(sp2.x - preset_shift, sp2.y)
+    return shifted_sp1, shifted_sp2, preset_shift
