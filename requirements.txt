@@ -1,11 +1,11 @@
 numpy==1.13.3
-scipy==0.19.1
+scipy==1.0.0
 pymatgen==2017.10.16
 monty==1.0.2
-keras==2.0.6
+keras==2.0.9
 tabulate==0.8.1
-pandas==0.20.3
-scikit-learn==0.19.0
-tensorflow==1.2.1
+pandas==0.21.0
+scikit-learn==0.19.1
+tensorflow==1.4.0
 six==1.11.0
-h5py==2.7.1
+h5py==2.7.0
