@@ -7,30 +7,41 @@ Define abstract base classes.
 """
 
 import abc
-import warnings
 import six
 from monty.json import MSONable
+from sklearn.base import TransformerMixin, BaseEstimator
 
 import pandas as pd
 
 
-class Describer(six.with_metaclass(abc.ABCMeta, MSONable)):
+class Describer(six.with_metaclass(abc.ABCMeta, BaseEstimator, MSONable, TransformerMixin)):
     """
     Base class for a Describer, i.e., something that converts an object to a
-    descriptor, typically a numerical representation useful for machine
+    describer, typically a numerical representation useful for machine
     learning.
     """
+
+    def fit(self, objs, targets=None):
+        """Fit the describer.
+        In the case that the describer relies on training data,
+        this method should be rewrite to store the fitted parameters
+        """
+        return self
+
+    def transform(self, objs):
+        """Transform the input objects"""
+        return self.describe_all(objs).values
 
     @abc.abstractmethod
     def describe(self, obj):
         """
-        Converts an obj to a descriptor.
+        Converts an obj to a describer.
 
         :param obj: Object
         :return: Descriptor for a structure. Recommended format is a pandas
             Dataframe object with the column names as intuitive names.
-            For example, a simple site descriptor of the fractional coordinates
-            (this is usually a bad descriptor, so it is just for illustration
+            For example, a simple site describer of the fractional coordinates
+            (this is usually a bad describer, so it is just for illustration
             purposes) can be generated as::
 
                 print(pd.DataFrame(s.frac_coords, columns=["a", "b", "c"]))
@@ -60,11 +71,8 @@ class Describer(six.with_metaclass(abc.ABCMeta, MSONable)):
         """
         return pd.concat([self.describe(o) for o in objs])
 
-    def __repr__(self):
-        return self.__name__
 
-
-class Model(six.with_metaclass(abc.ABCMeta, MSONable)):
+class Model(six.with_metaclass(abc.ABCMeta, BaseEstimator, MSONable)):
     """
     Abstract Base class for a Model. Basically, it usually wraps around a deep
     learning package, e.g., the Sequential Model in Keras, but provides for
@@ -84,38 +92,12 @@ class Model(six.with_metaclass(abc.ABCMeta, MSONable)):
     @abc.abstractmethod
     def predict(self, inputs):
         """
-        Predict the value given a set of inputs based on fitted model.
+        Predict the values given a set of inputs based on fitted model.
 
-        :param inputs: List of input objects
+        :param inputs: List of inputs
 
         :return: List of output objects
         """
         pass
 
-    def fit_object(self, inputs, outputs, **kwargs):
-        """
-        Fit the model with objects as inputs and outputs
 
-        :param inputs: List of input objects
-        :param outputs: List of output objects or target outputs
-        """
-        
-        try:
-            getattr(self, "describer")
-        except AttributeError:
-            self.describer = None
-
-        # Convert the inputs to numerical values with describer
-        # for the model fitting otherwise just use the raw inputs
-        # and outputs assuming they are already numerical values
-        if self.describer is not None:
-            features = self.describer.describe_all(inputs)
-        else:
-            warnings.warn("Describer not found, assuming the inputs are already numerical values.")
-            features = inputs
-
-        # call the fit method to get the model coefficients
-        self.fit(features, outputs, **kwargs)
-
-    def __repr__(self):
-        return self.__name__
