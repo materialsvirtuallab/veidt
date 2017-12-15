@@ -23,7 +23,8 @@ class Describer(six.with_metaclass(abc.ABCMeta, BaseEstimator, MSONable, Transfo
 
     def fit(self, objs, targets=None):
         """Fit the describer.
-        In the case that the describer relies on parameters calculated from training data, this method should be rewritten to store the fitted parameters
+        In the case that the describer relies on parameters calculated from training data,
+        this method should be rewritten to store the fitted parameters
         """
         return self
 
