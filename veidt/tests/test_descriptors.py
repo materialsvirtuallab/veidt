@@ -11,8 +11,8 @@ import numpy as np
 import pandas as pd
 from pymatgen import Structure
 
-from veidt.descriptors import FuncGenerator, DistinctSiteProperty,  \
-    MultiDescriber
+from veidt.describer.general import FuncGenerator, MultiDescriber
+from veidt.describer.structural_describer import DistinctSiteProperty
 
 
 class GeneratorTest(unittest.TestCase):
