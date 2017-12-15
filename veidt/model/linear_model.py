@@ -101,3 +101,4 @@ class LinearModel(Model):
 
     def load(self, model_fname):
         self.model = joblib.load(model_fname)
+
