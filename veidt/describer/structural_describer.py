@@ -5,7 +5,7 @@ import pandas as pd
 
 class DistinctSiteProperty(Describer):
     """
-    Constructs a descriptor based on properties of distinct sites in a
+    Constructs a describer based on properties of distinct sites in a
     structure. For now, this assumes that there is only one type of species in
     a particular Wyckoff site.
     """
