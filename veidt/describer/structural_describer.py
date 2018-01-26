@@ -9,7 +9,7 @@ class DistinctSiteProperty(Describer):
     structure. For now, this assumes that there is only one type of species in
     a particular Wyckoff site.
     """
-    #todo: generalize to multiple sites with the same Wyckoff.
+    # todo: generalize to multiple sites with the same Wyckoff.
 
     def fit(self, structures, target=None):
         return self

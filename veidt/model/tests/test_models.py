@@ -15,10 +15,10 @@ from veidt.abstract import Describer
 from veidt.describer.structural_describer import DistinctSiteProperty
 from veidt.model.neural_network import FeedForwardNeuralNetwork
 from veidt.model.linear_model import LinearModel
-from monty.serialization import MontyEncoder, MontyDecoder
+
 import shutil
 import tempfile
-import sklearn.linear_model
+
 
 
 class NeuralNetTest(unittest.TestCase):
@@ -28,9 +28,9 @@ class NeuralNetTest(unittest.TestCase):
         self.nn2 = FeedForwardNeuralNetwork(
             [25, 5], describer=DistinctSiteProperty(['8c'], ["Z"]))
         self.li2o = Structure.from_file(os.path.join(os.path.dirname(__file__),
-                                                     "Li2O.cif"))
+                                                     "../../tests/Li2O.cif"))
         self.na2o = Structure.from_file(os.path.join(os.path.dirname(__file__),
-                                                     "Na2O.cif"))
+                                                     "../../tests/Na2O.cif"))
         self.structures = [self.li2o] * 100 + [self.na2o] * 100
         self.energies = [3] * 100 + [4] * 100
         self.test_dir = tempfile.mkdtemp()
