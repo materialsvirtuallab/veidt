@@ -7,7 +7,8 @@
 import matplotlib.pyplot as plt
 from prettyplotlib import brewer2mpl
 
-# To Do: 1) plot from a model object 2)write test
+
+# ToDo: 1) plot from a model object
 
 
 def draw_neural_net(ax, left, right, bottom, top, layer_sizes, features,

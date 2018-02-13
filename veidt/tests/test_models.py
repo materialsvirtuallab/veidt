@@ -37,7 +37,7 @@ class NeuralNetTest(unittest.TestCase):
         shutil.rmtree(self.test_dir)
 
     def test_fit_evaluate(self):
-        self.nn.fit(inputs=self.structures, outputs=self.energies, nb_epoch=100)
+        self.nn.fit(inputs=self.structures, outputs=self.energies, epochs=100)
         # Given this is a fairly simple model, we should get close to exact.
         #self.assertEqual(round(self.nn.predict([self.na2o])[0][0]), 4, 3)
         self.assertTrue(3 <= round(self.nn.predict([self.na2o])[0][0]) <= 4)
@@ -45,7 +45,7 @@ class NeuralNetTest(unittest.TestCase):
     def test_model_save_load(self):
         model_fname = os.path.join(self.test_dir, 'test_nnmodel.h5')
         scaler_fname = os.path.join(self.test_dir, 'test_nnscaler.save')
-        self.nn.fit(inputs=self.structures, outputs=self.energies, nb_epoch=100)
+        self.nn.fit(inputs=self.structures, outputs=self.energies, epochs=100)
         self.nn.save(model_fname=model_fname, scaler_fname=scaler_fname)
         self.nn2.load(model_fname=model_fname, scaler_fname=scaler_fname)
         self.assertEqual(self.nn.predict([self.na2o])[0][0],
