@@ -4,6 +4,7 @@
 
 import sys
 import warnings
+import numpy as np
 
 from veidt.abstract import Model
 
@@ -45,7 +46,7 @@ class NeuralNet(Model):
         from keras.optimizers import Adam
         from keras.models import Sequential
         from keras.layers import Dense
-        descriptors = self.describer.describe_all(inputs)
+        descriptors = np.array(self.describer.describe_all(inputs))
         if self.preprocessor is None:
             self.preprocessor = StandardScaler()
             scaled_descriptors = self.preprocessor.fit_transform(descriptors)
