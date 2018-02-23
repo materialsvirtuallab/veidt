@@ -11,8 +11,8 @@ import numpy as np
 import pandas as pd
 from pymatgen import Structure
 
-from veidt.descriptors import FuncGenerator, DistinctSiteProperty,  \
-    MultiDescriber
+from veidt.describer.general import FuncGenerator, MultiDescriber
+from veidt.describer.structural_describer import DistinctSiteProperty
 
 
 class GeneratorTest(unittest.TestCase):
@@ -41,38 +41,13 @@ class GeneratorTest(unittest.TestCase):
         self.assert_(True)
 
 
-class DistinctSitePropertyTest(unittest.TestCase):
-
-    def setUp(self):
-        self.li2o = Structure.from_file(os.path.join(os.path.dirname(__file__),
-                                                     "Li2O.cif"))
-        self.na2o = Structure.from_file(os.path.join(os.path.dirname(__file__),
-                                                     "Na2O.cif"))
-        self.describer = DistinctSiteProperty(['8c', '4a'],
-                                              ["Z", "atomic_radius"])
-
-    def test_describe(self):
-        descriptor = self.describer.describe(self.li2o)
-        self.assertAlmostEqual(descriptor.iloc[0]["8c-Z"], 3)
-        self.assertAlmostEqual(descriptor.iloc[0]["8c-atomic_radius"], 1.45)
-        descriptor = self.describer.describe(self.na2o)
-        self.assertEqual(descriptor.iloc[0]["4a-Z"], 8)
-        self.assertEqual(descriptor.iloc[0]["4a-atomic_radius"], 0.6)
-
-    def test_describe_all(self):
-        df = pd.DataFrame(self.describer.describe_all([self.li2o, self.na2o]))
-        print(df)
-        self.assertEqual(df.iloc[0]["8c-Z"], 3)
-        self.assertEqual(df.iloc[0]["8c-atomic_radius"], 1.45)
-
-
 class MultiDescriberTest(unittest.TestCase):
 
     def test_describe(self):
         li2o = Structure.from_file(os.path.join(os.path.dirname(__file__),
-                                                "Li2O.cif"))
+                                                "../../tests/Li2O.cif"))
         na2o = Structure.from_file(os.path.join(os.path.dirname(__file__),
-                                                "Na2O.cif"))
+                                                "../../tests/Na2O.cif"))
         d1 = DistinctSiteProperty(['8c', '4a'], ["Z", "atomic_radius"])
         d2 = FuncGenerator(func_dict={"exp": "np.exp"}, append=False)
         d = MultiDescriber([d1, d2])
@@ -85,7 +60,6 @@ class MultiDescriberTest(unittest.TestCase):
         df = d.describe_all([li2o, na2o])
         self.assertAlmostEqual(df.iloc[0]["exp 8c-Z"], np.exp(3))
         self.assertAlmostEqual(df.iloc[1]["exp 8c-Z"], np.exp(11))
-
 
 if __name__ == "__main__":
     unittest.main()
