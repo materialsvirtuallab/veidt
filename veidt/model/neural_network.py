@@ -4,7 +4,7 @@ from sklearn.externals import joblib
 from ..abstract import Model
 
 
-class FeedForwardNeuralNetwork(Model):
+class MultiLayerPerceptron(Model):
     """
     Basic neural network model.
 
@@ -37,7 +37,7 @@ class FeedForwardNeuralNetwork(Model):
         from keras.optimizers import Adam
         from keras.models import Sequential
         from keras.layers import Dense
-        descriptors = self.describer.describe_all(inputs)
+        descriptors = self.describer.transform(inputs)
         if self.preprocessor is None:
             self.preprocessor = StandardScaler()
             scaled_descriptors = self.preprocessor.fit_transform(descriptors)
@@ -59,7 +59,7 @@ class FeedForwardNeuralNetwork(Model):
         self.model = model
 
     def predict(self, inputs):
-        descriptors = self.describer.describe_all(inputs)
+        descriptors = self.describer.transform(inputs)
         scaled_descriptors = self.preprocessor.transform(descriptors)
         return self.model.predict(scaled_descriptors)
 

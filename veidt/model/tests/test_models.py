@@ -13,7 +13,7 @@ from pymatgen import Structure
 
 from veidt.abstract import Describer
 from veidt.describer.structural_describer import DistinctSiteProperty
-from veidt.model.neural_network import FeedForwardNeuralNetwork
+from veidt.model.neural_network import MultiLayerPerceptron
 from veidt.model.linear_model import LinearModel
 
 import shutil
@@ -23,16 +23,16 @@ import tempfile
 
 class NeuralNetTest(unittest.TestCase):
     def setUp(self):
-        self.nn = FeedForwardNeuralNetwork(
+        self.nn = MultiLayerPerceptron(
             [25, 5], describer=DistinctSiteProperty(['8c'], ["Z"]))
-        self.nn2 = FeedForwardNeuralNetwork(
+        self.nn2 = MultiLayerPerceptron(
             [25, 5], describer=DistinctSiteProperty(['8c'], ["Z"]))
         self.li2o = Structure.from_file(os.path.join(os.path.dirname(__file__),
                                                      "../../tests/Li2O.cif"))
         self.na2o = Structure.from_file(os.path.join(os.path.dirname(__file__),
                                                      "../../tests/Na2O.cif"))
         self.structures = [self.li2o] * 100 + [self.na2o] * 100
-        self.energies = [3] * 100 + [4] * 100
+        self.energies = np.array([3] * 100 + [4] * 100)
         self.test_dir = tempfile.mkdtemp()
 
     def tearDown(self):
