@@ -4,6 +4,8 @@ from pymatgen.core import Structure
 from veidt.monte_carlo.base import StateDict
 from veidt.monte_carlo.state import AtomNumberState, IsingState, StaticState
 from veidt.monte_carlo.state import SpinStructure, Chain
+import os
+file_path = os.path.dirname(__file__)
 
 
 def unequal_site_number(list1, list2):
@@ -11,9 +13,6 @@ def unequal_site_number(list1, list2):
 
 
 class TestMonteCarlo(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        pass
 
     def test_ising_state(self):
         ising_state = IsingState([0, 1, 0, 1])
@@ -26,7 +25,6 @@ class TestMonteCarlo(unittest.TestCase):
         ising_state.change()
         self.assertEqual(unequal_site_number(ising_state.state, [0, 1, 0, 1]), 1)
 
-
     def test_atom_number_state(self):
         atom_number = AtomNumberState(10)
         self.assertEqual(atom_number.state, 10)
@@ -35,7 +33,7 @@ class TestMonteCarlo(unittest.TestCase):
 
     def test_spin_structure(self):
         species_map = {0: 'K', 1:'Na'}
-        structure = Structure.from_file('test_NaCoO2.cif')
+        structure = Structure.from_file(os.path.join(file_path, 'test_NaCoO2.cif'))
         state_dict = StateDict([StaticState(100, 'temperature'),
                                 AtomNumberState(10),
                                 IsingState([0]*22+[1, 1])])

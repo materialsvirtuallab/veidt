@@ -7,8 +7,11 @@ from veidt.monte_carlo.base import State
 from veidt.monte_carlo.state import StaticState
 from veidt.monte_carlo.state import AtomNumberState, IsingState
 from veidt.monte_carlo.base import StateDict
-from veidt.monte_carlo.state import SpinStructure, Chain
+from veidt.monte_carlo.state import SpinStructure
 from veidt.abstract import Model, Describer
+import os
+
+file_path = os.path.dirname(__file__)
 
 
 class SimpleLinearModel(Model):
@@ -37,18 +40,17 @@ class Volume(State):
 
 
 class TestHamiltonian(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        pass
+
+    def setUp(self):
+        self.structure = Structure.from_file(os.path.join(file_path, 'test_NaCoO2.cif'))
 
     def test_nvt(self):
-        structure = Structure.from_file('test_NaCoO2.cif')
         model = SimpleLinearModel(NaCount())
         nvt = NVT(model)
         state_dict = StateDict([StaticState(100, 'temperature'),
                                 AtomNumberState(10),
                                 IsingState([0]*22+[1, 1])])
-        spin_struct = SpinStructure(structure=structure, species_map={1: "Na", 0: "K"},
+        spin_struct = SpinStructure(structure=self.structure, species_map={1: "Na", 0: "K"},
                                     state_dict=state_dict)
         energy1 = nvt.exponential(spin_struct)
         self.assertEqual(energy1, 2440)
@@ -57,7 +59,6 @@ class TestHamiltonian(unittest.TestCase):
         self.assertIn(energy2, (2250, 2650))
 
     def test_npt(self):
-        structure = Structure.from_file('test_NaCoO2.cif')
         model = SimpleLinearModel(NaCount())
         npt = NPT(model)
         state_dict = StateDict([StaticState(100, 'temperature'),
@@ -65,7 +66,7 @@ class TestHamiltonian(unittest.TestCase):
                                 StaticState(-1, 'pressure'),
                                 AtomNumberState(10),
                                 IsingState([0, 1]*12)])
-        spin_struct = SpinStructure(structure=structure, species_map={1: "Na", 0: "K"},
+        spin_struct = SpinStructure(structure=self.structure, species_map={1: "Na", 0: "K"},
                                     state_dict=state_dict)
         energy1 = npt.exponential(spin_struct)
         self.assertAlmostEqual(energy1, 1429.80157, 4)
@@ -75,8 +76,6 @@ class TestHamiltonian(unittest.TestCase):
         self.assertLessEqual(1429.80157 + 10 - 5, energy2)
 
     def test_uVT(self):
-
-        structure = Structure.from_file('test_NaCoO2.cif')
         model = SimpleLinearModel(NaCount())
         uvt = uVT(model)
         state_dict = StateDict([StaticState(100, 'temperature'),
@@ -86,7 +85,7 @@ class TestHamiltonian(unittest.TestCase):
                                 StaticState(-1, 'pressure'),
                                 AtomNumberState(10),
                                 IsingState([0, 1]*12)])
-        spin_struct = SpinStructure(structure=structure, species_map={1: "Na", 0: "K"},
+        spin_struct = SpinStructure(structure=self.structure, species_map={1: "Na", 0: "K"},
                                     state_dict=state_dict)
         energy1 = uvt.exponential(spin_struct)
         self.assertAlmostEqual(energy1, 1469.6704985, 4)

@@ -9,7 +9,8 @@ from veidt.abstract import Model, Describer
 import pandas as pd
 import numpy as np
 from veidt.monte_carlo.ensemble import NVT
-
+import os
+file_path = os.path.dirname(__file__)
 
 class SimpleLinearModel(Model):
     def __init__(self, describer):
@@ -36,7 +37,7 @@ class ConstantTemperature(StaticState, SingleState):
 
 class TestSampler(unittest.TestCase):
     def setUp(self):
-        self.structure = Structure.from_file('../../tests/test_NaCoO2.cif')
+        self.structure = Structure.from_file(os.path.join(file_path, '../../tests/test_NaCoO2.cif'))
         self.state_dict = StateDict([
             ConstantTemperature(3000, 'temperature'), IsingState([0] * 22 + [1, 1])])
         self.spin_struct = SpinStructure(structure=self.structure, species_map={1: "Na", 0: "K"},
