@@ -47,7 +47,11 @@ class State(six.with_metaclass(ABCMeta)):
         copy a state
         :return: new state object with same state variable
         """
-        return self.__class__(copy(self.state), self.name)
+        new_state = self.__class__(copy(self.state), self.name)
+
+        # copy other attributes
+        new_state.__dict__.update({i: j for i, j in self.__dict__.items() if i not in ['state', 'name']})
+        return new_state
 
 
 class StateDict(OrderedDict):
