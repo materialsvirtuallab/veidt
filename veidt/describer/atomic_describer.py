@@ -6,7 +6,7 @@ from __future__ import division, print_function, unicode_literals, \
     absolute_import
 
 import itertools
-import os
+import subprocess
 import io
 
 import numpy as np
@@ -26,7 +26,7 @@ class BispectrumCoefficients(Describer):
     """
 
     def __init__(self, rcutfac, twojmax, element_profile, rfac0=0.99363,
-                 rmin0=0, diagonalstyle=3):
+                 rmin0=0, diagonalstyle=3, lmp_exe="lmp_serial"):
         """
 
         Args:
@@ -43,6 +43,8 @@ class BispectrumCoefficients(Describer):
             diagonalstyle (int): Parameter defining which bispectrum
                 components are generated. Choose among 0, 1, 2 and 3,
                 default to 3.
+            lmp_exe (str): Compiled serial LAMMPS executable file in
+                $PATH. Default to "lmp_serial".
 
         """
         self.rcutfac = rcutfac
@@ -51,6 +53,7 @@ class BispectrumCoefficients(Describer):
         self.rfac0 = rfac0
         self.rmin0 = rmin0
         self.diagonalstyle = diagonalstyle
+        self.lmp_exe = lmp_exe
 
     @property
     def subscripts(self):
@@ -110,7 +113,9 @@ class BispectrumCoefficients(Describer):
             for s in structures:
                 ld = structure_2_lmpdata(s, elements)
                 ld.write_file("data.sna")
-                os.system("lmp_serial -in in.sna")
+                p = subprocess.Popen([self.lmp_exe, "-in", "in.sna"],
+                                     stdout=subprocess.PIPE)
+                stdout = p.communicate()[0]
                 with open("dump.sna") as f:
                     sna_lines = f.readlines()[9:]
                 sna = np.loadtxt(io.StringIO("".join(sna_lines)))
