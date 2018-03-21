@@ -32,10 +32,10 @@ class BispectrumCoefficients(Describer):
         Args:
             rcutfac (float): Global cutoff distance.
             twojmax (int): Band limit for bispectrum components.
-            element_profile (dict): Parameters (cutoff factor 'r' and
-                weight 'w') related to each element, e.g.,
-                {'Na': {'r': 0.3, 'w': 0.9},
-                 'Cl': {'r': 0.7, 'w': 3.0}}
+            element_profile (dict): Parameters (cutoff factor "r" and
+                weight "w") related to each element, e.g.,
+                {"Na": {"r": 0.3, "w": 0.9},
+                 "Cl": {"r": 0.7, "w": 3.0}}
             rfac0 (float): Parameter in distance to angle conversion.
                 Set between (0, 1), default to 0.99363.
             rmin0 (float): Parameter in distance to angle conversion.
@@ -43,7 +43,7 @@ class BispectrumCoefficients(Describer):
             diagonalstyle (int): Parameter defining which bispectrum
                 components are generated. Choose among 0, 1, 2 and 3,
                 default to 3.
-        
+
         """
         self.rcutfac = rcutfac
         self.twojmax = twojmax
@@ -79,41 +79,41 @@ class BispectrumCoefficients(Describer):
         return list(subs)
 
     def _run_lammps(self, structures):
-        script = ['units metal',
-                  'boundary p p p',
-                  'atom_style charge',
-                  'box tilt large',
-                  'read_data data.sna',
-                  'pair_style lj/cut 10',
-                  'pair_coeff * * 1 1',
-                  'compute sna all sna/atom 1 ',
-                  'dump 1 all custom 1 dump.sna c_sna[*]',
-                  'run 0']
-        args = '{} {} '.format(self.rfac0, self.twojmax)
+        script = ["units metal",
+                  "boundary p p p",
+                  "atom_style charge",
+                  "box tilt large",
+                  "read_data data.sna",
+                  "pair_style lj/cut 10",
+                  "pair_coeff * * 1 1",
+                  "compute sna all sna/atom 1 ",
+                  "dump 1 all custom 1 dump.sna c_sna[*]",
+                  "run 0"]
+        args = "{} {} ".format(self.rfac0, self.twojmax)
         elements = [el.symbol for el in sorted(Element(e) for e in
                                                self.element_profile.keys())]
         cutoffs, weights = [], []
         for e in elements:
-            cutoffs.append(self.element_profile[e]['r'] * self.rcutfac)
-            weights.append(self.element_profile[e]['w'])
-        args += ' '.join([str(p) for p in cutoffs + weights])
-        args += ' diagonal {} rmin0 {} bzeroflag 0'.format(self.diagonalstyle,
+            cutoffs.append(self.element_profile[e]["r"] * self.rcutfac)
+            weights.append(self.element_profile[e]["w"])
+        args += " ".join([str(p) for p in cutoffs + weights])
+        args += " diagonal {} rmin0 {} bzeroflag 0".format(self.diagonalstyle,
                                                            self.rmin0)
         script[-3] += args
 
-        columns = list(map(lambda s: '-'.join(['%d' % i for i in s]),
+        columns = list(map(lambda s: "-".join(["%d" % i for i in s]),
                            self.subscripts))
         dfs = []
-        with ScratchDir('.'):
-            with open('in.sna', 'w') as f:
-                f.write('\n'.join(script))
+        with ScratchDir("."):
+            with open("in.sna", "w") as f:
+                f.write("\n".join(script))
             for s in structures:
                 ld = structure_2_lmpdata(s, elements)
-                ld.write_file('data.sna')
-                os.system('lmp_serial -in in.sna')
-                with open('dump.sna') as f:
+                ld.write_file("data.sna")
+                os.system("lmp_serial -in in.sna")
+                with open("dump.sna") as f:
                     sna_lines = f.readlines()[9:]
-                sna = np.loadtxt(io.StringIO(''.join(sna_lines)))
+                sna = np.loadtxt(io.StringIO("".join(sna_lines)))
                 dfs.append(pd.DataFrame(np.atleast_2d(sna), columns=columns))
         return dfs
 
@@ -142,10 +142,10 @@ class BispectrumCoefficients(Describer):
         Returns:
             DataFrame with indices of input list preserved. To retrieve
             the data for structures[i], use
-            df.xs(i, level='input_index').
+            df.xs(i, level="input_index").
 
         """
         dfs = self._run_lammps(structures)
         df = pd.concat(dfs, keys=range(len(structures)),
-                       names=['input_index', None])
+                       names=["input_index", None])
         return df
