@@ -77,54 +77,49 @@ class BispectrumCoefficientsTest(unittest.TestCase):
 
 class CoulomMatrixTest(unittest.TestCase):
 
-        def setUp(self):
-            """
-            Set up tests.
-            :return:
-            """
-            m = MPRester(api_key="VIqD4QUxH6wNpyc5")
-            self.s1 = Structure.from_spacegroup(225,
-                                               Lattice.cubic(5.69169),
-                                               ["Na", "Cl"],
-                                               [[0, 0, 0], [0, 0, 0.5]])
-            self.s2 = m.get_structure_by_material_id("mp-1234")
+    def setUp(self):
+        m = MPRester()
+        self.s1 = Structure.from_spacegroup(225,
+                                            Lattice.cubic(5.69169),
+                                            ["Na", "Cl"],
+                                            [[0, 0, 0], [0, 0, 0.5]])
+        self.s2 = m.get_structure_by_material_id("mp-1234")
 
-        def test_coulomb_mat(self):
-            cm = CoulombMatrix()
-            cmat = cm.describe(self.s1).as_matrix().reshape(self.s1.num_sites, self.s1.num_sites)
-            na = Element('Na')
-            cl = Element('Cl')
-            dist = self.s1.distance_matrix
-            self.assertEqual(cmat[0][0], (na.Z ** 2.4) * 0.5)
-            self.assertEqual(cmat[4][4], (cl.Z ** 2.4) * 0.5)
-            self.assertEqual(cmat[0][1], (na.Z * na.Z)/dist[0][1])
+    def test_coulomb_mat(self):
+        cm = CoulombMatrix()
+        cmat = cm.describe(self.s1).as_matrix().reshape(self.s1.num_sites, self.s1.num_sites)
+        na = Element('Na')
+        cl = Element('Cl')
+        dist = self.s1.distance_matrix
+        self.assertEqual(cmat[0][0], (na.Z ** 2.4) * 0.5)
+        self.assertEqual(cmat[4][4], (cl.Z ** 2.4) * 0.5)
+        self.assertEqual(cmat[0][1], (na.Z * na.Z) / dist[0][1])
 
-        def test_sorted_coulomb_mat(self):
-            cm = CoulombMatrix(sorted=True)
-            c = cm.coulomb_mat(self.s2)
-            cmat = cm.describe(self.s2).as_matrix().reshape(self.s2.num_sites, self.s2.num_sites)
-            norm_order_ind = np.argsort(np.linalg.norm(c, axis=1))
-            for i in range(cmat.shape[1]):
-                self.assertTrue(np.all(cmat[i]==c[norm_order_ind[i]]))
+    def test_sorted_coulomb_mat(self):
+        cm = CoulombMatrix(sorted=True)
+        c = cm.coulomb_mat(self.s2)
+        cmat = cm.describe(self.s2).as_matrix().reshape(self.s2.num_sites, self.s2.num_sites)
+        norm_order_ind = np.argsort(np.linalg.norm(c, axis=1))
+        for i in range(cmat.shape[1]):
+            self.assertTrue(np.all(cmat[i] == c[norm_order_ind[i]]))
 
-        def test_random_coulom_mat(self):
-            cm = CoulombMatrix(randomized=True, random_seed=7)
-            c = cm.coulomb_mat(self.s2)
-            cmat = cm.describe(self.s2).as_matrix().reshape(self.s2.num_sites, self.s2.num_sites)
-            cm2 = CoulombMatrix(randomized=True, random_seed=8)
-            cmat2 = cm2.describe(self.s2).as_matrix().reshape(self.s2.num_sites, self.s2.num_sites)
-            self.assertEqual(np.all(cmat == cmat2), False)
-            for i in range(cmat.shape[1]):
-                self.assertTrue(cmat[i] in c[i])
+    def test_random_coulom_mat(self):
+        cm = CoulombMatrix(randomized=True, random_seed=7)
+        c = cm.coulomb_mat(self.s2)
+        cmat = cm.describe(self.s2).as_matrix().reshape(self.s2.num_sites, self.s2.num_sites)
+        cm2 = CoulombMatrix(randomized=True, random_seed=8)
+        cmat2 = cm2.describe(self.s2).as_matrix().reshape(self.s2.num_sites, self.s2.num_sites)
+        self.assertEqual(np.all(cmat == cmat2), False)
+        for i in range(cmat.shape[1]):
+            self.assertTrue(cmat[i] in c[i])
 
-        def test_describe_all(self):
-            cm = CoulombMatrix()
-            c = cm.describe_all([self.s1, self.s2])
-            c1 = cm.describe(self.s1)
-            c2 = cm.describe(self.s2)
-            self.assertTrue(np.all(c[0].dropna() == c1[0]))
-            self.assertTrue(np.all(c[1].dropna() == c2[0]))
-
+    def test_describe_all(self):
+        cm = CoulombMatrix()
+        c = cm.describe_all([self.s1, self.s2])
+        c1 = cm.describe(self.s1)
+        c2 = cm.describe(self.s2)
+        self.assertTrue(np.all(c[0].dropna() == c1[0]))
+        self.assertTrue(np.all(c[1].dropna() == c2[0]))
 
 
 if __name__ == "__main__":
