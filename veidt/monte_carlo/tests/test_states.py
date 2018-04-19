@@ -32,7 +32,7 @@ class TestMonteCarlo(unittest.TestCase):
         self.assertIn(atom_number.state, [9, 11])
 
     def test_spin_structure(self):
-        species_map = {0: 'K', 1:'Na'}
+        species_map = {0: 'K', 1: 'Na'}
         structure = Structure.from_file(os.path.join(file_path, 'test_NaCoO2.cif'))
         state_dict = StateDict([StaticState(100, 'temperature'),
                                 AtomNumberState(10),
