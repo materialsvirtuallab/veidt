@@ -8,9 +8,10 @@ import random
 
 import numpy as np
 from monty.os.path import which
-from pymatgen import Lattice, Structure
+from pymatgen import Lattice, Structure, Element
 
 from veidt.describer.atomic_describer import BispectrumCoefficients
+
 
 
 class BispectrumCoefficientsTest(unittest.TestCase):
@@ -71,3 +72,10 @@ class BispectrumCoefficientsTest(unittest.TestCase):
         df_s = df_all.xs(i, level="input_index")
         self.assertEqual(df_s.shape[0], len(structures[i]))
         self.assertTrue(df_s.equals(bc.describe(structures[i])))
+
+
+
+
+
+if __name__ == "__main__":
+    unittest.main()

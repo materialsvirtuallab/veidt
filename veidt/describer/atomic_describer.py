@@ -122,6 +122,7 @@ class BispectrumCoefficients(Describer):
                 dfs.append(pd.DataFrame(np.atleast_2d(sna), columns=columns))
         return dfs
 
+
     def describe(self, structure):
         """
         Returns data for one input structure.
@@ -154,3 +155,6 @@ class BispectrumCoefficients(Describer):
         df = pd.concat(dfs, keys=range(len(structures)),
                        names=["input_index", None])
         return df
+
+
+
