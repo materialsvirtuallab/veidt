@@ -47,7 +47,7 @@ class CoulombMatrix(Describer):
     def __init__(self, max_sites=None, sorted=False, randomized=False, random_seed=None):
 
         """
-        Coulomb Matrix to decribe structure
+        Coulomb Matrix to describe structure
 
         Args:
             max_sites(int): number of max sites,
