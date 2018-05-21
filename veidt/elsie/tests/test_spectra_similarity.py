@@ -62,8 +62,9 @@ class SpectraSimilarityTest(unittest.TestCase):
         self.assertTrue(temp_spect1.x[0] == temp_spect2.x[0])
         self.assertTrue((temp_spect2.x[-1] - temp_spect1.x[-1]) == 5)
 
-        self.assertRaisesRegex(ValueError, "intensity threshold",absorption_onset_shift, sp1=self.Al2O3_xane_1, sp2=self.Al2O3_xane_2,
-                          intensity_threshold=2)
+        self.assertRaisesRegex(ValueError, "intensity threshold", absorption_onset_shift, sp1=self.Al2O3_xane_1,
+                               sp2=self.Al2O3_xane_2,
+                               intensity_threshold=2)
 
     def test_absorption_onset_shift(self):
         shifted_spect1, shifted_spect2, shifted_energy, abs_onset = absorption_onset_shift(self.Al2O3_xane_1,
@@ -77,6 +78,66 @@ class SpectraSimilarityTest(unittest.TestCase):
         self.assertEqual(shifted_energy, 5.0)
         self.assertAlmostEqual(abs_onset, 1565.4000000000001)
         self.assertTrue(np.allclose(shifted_spect1.x, shifted_spect3.x))
+
+    def test_cross_correlation_shift(self):
+        shifted_spect1, shifted_spect2, shifted_energy = signal_corre_shift(self.Al2O3_xane_1,
+                                                                            self.Al2O3_xane_left_shift5)
+        self.assertTrue(np.allclose(shifted_energy, -5.0, 1e-2))
+
+        shifted_spect1, shifted_spect2, shifted_energy = signal_corre_shift(self.Al2O3_xane_1,
+                                                                            self.Al2O3_xane_right_shift5)
+        self.assertTrue(np.allclose(shifted_energy, 5.0, 1e-2))
+
+        spect_simi1 = SpectraSimilarity(self.Al2O3_xane_1, self.Al2O3_xane_left_shift5)
+        cosine_simi = spect_simi1.get_shifted_similarity('Cosine', spect_preprocess=(('intnorm')),
+                                                         algo='cross_correlate')
+        pearson_simi = spect_simi1.get_shifted_similarity('PearsonCorrMeasure', spect_preprocess=(('intnorm')),
+                                                          algo='cross_correlate')
+        with self.assertRaises(AttributeError):
+            spect_simi1.abs_onset
+            self.assertAlmostEqual(cosine_simi, 1, 5)
+            self.assertAlmostEqual(pearson_simi, 1, 5)
+            self.assertTrue(np.allclose(spect_simi1.shifted_energy, -5, 1e-2))
+
+        spect_simi2 = SpectraSimilarity(self.Al2O3_xane_1, self.Al2O3_xane_right_shift5)
+        cosine_simi = spect_simi2.get_shifted_similarity('Cosine', spect_preprocess=(('intnorm')),
+                                                         algo='cross_correlate')
+        pearson_simi = spect_simi2.get_shifted_similarity('PearsonCorrMeasure', spect_preprocess=(('intnorm')),
+                                                          algo='cross_correlate')
+        with self.assertRaises(AttributeError):
+            spect_simi2.abs_onset
+            self.assertAlmostEqual(cosine_simi, 1, 5)
+            self.assertAlmostEqual(pearson_simi, 1, 5)
+            self.assertTrue(np.allclose(spect_simi2.shifted_energy, 5, 1e-2))
+
+    def test_preset_shift(self):
+        shifted_spect1, shifted_spect2, shifted_energy = preset_value_shift(self.Al2O3_xane_1,
+                                                                            self.Al2O3_xane_left_shift5, -5)
+
+        self.assertEqual(shifted_energy, -5.0)
+        self.assertTrue(np.all(shifted_spect1.x == shifted_spect2.x))
+        self.assertTrue(np.all(shifted_spect1.y == shifted_spect2.y))
+
+        shifted_spect1, shifted_spect2, shifted_energy = preset_value_shift(self.Al2O3_xane_1,
+                                                                            self.Al2O3_xane_right_shift5, 5)
+        self.assertEqual(shifted_energy, 5.0)
+        self.assertTrue(np.all(shifted_spect1.x == shifted_spect2.x))
+        self.assertTrue(np.all(shifted_spect1.y == shifted_spect2.y))
+
+        spect_simi_preset = SpectraSimilarity(self.Al2O3_xane_1, self.Al2O3_xane_right_shift5)
+        self.assertRaisesRegex(ValueError, "The energy shift value has not been set", spect_simi_preset._spectrum_shift,
+                               algo='user_specify')
+
+        spect_simi_preset._spectrum_shift(algo='user_specify', preset_shift=5)
+        self.assertTrue(np.all(spect_simi_preset.shifted_sp2.x == spect_simi_preset.sp1.x))
+        cosine_simi = spect_simi_preset.get_shifted_similarity('Cosine', spect_preprocess=(('intnorm')),
+                                                               algo='user_specify', preset_shift=5)
+        spect_simi_2 = SpectraSimilarity(self.Al2O3_xane_1, self.Al2O3_xane_left_shift5)
+        cosine_simi_2 = spect_simi_2.get_shifted_similarity('Cosine', spect_preprocess=(('intnorm')),
+                                                            algo='user_specify', preset_shift=-5)
+
+        self.assertAlmostEqual(cosine_simi, 1)
+        self.assertAlmostEqual(cosine_simi_2, 1)
 
     def test_get_shifted_similarity(self):
         # Test whether the get_shifted_similarity function could found the right energy variation scale

@@ -10,6 +10,7 @@ from copy import deepcopy
 from veidt.elsie.preprocessing import Preprocessing
 from veidt.elsie import similarity_measures
 from scipy.interpolate import interp1d
+from scipy import signal
 
 
 class SpectraSimilarity(MSONable):
@@ -60,7 +61,7 @@ class SpectraSimilarity(MSONable):
         else:
             self.valid_comparison = True
 
-    def _spectrum_shift(self, algo='threshold_shift', intensity_threshold=0.06):
+    def _spectrum_shift(self, algo='threshold_shift', intensity_threshold=0.06, preset_shift=None):
         """
         Shift self.sp2 with respect to self.spec1. Self.spec1 will be
         untouched.
@@ -72,21 +73,33 @@ class SpectraSimilarity(MSONable):
                 are determined by the intensity_threshold.
                 "cross_correlate": Use the cross correlation function between
                 two spectra to determine the shift energy.
-                "cross_FFT": Use FFT function to calculate the cross correlation
-                    function between two spectra and determine energy shift
+                "user_specify": User specify the shift energy between the two
+                                spectra. The shift energy value should be set
+                                through the preset_shift.
             intensity_threshold: The absorption peak intensity threshold used
                 to determine the absorption onset, default set to 0.1
-            **kwargs: Other parameters
+            preset_shift: The energy shift value between the two spectra.
+                    preset_shift > 0 means sp2 needs to shift left w.r.t sp1
         """
-        self.sp1, self.sp2 = spectra_lower_extend(self.sp1, self.sp2)
+        if algo == 'user_specify':
+            if preset_shift is None:
+                raise ValueError('The energy shift value has not been set')
+            self.shifted_sp1, self.shifted_sp2, self.shifted_energy = \
+                preset_value_shift(self.sp1, self.sp2, preset_shift)
 
         if algo == 'threshold_shift':
+            self.sp1, self.sp2 = spectra_lower_extend(self.sp1, self.sp2)
             self.shifted_sp1, self.shifted_sp2, self.shifted_energy, \
             self.abs_onset = absorption_onset_shift(
                 self.sp1, self.sp2, intensity_threshold)
+        elif algo == 'cross_correlate':
+            self.sp1, self.sp2 = spectra_lower_extend(self.sp1, self.sp2)
+            self.shifted_sp1, self.shifted_sp2, self.shifted_energy = \
+                signal_corre_shift(self.sp1, self.sp2)
+
 
     def get_shifted_similarity(self, similarity_metric, energy_variation=None,
-                               spect_preprocess=None):
+                               spect_preprocess=None, **kwargs):
         """
         Calculate the similarity between two shifted spectra
         Args:
@@ -103,7 +116,7 @@ class SpectraSimilarity(MSONable):
             return 0
 
         if (self.shifted_sp1 is None) and (self.shifted_sp2 is None):
-            self._spectrum_shift()
+            self._spectrum_shift(**kwargs)
         simi_class = getattr(similarity_measures, similarity_metric)
 
         if energy_variation is not None:
@@ -341,7 +354,68 @@ def absorption_onset_shift(sp1, sp2, intensity_threshold):
         sp2_new_energy = sp2.x - energy_diff
         sp2_new_mu = sp2.y
 
-    shifted_sp1 = deepcopy(sp1)
+    shifted_sp1 = Spectrum(sp1.x, sp1.y)
     shifted_sp2 = Spectrum(sp2_new_energy, sp2_new_mu)
 
     return shifted_sp1, shifted_sp2, energy_diff, threpoint_1_energy
+
+
+def signal_corre_shift(sp1, sp2):
+    """
+    Using the cross correlation function between two spectra to determine the shift energy.
+    Args:
+        sp1: Spectrum object 1
+        sp2: Spectrum object 2
+
+    Returns:
+        energy_diff: Energy difference between sp1 and sp2,
+            energy_diff > 0 means sp2 needs to shift left
+
+    """
+
+    overlap_energy = energy_overlap(sp1, sp2)
+    # Energy grid interpolate point density: 0.01 eV
+    overlap_energy_grid = np.linspace(overlap_energy[0], overlap_energy[1],
+                                      int(float(overlap_energy[1] - overlap_energy[0]) / 0.01))
+
+    interp_sp1 = spectra_energy_interpolate(Spectrum(sp1.x, sp1.y), overlap_energy_grid)
+    interp_sp2 = spectra_energy_interpolate(Spectrum(sp2.x, sp2.y), overlap_energy_grid)
+
+    if not np.allclose(interp_sp1.x, interp_sp2.x, 1e-5):
+        raise ValueError("Two scaled spectra's energy grid densities are different")
+
+    sp2_shift_index = np.argmax(signal.correlate(interp_sp2.y, interp_sp1.y))
+
+    # sp2 need to shift left
+    if sp2_shift_index > interp_sp2.x.shape[0]:
+        left_shift_index = sp2_shift_index - interp_sp2.x.shape[0]
+        energy_diff = interp_sp2.x[left_shift_index] - interp_sp2.x.min()
+
+    # sp2 need to shift right
+    elif sp2_shift_index < interp_sp2.x.shape[0]:
+        right_shift_index = interp_sp2.x.shape[0] - sp2_shift_index
+        energy_diff = -(interp_sp2.x[right_shift_index] - interp_sp2.x.min())
+
+    else:
+        energy_diff = 0
+
+    shifted_sp1 = Spectrum(sp1.x, sp1.y)
+    shifted_sp2 = Spectrum(sp2.x - energy_diff, sp2.y)
+
+    return shifted_sp1, shifted_sp2, energy_diff
+
+
+def preset_value_shift(sp1, sp2, preset_shift):
+    """
+    Using the preset value to shift the two spectra
+    Args:
+        sp1: Spectrum object 1
+        sp2: Spectrum object 2
+        preset_shift: Preset energy shift value between two spectra,
+            energy_diff > 0 means sp2 needs to shift left
+
+    """
+
+    shifted_sp1 = Spectrum(sp1.x, sp1.y)
+    shifted_sp2 = Spectrum(sp2.x - preset_shift, sp2.y)
+    return shifted_sp1, shifted_sp2, preset_shift
