@@ -12,24 +12,27 @@ import pandas as pd
 from pymatgen import Structure
 
 from veidt.abstract import Describer
-from veidt.descriptors import DistinctSiteProperty
-from veidt.models import NeuralNet, LinearModel
-from monty.serialization import MontyEncoder, MontyDecoder
-import shutil, tempfile
+from veidt.describer.structural_describer import DistinctSiteProperty
+from veidt.model.neural_network import MultiLayerPerceptron
+from veidt.model.linear_model import LinearModel
+
+import shutil
+import tempfile
+
 
 
 class NeuralNetTest(unittest.TestCase):
     def setUp(self):
-        self.nn = NeuralNet(
+        self.nn = MultiLayerPerceptron(
             [25, 5], describer=DistinctSiteProperty(['8c'], ["Z"]))
-        self.nn2 = NeuralNet(
+        self.nn2 = MultiLayerPerceptron(
             [25, 5], describer=DistinctSiteProperty(['8c'], ["Z"]))
         self.li2o = Structure.from_file(os.path.join(os.path.dirname(__file__),
-                                                     "Li2O.cif"))
+                                                     "../../tests/Li2O.cif"))
         self.na2o = Structure.from_file(os.path.join(os.path.dirname(__file__),
-                                                     "Na2O.cif"))
+                                                     "../../tests/Na2O.cif"))
         self.structures = [self.li2o] * 100 + [self.na2o] * 100
-        self.energies = [3] * 100 + [4] * 100
+        self.energies = np.array([3] * 100 + [4] * 100)
         self.test_dir = tempfile.mkdtemp()
 
     def tearDown(self):
@@ -37,7 +40,7 @@ class NeuralNetTest(unittest.TestCase):
         shutil.rmtree(self.test_dir)
 
     def test_fit_evaluate(self):
-        self.nn.fit(inputs=self.structures, outputs=self.energies, nb_epoch=100)
+        self.nn.fit(inputs=self.structures, outputs=self.energies, epochs=100)
         # Given this is a fairly simple model, we should get close to exact.
         #self.assertEqual(round(self.nn.predict([self.na2o])[0][0]), 4, 3)
         self.assertTrue(3 <= round(self.nn.predict([self.na2o])[0][0]) <= 4)
@@ -45,7 +48,7 @@ class NeuralNetTest(unittest.TestCase):
     def test_model_save_load(self):
         model_fname = os.path.join(self.test_dir, 'test_nnmodel.h5')
         scaler_fname = os.path.join(self.test_dir, 'test_nnscaler.save')
-        self.nn.fit(inputs=self.structures, outputs=self.energies, nb_epoch=100)
+        self.nn.fit(inputs=self.structures, outputs=self.energies, epochs=100)
         self.nn.save(model_fname=model_fname, scaler_fname=scaler_fname)
         self.nn2.load(model_fname=model_fname, scaler_fname=scaler_fname)
         self.assertEqual(self.nn.predict([self.na2o])[0][0],
