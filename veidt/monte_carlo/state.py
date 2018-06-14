@@ -52,14 +52,6 @@ class SingleState(State):
         return
 
 
-class StaticState(State):
-    """
-    StaticState does not change the state when calling the change method
-    """
-    def change(self):
-        pass
-
-
 class AtomNumberState(SingleState):
     """
     Number of atom state

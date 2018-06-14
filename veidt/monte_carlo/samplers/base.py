@@ -1,4 +1,4 @@
-from veidt.monte_carlo.state import StaticState
+from veidt.monte_carlo.base import StaticState
 from veidt.monte_carlo.state import Chain
 kb = 8.61733e-5
 

@@ -1,7 +1,7 @@
 import unittest
 from pymatgen.core import Structure
-from veidt.monte_carlo.base import StateDict
-from veidt.monte_carlo.state import StaticState, SingleState, \
+from veidt.monte_carlo.base import StateDict, StaticState
+from veidt.monte_carlo.state import SingleState, \
     IsingState, SpinStructure
 from veidt.monte_carlo.samplers.base import Sampler
 from veidt.monte_carlo.samplers.metropolis import Metropolis, proposal
@@ -11,6 +11,7 @@ import numpy as np
 from veidt.monte_carlo.ensemble import NVT
 import os
 file_path = os.path.dirname(__file__)
+
 
 class SimpleLinearModel(Model):
     def __init__(self, describer):

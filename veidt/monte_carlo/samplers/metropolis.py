@@ -37,12 +37,13 @@ class Metropolis(Sampler):
         for step_name in self.ensemble.step_names:
             temperature = self.state_structure.state_dict['temperature'].state
             new_state_structure = proposal(self.state_structure, step_name)
-            exponential = self.ensemble.exponential(new_state_structure)
-            d_exp = exponential - self.exponential
+            # exponential = self.ensemble.exponential(new_state_structure)
+            d_exp = self.ensemble.d_exponential(self.state_structure, new_state_structure)
+            # print('delta exp: ', d_exp)
             is_accept = accept(d_exp, temperature)
             if is_accept:
                 self.state_structure = new_state_structure
-                self.exponential = exponential
+                self.exponential = self.ensemble.exponential(new_state_structure)
                 self._acceptance += 1
             self.chain.append(self.state_structure.state_dict)
             self.chain.chain['exponential'].append(self.exponential)
@@ -58,7 +59,7 @@ def proposal(state_structure, step_name=None):
     """
     init_sig = signature(state_structure.__init__)
     p_names = [p.name for p in init_sig.parameters.values() if p.name != 'self']
-    out_dict = {i:getattr(state_structure, i) for i in p_names}
+    out_dict = {i: getattr(state_structure, i) for i in p_names}
     out_dict.update({'structure': state_structure.structure.copy(),
                      'state_dict': state_structure.state_dict.copy()})
     new_state_structure = state_structure.__class__(**out_dict)

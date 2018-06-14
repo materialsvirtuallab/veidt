@@ -1,8 +1,8 @@
 import unittest
 
 from pymatgen.core import Structure
-from veidt.monte_carlo.base import StateDict
-from veidt.monte_carlo.state import AtomNumberState, IsingState, StaticState
+from veidt.monte_carlo.base import StateDict, StaticState
+from veidt.monte_carlo.state import AtomNumberState, IsingState
 from veidt.monte_carlo.state import SpinStructure, Chain
 import os
 file_path = os.path.dirname(__file__)
@@ -58,7 +58,6 @@ class TestMonteCarlo(unittest.TestCase):
         # test structure to states
         self.assertListEqual(spin_struct.structure_to_states(structure)['ising'].state,
                              [0] * 22 + [1, 1])
-
 
     def test_chain(self):
         spin_state = IsingState([0, 1, 0])

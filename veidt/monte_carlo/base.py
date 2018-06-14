@@ -50,8 +50,16 @@ class State(six.with_metaclass(ABCMeta)):
         new_state = self.__class__(copy(self.state), self.name)
 
         # copy other attributes
-        new_state.__dict__.update({i: j for i, j in self.__dict__.items() if i not in ['state', 'name']})
+        # new_state.__dict__.update({i: j for i, j in self.__dict__.items() if i not in ['state', 'name']})
         return new_state
+
+
+class StaticState(State):
+    """
+    StaticState does not change the state when calling the change method
+    """
+    def change(self):
+        pass
 
 
 class StateDict(OrderedDict):
@@ -59,9 +67,12 @@ class StateDict(OrderedDict):
     A collection of states. Usually one physical system is described by more than
     one state variable
     """
-    def __init__(self, states=None):
+    def __init__(self, states=None, **kwargs):
         if isinstance(states, (list, tuple)):
             super(StateDict, self).__init__({i.name: i for i in states})
+        if kwargs is not None:
+            for key, value in kwargs.items():
+                self.update({key: StaticState(value, name=key)})
 
     def __eq__(self, other):
         keys = self.keys()
