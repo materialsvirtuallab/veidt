@@ -38,7 +38,8 @@ class Sampler(object):
         :param verbose: bool, print indicator
         :return: the chain of samples
         """
-        while self.n_step < n:
+        cur_step = self.n_step
+        while self.n_step < cur_step + n:
             self.step(n_print, verbose)
         return self.chain
 

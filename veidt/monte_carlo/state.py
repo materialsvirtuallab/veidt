@@ -1,6 +1,6 @@
 import numpy as np
 from collections import defaultdict
-from .base import State, StateStructure
+from .base import State, StateStructure, StaticState
 import itertools
 
 
@@ -159,10 +159,10 @@ class Chain(object):
 
         # append state variables
         for state_name, state in state_dict.items():
-            self.chain[state_name].append(state.state)
-            # state can observe the chain change
-            state._chain = self
-
+            if not isinstance(state, StaticState):
+                self.chain[state_name].append(state.state)
+                # state can observe the chain change
+                state._chain = self
         self.length += 1
         self.current_state = state_dict
 
@@ -173,3 +173,6 @@ class Chain(object):
         :return: list, state names
         """
         return list(self.chain.keys())
+
+    def clear(self):
+        self.chain = defaultdict(list)
