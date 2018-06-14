@@ -17,7 +17,7 @@ class EnsembleRank(object):
     """
 
     def __init__(self, spect_col_df, spect_column, target_spect,
-                 label_column='mp-id'):
+                 label_column='mp-id', **kwargs):
         """
         Create an EnsembleRank object
 
@@ -37,7 +37,7 @@ class EnsembleRank(object):
         self.target_spect = target_spect
         self.label_col = label_column
         self.simple_ensem = SimpleEnsemble(
-            self.target_spect, self.dataframe[self.spect_column].tolist())
+            self.target_spect, self.dataframe[self.spect_column].tolist(), **kwargs)
         self.dataframe['energy_shift'] = self.simple_ensem.spect_df[
                                              'energy_shift'].tolist()[:]
 
@@ -121,7 +121,7 @@ class SimpleEnsemble(object):
     spectrum
     """
 
-    def __init__(self, target_spectrum, refdb_spectrum):
+    def __init__(self, target_spectrum, refdb_spectrum, **kwargs):
         """
         Create a SimpleEnsemble object
         Args:
@@ -134,9 +134,9 @@ class SimpleEnsemble(object):
         """
         self.u_spect = [target_spectrum]
         self.ref_spect = refdb_spectrum
-        self.dataframe_init()
+        self.dataframe_init(**kwargs)
 
-    def dataframe_init(self):
+    def dataframe_init(self, **kwargs):
         """
         Initialize the comparison pandas dataframe, column 'Target_spect' is
         corresponding to the target spectrum object column 'Ref_spect' contains
@@ -156,7 +156,7 @@ class SimpleEnsemble(object):
             ref_spect = Spectrum(ref_spect[:, 0], ref_spect[:, 1])
 
             spect_simi_obj = SpectraSimilarity(target_spect, ref_spect)
-            spect_simi_obj._spectrum_shift()
+            spect_simi_obj._spectrum_shift(**kwargs)
             spect_shift_energy.append(spect_simi_obj.shifted_energy)
             spect_simi_list.append(spect_simi_obj)
         self.spect_df['Spectra_Simi_obj'] = spect_simi_list
