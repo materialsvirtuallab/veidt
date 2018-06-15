@@ -99,5 +99,3 @@ class Model(six.with_metaclass(abc.ABCMeta, BaseEstimator, MSONable)):
         :return: List of output objects
         """
         pass
-
-
