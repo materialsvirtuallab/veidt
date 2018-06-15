@@ -11,12 +11,9 @@ import io
 
 import numpy as np
 import pandas as pd
-from pymatgen import Element
-from pymatgen.io.lammps.data import structure_2_lmpdata
-from monty.tempfile import ScratchDir
+from pymatgen.core.periodic_table import get_el_sp
 
 from veidt.abstract import Describer
-
 
 class BispectrumCoefficients(Describer):
     """
@@ -26,16 +23,16 @@ class BispectrumCoefficients(Describer):
     """
 
     def __init__(self, rcutfac, twojmax, element_profile, rfac0=0.99363,
-                 rmin0=0, diagonalstyle=3, lmp_exe="lmp_serial"):
+                 rmin0=0, diagonalstyle=3, pot_fit=False):
         """
 
         Args:
             rcutfac (float): Global cutoff distance.
             twojmax (int): Band limit for bispectrum components.
-            element_profile (dict): Parameters (cutoff factor "r" and
-                weight "w") related to each element, e.g.,
-                {"Na": {"r": 0.3, "w": 0.9},
-                 "Cl": {"r": 0.7, "w": 3.0}}
+            element_profile (dict): Parameters (cutoff factor 'r' and
+                weight 'w') related to each element, e.g.,
+                {'Na': {'r': 0.3, 'w': 0.9},
+                 'Cl': {'r': 0.7, 'w': 3.0}}
             rfac0 (float): Parameter in distance to angle conversion.
                 Set between (0, 1), default to 0.99363.
             rmin0 (float): Parameter in distance to angle conversion.
@@ -43,17 +40,25 @@ class BispectrumCoefficients(Describer):
             diagonalstyle (int): Parameter defining which bispectrum
                 components are generated. Choose among 0, 1, 2 and 3,
                 default to 3.
-            lmp_exe (str): Compiled serial LAMMPS executable file in
-                $PATH. Default to "lmp_serial".
+            pot_fit (bool): Whether to output in potential fitting
+                format. Default to False, i.e., returning the bispectrum
+                coefficients for each site.
 
         """
+        from veidt.potential.lammps.calcs import SpectralNeighborAnalysis
+        self.calculator = SpectralNeighborAnalysis(rcutfac, twojmax,
+                                                   element_profile,
+                                                   rfac0, rmin0,
+                                                   diagonalstyle)
         self.rcutfac = rcutfac
         self.twojmax = twojmax
         self.element_profile = element_profile
         self.rfac0 = rfac0
         self.rmin0 = rmin0
         self.diagonalstyle = diagonalstyle
-        self.lmp_exe = lmp_exe
+        self.elements = sorted(element_profile.keys(),
+                               key=lambda sym: get_el_sp(sym).X)
+        self.pot_fit = pot_fit
 
     @property
     def subscripts(self):
@@ -62,66 +67,8 @@ class BispectrumCoefficients(Describer):
         involved.
 
         """
-        subs = itertools.product(range(self.twojmax + 1), repeat=3)
-        filters = [lambda x: True if x[0] >= x[1] else False]
-        if self.diagonalstyle == 2:
-            filters.append(lambda x: True if x[0] == x[1] == x[2] else False)
-        else:
-            if self.diagonalstyle == 1:
-                filters.append(lambda x: True if x[0] == x[1] else False)
-            elif self.diagonalstyle == 3:
-                filters.append(lambda x: True if x[2] >= x[0] else False)
-            elif self.diagonalstyle == 0:
-                pass
-            j_filter = lambda x: True if \
-                x[2] in range(x[0] - x[1], min(self.twojmax, x[0] + x[1]) + 1,
-                              2) else False
-            filters.append(j_filter)
-        for f in filters:
-            subs = filter(f, subs)
-        return list(subs)
-
-    def _run_lammps(self, structures):
-        script = ["units metal",
-                  "boundary p p p",
-                  "atom_style charge",
-                  "box tilt large",
-                  "read_data data.sna",
-                  "pair_style lj/cut 10",
-                  "pair_coeff * * 1 1",
-                  "compute sna all sna/atom 1 ",
-                  "dump 1 all custom 1 dump.sna c_sna[*]",
-                  "run 0"]
-        args = "{} {} ".format(self.rfac0, self.twojmax)
-        elements = [el.symbol for el in sorted(Element(e) for e in
-                                               self.element_profile.keys())]
-        cutoffs, weights = [], []
-        for e in elements:
-            cutoffs.append(self.element_profile[e]["r"] * self.rcutfac)
-            weights.append(self.element_profile[e]["w"])
-        args += " ".join([str(p) for p in cutoffs + weights])
-        args += " diagonal {} rmin0 {} bzeroflag 0".format(self.diagonalstyle,
-                                                           self.rmin0)
-        script[-3] += args
-
-        columns = list(map(lambda s: "-".join(["%d" % i for i in s]),
-                           self.subscripts))
-        dfs = []
-        with ScratchDir("."):
-            with open("in.sna", "w") as f:
-                f.write("\n".join(script))
-            for s in structures:
-                ld = structure_2_lmpdata(s, elements)
-                ld.write_file("data.sna")
-                p = subprocess.Popen([self.lmp_exe, "-in", "in.sna"],
-                                     stdout=subprocess.PIPE)
-                stdout = p.communicate()[0]
-                with open("dump.sna") as f:
-                    sna_lines = f.readlines()[9:]
-                sna = np.loadtxt(io.StringIO("".join(sna_lines)))
-                dfs.append(pd.DataFrame(np.atleast_2d(sna), columns=columns))
-        return dfs
-
+        return self.calculator.get_bs_subscripts(self.twojmax,
+                                                 self.diagonalstyle)
 
     def describe(self, structure):
         """
@@ -131,12 +78,23 @@ class BispectrumCoefficients(Describer):
             structure (Structure): Input structure.
 
         Returns:
-            DataFrame. The columns are the subscripts of bispectrum
-            components, while indices are the site indices in
-            input structure.
+            DataFrame.
+
+            In regular format, the columns are the subscripts of
+            bispectrum components, while indices are the site indices
+            in input structure.
+
+            In potential fitting format, to match the sequence of
+            [energy, f_x[0], f_y[0], ..., f_z[N]], the bispectrum
+            coefficients are summed up by each specie and normalized by
+            a factor of No. of atoms (in the 1st row), while the
+            derivatives in each direction are preserved, with the
+            columns being the subscripts of bispectrum components with
+            each specie and the indices being
+            [0, '0_x', '0_y', ..., 'N_z'].
 
         """
-        return self._run_lammps([structure])[0]
+        return self.describe_all([structure]).xs(0, level='input_index')
 
     def describe_all(self, structures):
         """
@@ -148,13 +106,35 @@ class BispectrumCoefficients(Describer):
         Returns:
             DataFrame with indices of input list preserved. To retrieve
             the data for structures[i], use
-            df.xs(i, level="input_index").
+            df.xs(i, level='input_index').
 
         """
-        dfs = self._run_lammps(structures)
-        df = pd.concat(dfs, keys=range(len(structures)),
-                       names=["input_index", None])
+        columns = list(map(lambda s: '-'.join(['%d' % i for i in s]),
+                           self.subscripts))
+        raw_data = self.calculator.calculate(structures)
+
+        def process(output, combine):
+            b, db, e = output
+            df = pd.DataFrame(b, columns=columns)
+            if combine:
+                df_add = pd.DataFrame({'element': e, 'n': np.ones(len(e))})
+                df_b = df_add.join(df)
+                n_atoms = df_b.shape[0]
+                b_by_el = [df_b[df_b['element'] == e] for e in self.elements]
+                sum_b = [df[df.columns[1:]].sum(axis=0) for df in b_by_el]
+                hstack_b = pd.concat(sum_b, keys=self.elements)
+                hstack_b = hstack_b.to_frame().T / n_atoms
+                hstack_b.fillna(0, inplace=True)
+                dbs = np.split(db, len(self.elements), axis=1)
+                dbs = np.hstack([np.insert(d.reshape(-1, len(columns)),
+                                           0, 0, axis=1) for d in dbs])
+                db_index = ['%d_%s' % (i, d)
+                            for i in df_b.index for d in 'xyz']
+                df_db = pd.DataFrame(dbs, index=db_index,
+                                     columns=hstack_b.columns)
+                df = pd.concat([hstack_b, df_db])
+            return df
+
+        df = pd.concat([process(d, self.pot_fit) for d in raw_data],
+                       keys=range(len(raw_data)), names=["input_index", None])
         return df
-
-
-
