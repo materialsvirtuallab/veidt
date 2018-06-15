@@ -11,16 +11,18 @@ import sklearn.linear_model
 class LinearModel(Model):
     """
     Linear model.
-
-    :param describer: Describer To convert input objects to
-        descriptors.
-    :param regressor: (str) Name of LinearModel from
-        sklearn.linear_model. Default to "LinearRegression", i.e.,
-        ordinary least squares.
-    :param kwargs: kwargs to be passed to regressor.
     """
 
     def __init__(self, describer, regressor="LinearRegression", **kwargs):
+        """
+
+        Args:
+            describer (Describer): Describer to convert structure objects
+                to descriptors.
+            regressor (str): Name of LinearModel from sklearn.linear_model.
+                Default to "LinearRegression", i.e., ordinary least squares.
+            kwargs: kwargs to be passed to regressor.
+        """
         self.describer = describer
         self.regressor = regressor
         self.kwargs = kwargs
@@ -34,15 +36,16 @@ class LinearModel(Model):
         """
         Fit model.
 
-        :param inputs: List of input training objects.
-        :param outputs: List/Array of output values (supervisory
-            signals).
-        :param weights: List/Array of weights. Default to None, i.e.,
-            unweighted.
-        :param override: (bool) Whether to calculate the feature
-            vectors from given inputs. Default to False. Set to True if
-            you want to retrain the model with a different set of
-            training inputs.
+        Args:
+            inputs (list): List of input training objects.
+            outputs (list): List/Array of output values
+                (supervisory signals).
+            weights (list): List/Array of weights. Default to None,
+                i.e., unweighted.
+            override (bool): Whether to calculate the feature vectors
+                from given inputs. Default to False. Set to True if
+                you want to retrain the model with a different set of
+                training inputs.
         """
         if self._xtrain is None or override:
             xtrain = self.describer.describe_all(inputs)
@@ -59,12 +62,15 @@ class LinearModel(Model):
         """
         Predict outputs with fitted model.
 
-        :param inputs: List of input testing objects.
-        :param override: (bool) Whether to calculate the feature
-            vectors from given inputs. Default to False. Set to True if
-            you want to test the model with a different set of testing
-            inputs.
-        :return: Predicted output array from inputs.
+        Args:
+            inputs (list): List of input testing objects.
+            override (bool): Whether to calculate the feature
+                vectors from given inputs. Default to False. Set to True
+                if you want to test the model with a different set of
+                testing inputs.
+
+        Returns:
+            Predicted output array from inputs.
         """
         if self._xtest is None or override:
             xtest = self.describer.describe_all(inputs)
@@ -82,7 +88,8 @@ class LinearModel(Model):
         Efficient method to obtain prediction on training inputs w/o
         calculating the features of inputs again.
 
-        :return: Predicted output array from training inputs.
+        Args:
+            Predicted output array from training inputs.
         """
         self._xtest = self._xtrain
         return self.predict(inputs=None, override=False)
@@ -100,4 +107,3 @@ class LinearModel(Model):
 
     def load(self, model_fname):
         self.model = joblib.load(model_fname)
-
