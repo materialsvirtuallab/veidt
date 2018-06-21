@@ -141,8 +141,7 @@ class SemiUVT(Ensemble):
         self.specie = specie
         self._cache = {}
         self.fu_species = fu_species
-        if per_formula_unit:
-            self.is_fraction = True
+        self.is_fraction = per_formula_unit
 
     def exponential(self, state_structure):
         mu = state_structure.state_dict['mu'].state
