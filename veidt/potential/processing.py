@@ -62,7 +62,7 @@ def pool_from(structures, energies=None, forces=None, stresses=None):
                         in zip(structures, energies, forces, stresses)]
     return datapool
 
-def convert_docs(docs):
+def convert_docs(docs, **kwargs):
     """
     Method to convert a list of docs into objects, e.g.,
     Structure and DataFrame.
@@ -96,4 +96,6 @@ def convert_docs(docs):
         structures.append(structure)
     df = pd.DataFrame(dict(y_orig=np.concatenate(y_orig), n=np.concatenate(n),
                            dtype=dtype))
+    for k, v in kwargs.items():
+        df[k] = v
     return structures, df

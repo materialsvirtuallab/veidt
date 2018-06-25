@@ -77,7 +77,7 @@ class SNAPotential(Potential):
         _, df_orig = convert_docs(predict_pool)
 
         _, df_predict = convert_docs(pool_from(test_structures))
-        outputs = self.model.predict(inputs=test_structures)
+        outputs = self.model.predict(inputs=test_structures, override=True)
         df_predict['y_orig'] = df_predict['n'] * outputs
 
         return df_orig, df_predict

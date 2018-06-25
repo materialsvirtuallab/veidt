@@ -463,3 +463,48 @@ class LatticeConstant(LMPStaticCalculator):
         """
         a, b, c = np.loadtxt('lattice.txt')
         return a, b, c
+
+class TimeBenchmarker(LMPStaticCalculator):
+    """
+    Time benchmark calculator.
+    """
+    def __init__(self, ff_settings):
+        """
+        Args:
+            ff_settings (list/Potential): Configure the force field settings for LAMMPS
+                calculation, if given a Potential object, should apply
+                Potential.write_param method to get the force field setting.
+        """
+        self.ff_settings = ff_settings
+
+    def _setup(self):
+        template_dir = os.path.join(os.path.dirname(__file__), 'templates', 'time_benchmark')
+
+        with open(os.path.join(template_dir, 'in.time'), 'r') as f:
+            input_template = f.read()
+
+        input_file = 'in.time'
+
+        if isinstance(self.ff_settings, Potential):
+            ff_settings = self.ff_settings.write_param()
+        else:
+            ff_settings = self.ff_settings
+
+        with open(input_file, 'w') as f:
+            f.write(input_template.format(ff_settings='\n'.join(ff_settings)))
+
+        return input_file
+
+    def _sanity_check(self, structure):
+        """
+        Check if the structure is valid for this calculation.
+
+        """
+        return True
+
+    def _parse(self):
+        """
+        Parse results from dump file.
+
+        """
+        return 0
