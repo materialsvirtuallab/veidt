@@ -180,14 +180,14 @@ class SOAPotential(Potential):
         _, df = convert_docs(docs=data_pool)
         return data_pool, df
 
-    def train(self, structures, energies=None, forces=None, stresses=None,
+    def train(self, train_structures, energies=None, forces=None, stresses=None,
                     default_sigma=[0.0005, 0.1, 0.05, 0.01],
                     use_energies=True, use_forces=True, use_stress=False, **kwargs):
         """
         Training data with gaussian process regression.
 
         Args:
-            structures ([Structure]): The list of Pymatgen Structure object.
+            train_structures ([Structure]): The list of Pymatgen Structure object.
                 energies ([float]): The list of total energies of each structure
                 in structures list.
             energies ([float]): List of total energies of each structure in
@@ -245,7 +245,7 @@ class SOAPotential(Potential):
                                "further detail.")
         atoms_filename = 'train.xyz'
         xml_filename = 'train.xml'
-        train_pool = pool_from(structures, energies, forces, stresses)
+        train_pool = pool_from(train_structures, energies, forces, stresses)
 
         exe_command = ["teach_sparse"]
         exe_command.append('at_file={}'.format(atoms_filename))
