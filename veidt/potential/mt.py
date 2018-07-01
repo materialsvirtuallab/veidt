@@ -395,13 +395,13 @@ class MTPotential(Potential):
         _, df = convert_docs(docs=data_pool)
         return data_pool, df
 
-    def train(self, structures, energies=None, forces=None, stresses=None,
+    def train(self, train_structures, energies=None, forces=None, stresses=None,
                     unfitted_mtp=None, **kwargs):
         """
         Training data with moment tensor method.
 
         Args:
-            structures ([Structure]): The list of Pymatgen Structure object.
+            train_structures ([Structure]): The list of Pymatgen Structure object.
                 energies ([float]): The list of total energies of each structure
                 in structures list.
             energies ([float]): List of total energies of each structure in
@@ -419,7 +419,7 @@ class MTPotential(Potential):
             raise RuntimeError("mlp has not been found.\n",
                                "Please refer to http://gitlab.skoltech.ru/shapeev/mlip ",
                                "for further detail.")
-        train_pool = pool_from(structures, energies, forces, stresses)
+        train_pool = pool_from(train_structures, energies, forces, stresses)
         atoms_filename = 'train.cfgs'
 
         with ScratchDir('.'):

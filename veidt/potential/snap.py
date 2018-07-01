@@ -35,12 +35,12 @@ class SNAPotential(Potential):
         self.model = model
         self.specie = None
 
-    def train(self, structures, energies, forces, stresses=None, **kwargs):
+    def train(self, train_structures, energies, forces, stresses=None, **kwargs):
         """
         Training data with model.
 
         Args:
-            structures ([Structure]): The list of Pymatgen Structure object.
+            train_structures ([Structure]): The list of Pymatgen Structure object.
                 energies ([float]): The list of total energies of each structure
                 in structures list.
             energies ([float]): List of total energies of each structure in
@@ -51,11 +51,11 @@ class SNAPotential(Potential):
             stresses (list): List of (6, ) virial stresses of each
                 structure in structures list.
         """
-        train_pool = pool_from(structures, energies, forces, stresses)
+        train_pool = pool_from(train_structures, energies, forces, stresses)
         _, df = convert_docs(train_pool)
         ytrain = df['y_orig'] / df['n']
-        self.model.fit(inputs=structures, outputs=ytrain, **kwargs)
-        self.specie = Element(structures[0].symbol_set[0])
+        self.model.fit(inputs=train_structures, outputs=ytrain, **kwargs)
+        self.specie = Element(train_structures[0].symbol_set[0])
 
     def evaluate(self, test_structures, ref_energies, ref_forces, ref_stresses):
         """
