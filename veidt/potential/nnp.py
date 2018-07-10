@@ -392,31 +392,46 @@ class NNPotential(Potential):
 
         with ScratchDir('.'):
             atoms_filename = self.write_cfgs(filename=atoms_filename, cfg_pool=train_pool)
+            mode_output = 'mode.out'
 
             for i in range(1, 3):
                 input_filename = self.write_input(mode=i, **kwargs)
-                p = subprocess.Popen(['RuNNer'], stdout=subprocess.PIPE)
+                # p = subprocess.Popen(['RuNNer'], stdout=subprocess.PIPE)
+                p = subprocess.Popen(['RuNNer'], stdout=open(mode_output, 'w'))
                 stdout = p.communicate()[0]
 
                 rc = p.returncode
-                if rc != 0:
-                    error_msg = 'RuNNer exited with return code %d' % rc
-                    msg = stdout.decode("utf-8").split('\n')[:-1]
-                    try:
-                        error_line = [i for i, m in enumerate(msg)
-                                      if m.startswith('ERROR')][0]
-                        error_msg += ', '.join([e for e in msg[error_line:]])
-                    except:
-                        error_msg += msg[-1]
-                    raise RuntimeError(error_msg)
+                # if rc != 0:
+                #     error_msg = 'RuNNer exited with return code %d' % rc
+                #     msg = stdout.decode("utf-8").split('\n')[:-1]
+                #     try:
+                #         error_line = [i for i, m in enumerate(msg)
+                #                       if m.startswith('ERROR')][0]
+                #         error_msg += ', '.join([e for e in msg[error_line:]])
+                #     except:
+                #         error_msg += msg[-1]
+                #     raise RuntimeError(error_msg)
+
+            with zopen(mode_output) as f:
+                error_lines = f.read()
+            self.validation_energy_rmse = []
+            self.validation_forces_rmse = []
+            energy_rmse_pattern = re.compile('ENERGY\s*\S*\s*(\S*)\s*(\S*).*?\n')
+            forces_rmse_pattern = re.compile('FORCES\s*\S*\s*(\S*)\s*(\S*).*?\n')
+            self.train_energy_rmse, self.validation_energy_rmse = \
+                    np.array([line for line in energy_rmse_pattern.findall(error_lines)],
+                             dtype=np.float).T
+            self.train_forces_rmse, self.validation_forces_rmse = \
+                    np.array([line for line in forces_rmse_pattern.findall(error_lines)],
+                             dtype=np.float).T
 
             weights_filename_pattern = '*{}*'.format(str(self.epochs) + '.short')
             weights_filename = glob.glob(weights_filename_pattern)[0]
             self.suffix = weights_filename.split('.')[2]
             with open(weights_filename) as f:
-                lines = f.readlines()
+                weights_lines = f.readlines()
 
-            params = pd.DataFrame([line.split() for line in lines])
+            params = pd.DataFrame([line.split() for line in weights_lines])
             params.columns = ['value', 'type', '', 'ahead_index', 'ahead_node',
                               'behind_index', 'behind_node']
             self.params = params
