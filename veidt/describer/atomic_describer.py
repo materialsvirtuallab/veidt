@@ -138,3 +138,53 @@ class BispectrumCoefficients(Describer):
         df = pd.concat([process(d, self.pot_fit) for d in raw_data],
                        keys=range(len(raw_data)), names=["input_index", None])
         return df
+
+class AGNIFingerprints(Describer):
+    """
+    Fingerprints for AGNI (Adaptive, Generalizable and Neighborhood
+    Informed) force field. Elemental systems only.
+
+    """
+
+    def __init__(self, r_cut, etas):
+        """
+
+        Args:
+            r_cut (float): Cutoff distance.
+            etas (numpy.array): All eta parameters in 1D array.
+        """
+        self.r_cut = r_cut
+        self.etas = etas
+
+    def describe(self, structure):
+        """
+        Calculate fingerprints for all sites in a structure.
+
+        Args:
+            structure (Structure): Input structure.
+
+        Returns:
+            DataFrame.
+
+        """
+        all_neighbors = structure.get_all_neighbors(self.r_cut)
+        fingerprints = []
+        for i, an in enumerate(all_neighbors):
+            center = structure[i].coords
+            coords, distances = zip(*[(site.coords, d) for (site, d) in an])
+            v = (np.array(coords) - center)[:, :, None]
+            d = np.array(distances)[:, None, None]
+            e = np.array(self.etas)[None, None, :]
+            cf = 0.5 * (np.cos(np.pi * d / self.r_cut) + 1)
+            fpi = np.sum(v / d * np.exp(-(d / e) ** 2) * cf, axis=0)
+            fingerprints.append(fpi)
+        index = ["%d_%s" % (i, d) for i in range(len(structure))
+                 for d in "xyz"]
+        df = pd.DataFrame(np.vstack(fingerprints), index=index,
+                          columns=self.etas)
+        return df
+
+    def describe_all(self, structures):
+        return pd.concat([self.describe(s) for s in structures],
+                         keys=range(len(structures)),
+                         names=['input_index', None])
