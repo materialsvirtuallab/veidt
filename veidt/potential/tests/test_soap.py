@@ -69,7 +69,7 @@ class SOAPotentialTest(unittest.TestCase):
 
     @unittest.skipIf(not which('teach_sparse'), 'No QUIP cmd found.')
     def test_train(self):
-        self.potential.train(structures=self.test_structures,
+        self.potential.train(train_structures=self.test_structures,
                              energies=self.test_energies,
                              forces=self.test_forces,
                              stresses=self.test_stresses)
@@ -77,7 +77,7 @@ class SOAPotentialTest(unittest.TestCase):
 
     @unittest.skipIf(not which('quip'), 'No QUIP cmd found.')
     def test_evaluate(self):
-        self.potential.train(structures=self.test_structures,
+        self.potential.train(train_structures=self.test_structures,
                              energies=self.test_energies,
                              forces=self.test_forces,
                              stresses=self.test_stresses)
@@ -90,7 +90,7 @@ class SOAPotentialTest(unittest.TestCase):
     @unittest.skipIf(not which('teach_sparse'), 'No QUIP cmd found.')
     @unittest.skipIf(not which('lmp_serial'), 'No LAMMPS cmd found.')
     def test_predict(self):
-        self.potential.train(structures=self.test_structures,
+        self.potential.train(train_structures=self.test_structures,
                              energies=self.test_energies,
                              forces=self.test_forces,
                              stresses=self.test_stresses)

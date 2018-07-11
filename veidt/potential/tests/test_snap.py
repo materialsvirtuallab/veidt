@@ -58,7 +58,7 @@ class SNAPotentialTest(unittest.TestCase):
         self.test_struct = d['structure']
 
     def test_train(self):
-        self.potential.train(structures=self.test_structures,
+        self.potential.train(train_structures=self.test_structures,
                              energies=self.test_energies,
                              forces=self.test_forces,
                              stresses=self.test_stresses)
@@ -66,7 +66,7 @@ class SNAPotentialTest(unittest.TestCase):
                          len(self.describer.subscripts) + 1)
 
     def test_evaluate(self):
-        self.potential.train(structures=self.test_structures,
+        self.potential.train(train_structures=self.test_structures,
                              energies=self.test_energies,
                              forces=self.test_forces,
                              stresses=self.test_stresses)

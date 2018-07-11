@@ -180,7 +180,7 @@ class AGNIPotential(Potential):
         gamma = st_gamma
 
         K = np.exp(-gamma * squareform(pdist(features)) ** 2)
-        alphas = np.dot(np.linalg.inv(K \
+        alphas = -np.dot(np.linalg.inv(K \
                         + alpha * np.eye(len(features))), targets)
         self.param['n_train'] = len(features)
         self.param['lambda'] = alpha
