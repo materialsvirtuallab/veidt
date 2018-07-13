@@ -139,6 +139,7 @@ class BispectrumCoefficients(Describer):
                        keys=range(len(raw_data)), names=["input_index", None])
         return df
 
+
 class AGNIFingerprints(Describer):
     """
     Fingerprints for AGNI (Adaptive, Generalizable and Neighborhood
