@@ -10,8 +10,9 @@ import abc
 import six
 from monty.json import MSONable
 from sklearn.base import TransformerMixin, BaseEstimator
-
+from veidt.metrics import get
 import pandas as pd
+import numpy as np
 
 
 class Describer(six.with_metaclass(abc.ABCMeta, BaseEstimator, MSONable, TransformerMixin)):
@@ -90,12 +91,28 @@ class Model(six.with_metaclass(abc.ABCMeta, BaseEstimator, MSONable)):
         pass
 
     @abc.abstractmethod
-    def predict(self, inputs):
+    def predict(self, features):
         """
         Predict the values given a set of inputs based on fitted model.
 
-        :param inputs: List of inputs
+        :param features: List of input features
 
         :return: List of output objects
         """
         pass
+
+    def evaluate(self, features, targets, metrics=['mae'], multi_targets=False):
+        """
+        evaluate the performance of model based on metric.
+        :return: dict of metric evaluations
+        """
+        pred_targets = self.predict(features)
+        evaluation = {}
+        if not multi_targets:
+            targets = [targets]
+            pred_targets = [pred_targets]
+        for metric in metrics:
+            veidt_metric = get(metric)
+            evaluation[metric] = [veidt_metric(np.array(target).ravel(), np.array(pred_target).ravel()) for
+                                  target, pred_target in zip(targets, pred_targets)]
+        return evaluation
