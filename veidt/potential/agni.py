@@ -2,13 +2,14 @@
 # Copyright (c) Materials Virtual Lab
 # Distributed under the terms of the BSD License.
 
+import warnings
+import logging
 import re
-import os
-import random
+from io import StringIO
+from veidt.kernel import get_kernel
 import pandas as pd
 from collections import OrderedDict, defaultdict
 from scipy.spatial.distance import pdist, squareform
-
 import numpy as np
 from monty.io import zopen
 from pymatgen import Structure, Lattice
@@ -18,6 +19,13 @@ from veidt.describer.atomic_describer import AGNIFingerprints
 from veidt.potential.lammps.calcs import EnergyForceStress
 from sklearn.model_selection import GridSearchCV
 from sklearn.kernel_ridge import KernelRidge
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+# coding: utf-8
+# Copyright (c) Materials Virtual Lab
+# Distributed under the terms of the BSD License.
+
 
 class AGNIPotential(Potential):
     """
@@ -28,7 +36,6 @@ class AGNIPotential(Potential):
     pair_coeff = 'pair_coeff        * * {} {}'
     def __init__(self, name=None):
         """
-
         Args:
             name (str): Name of force field.
             describer (AGNIFingerprints): Describer to describe
@@ -45,10 +52,8 @@ class AGNIPotential(Potential):
     def from_file(self, filename):
         """
         Get the AGNIPotential parameters from file.
-
         Args:
             filename (str): Filename to be read.
-
         Returns:
             (list)
         """
@@ -93,7 +98,6 @@ class AGNIPotential(Potential):
         """
         Use metropolis sampling method to select uniform and diverse enough
         data subsets to represent the whole structure-derived features.
-
         Args:
             data_pool (list): Data pool to be sampled.
             r_cut (float): Cutoff radius to generate high-dimensional
@@ -104,7 +108,6 @@ class AGNIPotential(Potential):
             num_attempts (int): Number of sampling attempts.
             t_init (int): Initial temperature.
             t_final (int): Final temperature.
-
         Returns:
             (features, targets)
         """
@@ -145,7 +148,6 @@ class AGNIPotential(Potential):
             scoring_criteria='neg_mean_absolute_error', threshold=1e-3):
         """
         Fit the dataset with kernel ridge regression.
-
         Args:
             features (np.array): features X.
             targets (np.array): targets y.
@@ -159,7 +161,6 @@ class AGNIPotential(Potential):
                 Default to 'neg_mean_absolute_error', i.e. MAE.
             threshold (float): The converged threshold of final
                 optimal sigma.
-
         Returns:
             (float) The optimized sigma.
         """
@@ -195,7 +196,6 @@ class AGNIPotential(Potential):
                         stresses=None, **kwargs):
         """
         Training data with agni method.
-
         Args:
             train_structures ([Structure]): The list of Pymatgen Structure object.
                 energies ([float]): The list of total energies of each structure
@@ -252,7 +252,6 @@ class AGNIPotential(Potential):
         """
         Evaluate energies, forces and stresses of structures with trained
         interatomic potential.
-
         Args:
             test_structures ([Structure]): List of Pymatgen Structure Objects.
             ref_energies ([float]): List of DFT-calculated total energies of
@@ -285,3 +284,177 @@ class AGNIPotential(Potential):
         _, df_pred = convert_docs(data_pool)
 
         return df_orig, df_pred
+
+
+class AGNIPotentialVeidt(Potential):
+    """
+    This class implements Adaptive generalizable neighborhood
+    informed potential.
+    """
+    def __init__(self,
+                 name=None,
+                 n_elements=1,
+                 element="Li",
+                 rc=8.0,
+                 rs=0.0,
+                 eta=[0.0036, 0.0357, 0.0715, 0.1251, 0.2144, 0.3573, 0.7147, 1.4294],
+                 sigma=1,
+                 lambda_=1e-8,
+                 xu=None,
+                 yu=None,
+                 alphas=None,
+                 kernel='rbf',
+                 **kwargs):
+        """
+        Args:
+            name (str): Name of force field.
+            describer (AGNIFingerprints): Describer to describe
+                structures.
+        """
+        self.name = name if name else 'AGNIPotential'
+        self.n_elements = n_elements
+        self.element = element
+        self.rs = rs
+        self.eta = eta
+        self.rc = rc
+        self.describer = AGNIFingerprints(r_cut=rc, etas=eta)
+        self.sigma = sigma
+        self.xu = xu
+        self.yu = yu
+        self.alphas = alphas
+        if self.xu is not None:
+            self.n_train = len(self.xu)
+        if alphas is not None:
+            warnings.warn('Pretrained model loaded')
+        self.lambda_ = lambda_
+        self.kernel = get_kernel(kernel)
+        self.kwargs = kwargs
+
+    def fit(self, features, targets):
+        """
+        Fit the dataset with kernel ridge regression.
+
+        Args:
+            features (np.array): features X.
+            targets (np.array): targets y.
+        """
+        self.xu = features
+        self.yu = targets
+        self.K = self.kernel(self.xu, self.xu, self.sigma)
+        self.inv = np.linalg.inv(self.K + self.lambda_ * np.eye(len(self.yu)))
+        alphas = np.dot(self.inv, self.yu)
+        self.alphas = alphas
+
+    def predict(self, features):
+        return self.kernel(features, self.xu, self.sigma).dot(self.alphas)
+
+    def train(self, train_structures, force_targets):
+        """
+        Training data with agni method.
+
+        Args:
+            train_structures ([Structure]): The list of Pymatgen Structure object.
+                energies ([float]): The list of total energies of each structure
+                in structures list.
+            force_targets ([np.array]): List of (m, 3) forces array of each structure
+                with m atoms in structures list. m can be varied with each
+                single structure case.
+        """
+        features = self.describer.transform(train_structures)
+        self.fit(features, force_targets)
+
+    def write_lammps_file(self, filename="param.agni", generation=1):
+        """
+        Write fitted agni parameter file to perform lammps calculation.
+        """
+        if self.xu is None or self.yu is None \
+                or self.alphas is None:
+            raise RuntimeError("The parameters should be provided.")
+
+        assert len(self.alphas) == len(self.yu)
+        line_header = """generation {generation}
+n_elements {n_elements}
+element {element}
+interaction {interaction}
+Rc {rc}
+Rs {rs}
+neighbors {neighbors}
+eta {eta}
+sigma {sigma}
+lambda {lamb}
+b {b}
+n_train {n_train}
+endVar
+"""
+        lines = []
+        n_elements = self.n_elements
+        interaction = self.element
+        rc = self.rc
+        rs = self.rs
+        neighbors = self.kwargs.get('neighbors', 500)
+        eta = " ".join(["%s" % i for i in self.eta])
+        sigma = self.sigma
+        lamb = self.lambda_
+        b = self.kwargs.get('b', 100)
+        n_train = len(self.xu)
+        lines.append(line_header.format(**locals()))
+
+        for index, (x, y, alpha) in enumerate(zip(self.xu, self.yu, self.alphas)):
+            index_str = str(index)
+            x_str = ' '.join([str(f) for f in x])
+            y_str = str(y)
+            alpha_str = str(alpha)
+            line = '{} {} {} {}'.format(index_str, x_str, y_str, alpha_str)
+            lines.append(line)
+        with open(filename, 'w') as f:
+            f.write('\n'.join(lines))
+
+    def predict_from_lammps(self, structures):
+        filename = "%s.agni" % self.element
+        self.write_lammps_file(filename=filename, generation=1)
+        pair_style = 'pair_style        agni'
+        pair_coeff = 'pair_coeff        * * {} {}'
+        pair_coeff = pair_coeff.format(filename, self.element)
+        ff_settings = [pair_style, pair_coeff]
+        calculator = EnergyForceStress(ff_settings)
+        return calculator.calculate(structures)
+
+    @staticmethod
+    def from_lammps_file(filename):
+        """
+        Get the AGNIPotential parameters from file.
+
+        Args:
+            filename (str): Filename to be read.
+
+        Returns:
+            AGNIPotential
+        """
+        def read_line(line):
+            line_splits = line.split(" ")
+            param = line_splits[0]
+            value = [float(i) for i in line_splits[1:]]
+            if len(value) == 1:
+                value = value[0]
+            return param.lower(), value
+
+        param = {}
+        with zopen(filename) as f:
+            lines = f.readlines()
+        for line_index, line in enumerate(lines):
+            if line.startswith('endVar'):
+                end_index = line_index
+                break
+
+        for i in range(end_index+1):
+            if not lines[i].startswith('#'):
+                line_strip = line.strip()
+                if line_strip:
+                    parameter, value = read_line(line_strip)
+                    param[parameter] = value
+
+        reference_params = np.genfromtxt(StringIO("\n".join(lines[end_index+1:])))
+        param['xu'] = reference_params[:, 1:-2]
+        param['yu'] = reference_params[:, -2]
+        param['alphas'] = reference_params[:, -1]
+        return AGNIPotential(**param)
