@@ -14,7 +14,7 @@ import numpy as np
 from monty.io import zopen
 from pymatgen import Structure, Lattice
 from veidt.potential.processing import convert_docs, pool_from, MonteCarloSampler
-from veidt.potential.abstract import Potential
+from veidt.potential.abstract import Potential, PotentialVeidt
 from veidt.describer.atomic_describer import AGNIFingerprints
 from veidt.potential.lammps.calcs import EnergyForceStress
 from sklearn.model_selection import GridSearchCV
@@ -286,7 +286,7 @@ class AGNIPotential(Potential):
         return df_orig, df_pred
 
 
-class AGNIPotentialVeidt(Potential):
+class AGNIPotentialVeidt(PotentialVeidt):
     """
     This class implements Adaptive generalizable neighborhood
     informed potential.

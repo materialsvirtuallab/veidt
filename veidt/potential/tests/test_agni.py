@@ -1,6 +1,6 @@
 import unittest
 import os
-from bson.json_util import loads
+import json
 import numpy as np
 from pymatgen.core import Structure
 from veidt.potential.agni import AGNIPotentialVeidt
@@ -14,7 +14,7 @@ class TestAgniVeidt(unittest.TestCase):
     def setUpClass(cls):
         cls.file = pjoin(dirname, "data", "Ni.json")
         with open(cls.file, 'r') as f:
-            cls.data = loads(f.read())
+            cls.data = json.load(f)
         cls.structures = [Structure.from_dict(i['structure']) for i in cls.data[:5]]
         cls.forces = np.concatenate([np.array(i['outputs']['forces']).reshape((-1, 1)) for i in cls.data[:5]], axis=0)
         cls.test_structures = [Structure.from_dict(i['structure']) for i in cls.data[5:10]]
@@ -31,4 +31,4 @@ class TestAgniVeidt(unittest.TestCase):
 
     def test_lammps_calc(self):
         out = self.model.predict_structures(self.structures[:10])
-        self.assertListEqual(list(out.shape), [3240, 1])
+        self.assertListEqual(list(out.shape), [1620, 1])
