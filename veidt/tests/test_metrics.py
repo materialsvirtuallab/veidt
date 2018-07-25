@@ -1,9 +1,13 @@
 import unittest
 import numpy as np
-from veidt.metrics import get
+from veidt.metrics import get, serialize, deserialize
 import os
 
 file_path = os.path.dirname(__file__)
+
+
+def test_func():
+    pass
 
 
 class TestMetrics(unittest.TestCase):
@@ -27,6 +31,14 @@ class TestMetrics(unittest.TestCase):
     def test_binary_accuracy(self):
         binary_accuracy = get('binary_accuracy')
         self.assertAlmostEqual(binary_accuracy([0, 1, 0], [1, 1, 1]), 1./3)
+
+    def test_deserialization(self):
+        mae = deserialize("mae")
+        self.assertEqual(mae(self.x1, self.x2), 3)
+
+    def test_serialization(self):
+        test_func_string = serialize(test_func)
+        self.assertEqual(test_func_string, "test_func")
 
 if __name__ == '__main__':
     unittest.main()

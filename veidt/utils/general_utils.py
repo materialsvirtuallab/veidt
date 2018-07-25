@@ -1,5 +1,6 @@
 import six
 
+
 def serialize_veidt_object(instance):
     if instance is None:
         return None
