@@ -16,8 +16,10 @@ def binary_accuracy(y_true, y_pred):
 mse = MSE = mean_squared_error
 mae = MAE = mean_absolute_error
 
+
 def serialize(metric):
     return serialize_veidt_object(metric)
+
 
 def deserialize(config):
     return deserialize_veidt_object(config,
@@ -27,7 +29,7 @@ def deserialize(config):
 
 def get(identifier):
     if isinstance(identifier, dict):
-        config = {'class_name': str(identifier), 'config': {}}
+        config = {'class_name': identifier['class_name'], 'config': identifier['config']}
         return deserialize(config)
     elif isinstance(identifier, six.string_types):
         return deserialize(str(identifier))

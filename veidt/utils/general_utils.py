@@ -28,6 +28,8 @@ def deserialize_veidt_object(identifier, module_objects=None,
         if cls is None:
             raise ValueError('Unknown ' + printable_module_name +
                              ': ' + class_name)
+        return cls(**config['config'])
+
     elif isinstance(identifier, six.string_types):
         function_name = identifier
         fn = module_objects.get(function_name)

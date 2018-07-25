@@ -12,7 +12,7 @@ def rbf(x1, x2, sigma):
 
 def get_kernel(identifier):
     if isinstance(identifier, dict):
-        config = {'class_name': str(identifier), 'config': {}}
+        config = {'class_name': identifier['class_name'], 'config': identifier['config']}
         return deserialize_veidt_object(config, module_objects=globals())
     elif isinstance(identifier, six.string_types):
         return deserialize_veidt_object(str(identifier), module_objects=globals())
@@ -21,9 +21,3 @@ def get_kernel(identifier):
     else:
         raise ValueError('Could not interpret '
                          'metric function identifier:', identifier)
-
-if __name__ == "__main__":
-    rbf_kernel = get_kernel('rbf')
-    print(rbf_kernel(np.array([[1, 2, 3], [4, 5, 6]]),
-                     np.array([[1, 2, 3], [4, 5, 6]]),
-                     1))

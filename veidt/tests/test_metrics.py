@@ -7,7 +7,7 @@ file_path = os.path.dirname(__file__)
 
 
 def test_func():
-    pass
+    return 1
 
 
 class TestMetrics(unittest.TestCase):
@@ -32,6 +32,13 @@ class TestMetrics(unittest.TestCase):
         binary_accuracy = get('binary_accuracy')
         self.assertAlmostEqual(binary_accuracy([0, 1, 0], [1, 1, 1]), 1./3)
 
+        self.assertAlmostEqual(get({"class_name": "binary_accuracy",
+                                    "config": {"y_true": [0, 1, 0],
+                                               "y_pred": [1, 1, 1]}}), 1/3)
+        self.assertEqual(get(test_func)(), 1)
+        with self.assertRaises(ValueError) as context:
+            get({"class_name":'not existing', "config": "not existing"})
+
     def test_deserialization(self):
         mae = deserialize("mae")
         self.assertEqual(mae(self.x1, self.x2), 3)
@@ -39,6 +46,8 @@ class TestMetrics(unittest.TestCase):
     def test_serialization(self):
         test_func_string = serialize(test_func)
         self.assertEqual(test_func_string, "test_func")
+
+
 
 if __name__ == '__main__':
     unittest.main()
