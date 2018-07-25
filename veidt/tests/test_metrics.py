@@ -47,7 +47,9 @@ class TestMetrics(unittest.TestCase):
         test_func_string = serialize(test_func)
         self.assertEqual(test_func_string, "test_func")
 
-
+    def test_get(self):
+        with self.assertRaises(ValueError):
+            dummy_kernel = get([1, 2, 3])
 
 if __name__ == '__main__':
     unittest.main()

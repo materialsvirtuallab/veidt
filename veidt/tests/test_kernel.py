@@ -34,10 +34,12 @@ class TestKernel(unittest.TestCase):
                                             "sigma": 1}})
         self.assertAlmostEqual(np.asscalar(np.sum(test_dict)),
                                4. * np.exp(-2 / 2))
-        with self.assertRaises(ValueError) as context:
+        with self.assertRaises(ValueError):
             get_kernel({"class_name": 'none existing',
                         "config": "none existing"})
 
+        with self.assertRaises(ValueError):
+            get_kernel([1, 2, 3])
 
 
 

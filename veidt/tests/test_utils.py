@@ -29,13 +29,19 @@ class TestGeneralUtil(unittest.TestCase):
         self.assertEqual(serialize_veidt_object(test_func), "test_func")
         self.assertEqual(serialize_veidt_object(DummyClass())['class_name'], "DummyClass")
         self.assertIsNone(serialize_veidt_object(None))
-
+        with self.assertRaises(ValueError):
+            serialize_veidt_object("Not a object")
 
     def test_deserialization(self):
         self.assertEqual(1, deserialize_veidt_object('test_func', module_objects=globals())())
         self.assertIsInstance(deserialize_veidt_object({"class_name": "DummyClass",
-                                                            "config": {}}, module_objects=globals()), DummyClass)
+                                                        "config": {}}, module_objects=globals()), DummyClass)
 
+        with self.assertRaises(ValueError):
+            serialize_veidt_object({"class":"test"})
+
+        with self.assertRaises(ValueError):
+            serialize_veidt_object({"not existing"})
 
 
 if __name__ == '__main__':
