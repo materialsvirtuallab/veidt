@@ -115,6 +115,7 @@ class AGNIPotential(Potential):
 
         etas = np.exp(np.linspace(np.log(8), np.log(0.8), eta_size, dtype=np.float16))
         fingerprint = AGNIFingerprints(r_cut=r_cut, etas=etas)
+        self.describer = fingerprint
 
         structures = []
         concat_forces = []
@@ -165,7 +166,7 @@ class AGNIPotential(Potential):
         """
         st_gamma = -np.inf
         nd_gamma = np.inf
-        gamma_trials = np.logspace(-6, -2, 5)
+        gamma_trials = np.logspace(-6, 4, 11)
         while(abs(st_gamma - nd_gamma) > threshold):
             kr = GridSearchCV(KernelRidge(kernel='rbf', alpha=alpha,
                               gamma=0.1), cv=cv, param_grid={"gamma": gamma_trials},
@@ -180,13 +181,17 @@ class AGNIPotential(Potential):
         gamma = st_gamma
 
         K = np.exp(-gamma * squareform(pdist(features)) ** 2)
-        alphas = -np.dot(np.linalg.inv(K \
+        alphas = np.dot(np.linalg.inv(K \
                         + alpha * np.eye(len(features))), targets)
+        kkr = KernelRidge(alpha=alpha, gamma=gamma, kernel='rbf')
+        kkr.fit(features, targets)
+
         self.param['n_train'] = len(features)
         self.param['lambda'] = alpha
         self.param['sigma'] = 1 / np.sqrt(2 * gamma)
         self.xU = features
         self.yU = targets
+        self.predictor = kkr
         self.alphas = alphas
 
         return gamma
@@ -247,7 +252,7 @@ class AGNIPotential(Potential):
 
         return ff_settings
 
-    def evaluate(self, test_structures, ref_energies=None,
+    def evaluate2(self, test_structures, ref_energies=None,
                     ref_forces=None, ref_stresses=None):
         """
         Evaluate energies, forces and stresses of structures with trained
@@ -284,4 +289,37 @@ class AGNIPotential(Potential):
             data_pool.append(d)
         _, df_pred = convert_docs(data_pool)
 
+        return df_orig, df_pred
+
+    def evaluate(self, test_structures, ref_energies, ref_forces, ref_stresses):
+        """
+        Evaluate energies, forces and stresses of structures with trained
+        interatomic potential.
+
+        Args:
+            test_structures ([Structure]): List of Pymatgen Structure Objects.
+            ref_energies ([float]): List of DFT-calculated total energies of
+                each structure in structures list.
+            ref_forces ([np.array]): List of DFT-calculated (m, 3) forces of
+                each structure with m atoms in structures list. m can be varied
+                with each single structure case.
+            ref_stresses (list): List of DFT-calculated (6, ) viriral stresses
+                of each structure in structures list.
+        """
+        predict_pool = pool_from(test_structures, ref_energies,
+                                 ref_forces, ref_stresses)
+        _, df_orig = convert_docs(predict_pool)
+
+        data_pool = []
+        for struct in test_structures:
+            d = {'outputs': {}}
+            d['structure'] = struct.as_dict()
+            d['num_atoms'] = len(struct)
+            features = self.describer.describe(struct)
+            targets = self.predictor.predict(features.values)
+            d['outputs']['energy'] = 0
+            d['outputs']['forces'] = targets.reshape((-1, 3))
+            d['outputs']['virial_stress'] = [0., 0., 0., 0., 0., 0.]
+            data_pool.append(d)
+        _, df_pred = convert_docs(data_pool)
         return df_orig, df_pred

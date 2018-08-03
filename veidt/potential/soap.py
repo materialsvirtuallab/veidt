@@ -228,7 +228,7 @@ class SOAPotential(Potential):
                 covariance_type (str): Parameter to configure Sparsification.
                     The type of convariance function. Default to dot_product.
                 sparse_method (str): Method to perform clustering in sparsification.
-                    Default to 'kmeans'.
+                    Default to 'cur_points'.
 
                 sparse_jitter (float): Intrisic error of atomic/bond energy,
                     used to regularise the sparse covariance matrix.
