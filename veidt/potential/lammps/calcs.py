@@ -8,7 +8,6 @@ from __future__ import division, print_function, unicode_literals, \
 import os
 import abc
 import io
-import re
 import subprocess
 import itertools
 
@@ -50,7 +49,6 @@ class LMPStaticCalculator(six.with_metaclass(abc.ABCMeta, object)):
 
     LMP_EXE = 'lmp_serial'
     _COMMON_CMDS = ['units metal',
-                    'boundary p p p',
                     'atom_style charge',
                     'box tilt large',
                     'read_data data.static',
@@ -185,9 +183,11 @@ class SpectralNeighborAnalysis(LMPStaticCalculator):
              'pair_coeff * * 1 1',
              'compute sna all sna/atom ',
              'compute snad all snad/atom ',
+             'compute snav all snav/atom ',
              'dump 1 all custom 1 dump.element element',
              'dump 2 all custom 1 dump.sna c_sna[*]',
-             'dump 3 all custom 1 dump.snad c_snad[*]']
+             'dump 3 all custom 1 dump.snad c_snad[*]',
+             'dump 4 all custom 1 dump.snav c_snav[*]']
 
     def __init__(self, rcutfac, twojmax, element_profile, rfac0=0.99363,
                  rmin0=0, diagonalstyle=3):
@@ -304,7 +304,8 @@ class SpectralNeighborAnalysis(LMPStaticCalculator):
         element = np.atleast_1d(_read_dump('dump.element', 'unicode'))
         b = np.atleast_2d(_read_dump('dump.sna'))
         db = np.atleast_2d(_read_dump('dump.snad'))
-        return b, db, element
+        vb = np.atleast_2d(_read_dump('dump.snav'))
+        return b, db, vb, element
 
 
 class ElasticConstant(LMPStaticCalculator):
