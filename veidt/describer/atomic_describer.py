@@ -85,13 +85,15 @@ class BispectrumCoefficients(Describer):
             in input structure.
 
             In potential fitting format, to match the sequence of
-            [energy, f_x[0], f_y[0], ..., f_z[N]], the bispectrum
-            coefficients are summed up by each specie and normalized by
-            a factor of No. of atoms (in the 1st row), while the
-            derivatives in each direction are preserved, with the
-            columns being the subscripts of bispectrum components with
-            each specie and the indices being
-            [0, '0_x', '0_y', ..., 'N_z'].
+            [energy, f_x[0], f_y[0], ..., f_z[N], v_xx, ..., v_xy], the
+            bispectrum coefficients are summed up by each specie and
+            normalized by a factor of No. of atoms (in the 1st row),
+            while the derivatives in each direction are preserved, with
+            the columns being the subscripts of bispectrum components
+            with each specie and the indices being
+            [0, '0_x', '0_y', ..., 'N_z'], and the virial contributions
+            (in GPa) are summed up for all atoms for each component in
+            the sequence of ['xx', 'yy', 'zz', 'yz', 'xz', 'xy'].
 
         """
         return self.describe_all([structure]).xs(0, level='input_index')
@@ -113,8 +115,8 @@ class BispectrumCoefficients(Describer):
                            self.subscripts))
         raw_data = self.calculator.calculate(structures)
 
-        def process(output, combine):
-            b, db, e = output
+        def process(output, combine, idx):
+            b, db, vb, e = output
             df = pd.DataFrame(b, columns=columns)
             if combine:
                 df_add = pd.DataFrame({'element': e, 'n': np.ones(len(e))})
@@ -132,12 +134,22 @@ class BispectrumCoefficients(Describer):
                             for i in df_b.index for d in 'xyz']
                 df_db = pd.DataFrame(dbs, index=db_index,
                                      columns=hstack_b.columns)
-                df = pd.concat([hstack_b, df_db])
+                vbs = np.split(vb.sum(axis=0), len(self.elements))
+                vbs = np.hstack([np.insert(v.reshape(-1, len(columns)),
+                                           0, 0, axis=1) for v in vbs])
+                volume = structures[idx].volume
+                vbs = vbs / volume * 160.21766208  # from eV to GPa
+                vb_index = ['xx', 'yy', 'zz', 'yz', 'xz', 'xy']
+                df_vb = pd.DataFrame(vbs, index=vb_index,
+                                     columns=hstack_b.columns)
+                df = pd.concat([hstack_b, df_db, df_vb])
             return df
 
-        df = pd.concat([process(d, self.pot_fit) for d in raw_data],
+        df = pd.concat([process(d, self.pot_fit, i)
+                        for i, d in enumerate(raw_data)],
                        keys=range(len(raw_data)), names=["input_index", None])
         return df
+
 
 class AGNIFingerprints(Describer):
     """

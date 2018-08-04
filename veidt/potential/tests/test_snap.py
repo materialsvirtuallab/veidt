@@ -25,6 +25,7 @@ from veidt.describer.atomic_describer import BispectrumCoefficients
 CWD = os.getcwd()
 test_datapool = loadfn(os.path.join(os.path.dirname(__file__), 'datapool.json'))
 
+@unittest.skipIf(not which('lmp_serial'), 'No LAMMPS cmd found.')
 class SNAPotentialTest(unittest.TestCase):
 
     @classmethod
@@ -76,7 +77,6 @@ class SNAPotentialTest(unittest.TestCase):
                                                   ref_stresses=self.test_stresses)
         self.assertEqual(df_orig.shape[0], df_tar.shape[0])
 
-    @unittest.skipIf(not which('lmp_serial'), 'No LAMMPS cmd found.')
     def test_predict(self):
         self.potential.train(structures=self.test_structures,
                              energies=self.test_energies,

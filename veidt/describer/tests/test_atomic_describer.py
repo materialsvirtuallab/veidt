@@ -49,29 +49,37 @@ class BispectrumCoefficientsTest(unittest.TestCase):
     @unittest.skipIf(not which("lmp_serial"), "No LAMMPS cmd found")
     def test_describe(self):
         s = Structure.from_spacegroup(225, Lattice.cubic(5.69169),
-                                      ["Na", "Cl"],
+                                      ['Na', 'Cl'],
                                       [[0, 0, 0], [0, 0, 0.5]])
-        profile = dict(Na=dict(r=0.5, w=1.0),
-                       Cl=dict(r=0.5, w=0.8))
-        bc = BispectrumCoefficients(rcutfac=5, twojmax=4,
-                                    element_profile=profile,
-                                    diagonalstyle=3)
-        df = bc.describe(s)
-        self.assertAlmostEqual(df.loc[0, "0-0-0"], 62.9328)
-        self.assertTupleEqual(df.shape, (len(s), len(bc.subscripts)))
-
+        profile = dict(Na=dict(r=0.3, w=0.9),
+                       Cl=dict(r=0.7, w=3.0))
         s *= [2, 2, 2]
         structures = [s] * 10
         for s in structures:
             n = np.random.randint(4)
             inds = np.random.randint(16, size=n)
             s.remove_sites(inds)
-
-        df_all = bc.describe_all(structures)
-        i = random.randint(0, 9)
-        df_s = df_all.xs(i, level="input_index")
-        self.assertEqual(df_s.shape[0], len(structures[i]))
-        self.assertTrue(df_s.equals(bc.describe(structures[i])))
+        bc_atom = BispectrumCoefficients(5, 3, profile, diagonalstyle=2,
+                                         pot_fit=False)
+        df_atom = bc_atom.describe_all(structures)
+        for i, s in enumerate(structures):
+            df_s = df_atom.xs(i, level='input_index')
+            self.assertEqual(df_s.shape, (len(s), 4))
+            self.assertTrue(df_s.equals(bc_atom.describe(s)))
+        bc_pot = BispectrumCoefficients(5, 3, profile, diagonalstyle=2,
+                                        pot_fit=True)
+        df_pot = bc_pot.describe_all(structures)
+        for i, s in enumerate(structures):
+            df_s = df_pot.xs(i, level='input_index')
+            self.assertEqual(df_s.shape, ((1 + len(s) * 3 + 6, 10)))
+            self.assertTrue(df_s.equals(bc_pot.describe(s)))
+            sna = df_s.iloc[0]
+            for specie in ['Na', 'Cl']:
+                self.assertAlmostEqual(
+                    sna[specie, 'n'],
+                    s.composition.fractional_composition[specie])
+                np.testing.assert_array_equal(df_s[specie, 'n'][1:],
+                                              np.zeros(len(s) * 3 + 6))
 
 
 

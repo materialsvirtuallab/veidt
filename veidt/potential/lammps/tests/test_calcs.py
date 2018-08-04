@@ -57,11 +57,12 @@ class SpectralNeighborAnalysisTest(unittest.TestCase):
         calculator1 = SpectralNeighborAnalysis(rcutfac=5, twojmax=tjm1,
                                                element_profile=profile1,
                                                diagonalstyle=diag1)
-        sna1, snad1, elem1 = calculator1.calculate([s1])[0]
+        sna1, snad1, snav1, elem1 = calculator1.calculate([s1])[0]
         n1 = calculator1.n_bs
         self.assertAlmostEqual(sna1[0][0], 585.920)
         self.assertEqual(sna1.shape, (len(s1), n1))
         self.assertEqual(snad1.shape, (len(s1), n1 * 3 * len(profile1)))
+        self.assertEqual(snav1.shape, (len(s1), n1 * 6 * len(profile1)))
         self.assertEqual(len(np.unique(elem1)), 1)
 
         s2 = Structure.from_spacegroup(225, Lattice.cubic(5.69169),
@@ -74,11 +75,12 @@ class SpectralNeighborAnalysisTest(unittest.TestCase):
         calculator2 = SpectralNeighborAnalysis(rcutfac=5, twojmax=tjm2,
                                                element_profile=profile2,
                                                diagonalstyle=diag2)
-        sna2, snad2, elem2 = calculator2.calculate([s2])[0]
+        sna2, snad2, snav2, elem2 = calculator2.calculate([s2])[0]
         n2 = calculator2.n_bs
         self.assertAlmostEqual(sna2[0][0], 525.858)
         self.assertEqual(sna2.shape, (len(s2), n2))
         self.assertEqual(snad2.shape, (len(s2), n2 * 3 * len(profile2)))
+        self.assertEqual(snav2.shape, (len(s2), n2 * 6 * len(profile2)))
         self.assertEqual(len(np.unique(elem2)), len(profile2))
 
         s3 = Structure.from_spacegroup(221, Lattice.cubic(3.88947),
@@ -94,11 +96,12 @@ class SpectralNeighborAnalysisTest(unittest.TestCase):
         calculator3 = SpectralNeighborAnalysis(rcutfac=5, twojmax=tjm3,
                                                element_profile=profile3,
                                                diagonalstyle=diag3)
-        sna3, snad3, elem3 = calculator3.calculate([s3])[0]
+        sna3, snad3, snav3, elem3 = calculator3.calculate([s3])[0]
         n3 = calculator3.n_bs
         self.assertAlmostEqual(sna3[0][0], 25506.3)
         self.assertEqual(sna3.shape, (len(s3), n3))
         self.assertEqual(snad3.shape, (len(s3), n3 * 3 * len(profile3)))
+        self.assertEqual(snav3.shape, (len(s3), n3 * 6 * len(profile3)))
         self.assertEqual(len(np.unique(elem3)), len(profile3))
 
 
