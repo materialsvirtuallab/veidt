@@ -68,11 +68,11 @@ class BispectrumCoefficientsTest(unittest.TestCase):
             self.assertTrue(df_s.equals(bc_atom.describe(s)))
         bc_pot = BispectrumCoefficients(5, 3, profile, diagonalstyle=2,
                                         pot_fit=True)
-        df_pot = bc_pot.describe_all(structures)
+        df_pot = bc_pot.describe_all(structures, include_stress=True)
         for i, s in enumerate(structures):
             df_s = df_pot.xs(i, level='input_index')
             self.assertEqual(df_s.shape, ((1 + len(s) * 3 + 6, 10)))
-            self.assertTrue(df_s.equals(bc_pot.describe(s)))
+            self.assertTrue(df_s.equals(bc_pot.describe(s, include_stress=True)))
             sna = df_s.iloc[0]
             for specie in ['Na', 'Cl']:
                 self.assertAlmostEqual(

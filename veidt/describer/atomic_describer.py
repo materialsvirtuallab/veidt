@@ -70,12 +70,13 @@ class BispectrumCoefficients(Describer):
         return self.calculator.get_bs_subscripts(self.twojmax,
                                                  self.diagonalstyle)
 
-    def describe(self, structure):
+    def describe(self, structure, include_stress=False):
         """
         Returns data for one input structure.
 
         Args:
             structure (Structure): Input structure.
+            include_stress (bool): Whether to include stress descriptors.
 
         Returns:
             DataFrame.
@@ -96,14 +97,15 @@ class BispectrumCoefficients(Describer):
             the sequence of ['xx', 'yy', 'zz', 'yz', 'xz', 'xy'].
 
         """
-        return self.describe_all([structure]).xs(0, level='input_index')
+        return self.describe_all([structure], include_stress).xs(0, level='input_index')
 
-    def describe_all(self, structures):
+    def describe_all(self, structures, include_stress=False):
         """
         Returns data for all input structures in a single DataFrame.
 
         Args:
-            structures [Structure]: Input structures as a list.
+            structures (Structure): Input structures as a list.
+            include_stress (bool): Whether to include stress descriptors.
 
         Returns:
             DataFrame with indices of input list preserved. To retrieve
@@ -115,7 +117,7 @@ class BispectrumCoefficients(Describer):
                            self.subscripts))
         raw_data = self.calculator.calculate(structures)
 
-        def process(output, combine, idx):
+        def process(output, combine, idx, include_stress):
             b, db, vb, e = output
             df = pd.DataFrame(b, columns=columns)
             if combine:
@@ -134,18 +136,21 @@ class BispectrumCoefficients(Describer):
                             for i in df_b.index for d in 'xyz']
                 df_db = pd.DataFrame(dbs, index=db_index,
                                      columns=hstack_b.columns)
-                vbs = np.split(vb.sum(axis=0), len(self.elements))
-                vbs = np.hstack([np.insert(v.reshape(-1, len(columns)),
-                                           0, 0, axis=1) for v in vbs])
-                volume = structures[idx].volume
-                vbs = vbs / volume * 160.21766208  # from eV to GPa
-                vb_index = ['xx', 'yy', 'zz', 'yz', 'xz', 'xy']
-                df_vb = pd.DataFrame(vbs, index=vb_index,
-                                     columns=hstack_b.columns)
-                df = pd.concat([hstack_b, df_db, df_vb])
+                if include_stress:
+                    vbs = np.split(vb.sum(axis=0), len(self.elements))
+                    vbs = np.hstack([np.insert(v.reshape(-1, len(columns)),
+                                               0, 0, axis=1) for v in vbs])
+                    volume = structures[idx].volume
+                    vbs = vbs / volume * 160.21766208  # from eV to GPa
+                    vb_index = ['xx', 'yy', 'zz', 'yz', 'xz', 'xy']
+                    df_vb = pd.DataFrame(vbs, index=vb_index,
+                                         columns=hstack_b.columns)
+                    df = pd.concat([hstack_b, df_db, df_vb])
+                else:
+                    df = pd.concat([hstack_b, df_db])
             return df
 
-        df = pd.concat([process(d, self.pot_fit, i)
+        df = pd.concat([process(d, self.pot_fit, i, include_stress)
                         for i, d in enumerate(raw_data)],
                        keys=range(len(raw_data)), names=["input_index", None])
         return df

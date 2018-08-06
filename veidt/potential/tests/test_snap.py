@@ -78,7 +78,7 @@ class SNAPotentialTest(unittest.TestCase):
         self.assertEqual(df_orig.shape[0], df_tar.shape[0])
 
     def test_predict(self):
-        self.potential.train(structures=self.test_structures,
+        self.potential.train(train_structures=self.test_structures,
                              energies=self.test_energies,
                              forces=self.test_forces,
                              stresses=self.test_stresses)

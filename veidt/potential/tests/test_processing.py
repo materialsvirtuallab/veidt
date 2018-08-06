@@ -10,6 +10,7 @@ import shutil
 import tempfile
 
 import unittest
+import numpy as np
 from monty.serialization import loadfn
 from veidt.potential.processing import pool_from, convert_docs
 
@@ -51,12 +52,22 @@ class PorcessingTest(unittest.TestCase):
                              p2['outputs']['virial_stress'])
 
     def test_convert_docs(self):
-        tag_structures, df = convert_docs(self.test_pool)
+        _, df = convert_docs(self.test_pool, include_stress=False)
         test_energies = df[df['dtype'] == 'energy']['y_orig']
-        self.assertEqual(test_energies, self.test_energies)
-        test_forces = df[df['dtype'] == 'force']
-        for force1, force2 in zip(test_forces, self.test_forces):
+        self.assertFalse(np.any(test_energies - self.test_energies))
+        test_forces = df[df['dtype'] == 'force']['y_orig']
+        for force1, force2 in zip(test_forces, np.array(self.test_forces).ravel()):
             self.assertEqual(force1, force2)
+
+        _, df = convert_docs(self.test_pool, include_stress=True)
+        test_energies = df[df['dtype'] == 'energy']['y_orig']
+        self.assertFalse(np.any(test_energies - self.test_energies))
+        test_forces = df[df['dtype'] == 'force']['y_orig']
+        for force1, force2 in zip(test_forces, np.array(self.test_forces).ravel()):
+            self.assertEqual(force1, force2)
+        test_stresses = df[df['dtype'] == 'stress']['y_orig']
+        for stress1, stress2 in zip(test_stresses, np.array(self.test_stresses).ravel()):
+            self.assertEqual(stress1, stress2)
 
 if __name__ == '__main__':
     unittest.main()
