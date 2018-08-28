@@ -290,7 +290,6 @@ class AGNIPotential(Potential):
 
         return df_orig, df_pred
 
-<<<<<<< HEAD
     def evaluate(self, test_structures, ref_energies, ref_forces, ref_stresses):
         """
         Evaluate energies, forces and stresses of structures with trained
@@ -323,7 +322,6 @@ class AGNIPotential(Potential):
             data_pool.append(d)
         _, df_pred = convert_docs(data_pool)
         return df_orig, df_pred
-=======
 
 class AGNIPotentialVeidt(PotentialVeidt):
     """
@@ -497,4 +495,3 @@ endVar
         param['yu'] = reference_params[:, -2]
         param['alphas'] = reference_params[:, -1]
         return AGNIPotential(**param)
->>>>>>> 148929cf649077c27af6d0d3af7b84b76254767b

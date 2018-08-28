@@ -122,13 +122,17 @@ class NNPotential(Potential):
 
         return filename
 
-    def write_input(self, atom_energy=None, mode=1, **kwargs):
+    def write_input(self, atom_energy=None, scale_feature=True,
+                    repeated_energy_update=True, mode=1, **kwargs):
         """
         Write input_nn file to train the Neural Network model.
 
         Args:
             atom_energy (float): Atomic reference energy to remove before
                 training (unit: eV).
+            scale_feature (bool): Whether to scale the features to certain range.
+            repeated_energy_update (bool): Whether to repeat energy update after
+                every force update. (recommend to use when force_update_scaling is 1).
             mode (int): Mode to execute the RuNNer. (1=calculate symmetry functions,
                 2=fitting mode, 3=predicition mode)
             kwargs:
@@ -161,7 +165,7 @@ class NNPotential(Potential):
                         Default to eV.
                     force_update_scaling (float): Scaling factor for force
                         update. Default to 1.0.
-                    optmode_short_energy (int): Optimization modefor short
+                    optmode_short_energy (int): Optimization mode for short
                         range energies (1=Kalman filter, 2=conjugate gradient,
                         3=steepest descent). Default to 1.
                     optmode_short_force (int): Optimization modefor short
@@ -200,7 +204,7 @@ class NNPotential(Potential):
                                         'weights_min', 'weights_max',
                                         'test_fraction', 'points_in_memory'],
                             'analyze': ['analyze_error', 'print_mad',
-                                        'analyze_composition', 'repeated_energy_update'],
+                                        'analyze_composition'],
                             'output': ['write_weights_epoch 1', 'write_trainpoints',
                                        'write_trainforces', 'calculate_forces',
                                        'calculate_stress']}}
@@ -223,18 +227,18 @@ class NNPotential(Potential):
             central_atom = self.specie.name
             neighbor_atom1 = self.specie.name
             neighbor_atom2 = self.specie.name
-            r_cut = kwargs.get('r_cut') if kwargs.get('r_cut') \
+            r_cut = kwargs.get('r_cut') if kwargs.get('r_cut') is not None \
                                     else NNinput_params.get('describer').get('r_cut')
             r_cut /= self.bohr_to_angstrom
-            r_etas = kwargs.get('r_etas') if kwargs.get('r_etas') \
+            r_etas = kwargs.get('r_etas') if kwargs.get('r_etas') is not None \
                                     else NNinput_params.get('describer').get('r_etas')
-            rss = kwargs.get('rss') if kwargs.get('rss') \
+            rss = kwargs.get('rss') if kwargs.get('rss') is not None \
                                     else NNinput_params.get('describer').get('rss')
             rss = np.array(rss) / self.bohr_to_angstrom
 
-            a_etas = kwargs.get('a_etas') if kwargs.get('a_etas') \
+            a_etas = kwargs.get('a_etas') if kwargs.get('a_etas') is not None \
                                     else NNinput_params.get('describer').get('a_etas')
-            zetas = kwargs.get('zetas') if kwargs.get('zetas')\
+            zetas = kwargs.get('zetas') if kwargs.get('zetas') is not None \
                                     else NNinput_params.get('describer').get('zetas')
             lambdas = NNinput_params.get('describer').get('lambdas')
 
@@ -267,23 +271,26 @@ class NNPotential(Potential):
             lines.append('global_nodes_short {}'.format(' '.join(hidden_layers)))
             lines.append('global_activation_short {}'.format(' '.join(activations)))
 
-            if 'scale' in PARAMS.get('model'):
+            if 'scale' in PARAMS.get('model') and scale_feature:
                 lines.extend(['mix_all_points', 'scale_symmetry_functions'])
                 for key in PARAMS.get('model').get('scale'):
-                    value = kwargs.get(key) if kwargs.get(key) \
+                    value = kwargs.get(key) if kwargs.get(key) is not None \
                             else NNinput_params.get('model').get('scale').get(key)
                     lines.append(' '.join([key, str(value)]))
             if 'fitting' in PARAMS.get('model'):
                 for key in PARAMS.get('model').get('fitting'):
-                    value = kwargs.get(key) if kwargs.get(key) \
+                    value = kwargs.get(key) if kwargs.get(key) is not None \
                             else NNinput_params.get('model').get('fitting').get(key)
                     if key == 'epochs':
                         self.epochs = value
                     lines.append(' '.join([key, str(value)]))
+            if repeated_energy_update:
+                lines.append('repeated_energy_update')
             if 'analyze' in PARAMS.get('model'):
                 lines.extend(PARAMS.get('model').get('analyze'))
             if 'output' in PARAMS.get('model'):
                 lines.extend(PARAMS.get('model').get('output'))
+
 
         with open(filename, 'w') as f:
             f.write('\n'.join(lines))
@@ -400,7 +407,13 @@ class NNPotential(Potential):
                 p = subprocess.Popen(['RuNNer'], stdout=open(mode_output, 'w'))
                 stdout = p.communicate()[0]
 
+                if i == 1:
+                    os.system('cp function.data testing.data')
+                    os.system('cp trainforces.data testforces.data')
+                    os.system('cp trainstruct.data teststruct.data')
+
                 rc = p.returncode
+
                 # if rc != 0:
                 #     error_msg = 'RuNNer exited with return code %d' % rc
                 #     msg = stdout.decode("utf-8").split('\n')[:-1]
@@ -516,3 +529,38 @@ class NNPotential(Potential):
 
     def predict(self, structure):
         pass
+
+    def generate_eta(self, dmin, r_cut, num_symm2):
+        """
+        Generate proper eta for G2 symmetry function given cutoff radius
+        and expexted number of G2 symmetry function.
+
+        Args:
+            dmin (float): The shortest interatomic distance (unit: Å).
+            r_cut (float): Cutoff distance (unit: Å).
+            num_symm2 (int): Expected number of G2 symmetry functions.
+
+        Returns:
+            r_etas (numpy.array)
+        """
+        if not which("RuNNerMakesym"):
+            raise RuntimeError("RuNNerMakesym has not been found.")
+
+        dmin /= self.bohr_to_angstrom
+        r_cut /= self.bohr_to_angstrom
+
+        etas_output = 'etas.out'
+
+        with ScratchDir('.'):
+            p = subprocess.Popen(["RuNNerMakesym", str(np.float(dmin)),
+                                  str(float(r_cut)), str(int(num_symm2))],
+                                  stdout=open(etas_output, 'w'))
+            stdout = p.communicate()[0]
+
+            with zopen(etas_output) as f:
+                etas_lines = f.read()
+
+            etas_pattern = re.compile('global_symfunction_short\s*\S*\s*(\S*)\s*\S*\s*\S*\n')
+            r_etas = np.array(etas_pattern.findall(etas_lines)[-num_symm2:], dtype=np.float)
+
+        return r_etas
