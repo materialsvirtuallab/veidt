@@ -18,6 +18,7 @@ compute         force all property/atom fx fy fz
 thermo_style    custom pe pxx pyy pzz pxy pxz pyz
 thermo          1
 dump            1 all custom 1 force.dump c_force[*]
+dump_modify     1 sort id
 run             0
 
 variable        energy equal pe

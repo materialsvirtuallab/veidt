@@ -26,7 +26,7 @@ def doc_from(structure, energy=None, force=None, stress=None):
     Returns:
         (dict)
     """
-    energy = energy if energy else 0
+    energy = energy if energy else 0.0
     force = force if force else np.zeros((len(structure), 3))
     stress = stress if stress else np.zeros(6)
     outputs = dict(energy=energy, forces=force,
