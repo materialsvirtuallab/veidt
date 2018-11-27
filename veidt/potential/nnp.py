@@ -407,10 +407,17 @@ class NNPotential(Potential):
                 p = subprocess.Popen(['RuNNer'], stdout=open(mode_output, 'w'))
                 stdout = p.communicate()[0]
 
+                # if i == 1:
+                #     os.system('cp function.data testing.data')
+                #     os.system('cp trainforces.data testforces.data')
+                #     os.system('cp trainstruct.data teststruct.data')
                 if i == 1:
-                    os.system('cp function.data testing.data')
-                    os.system('cp trainforces.data testforces.data')
-                    os.system('cp trainstruct.data teststruct.data')
+                    open('function.data', 'a').writelines(
+                        [l for l in open('testing.data').readlines()])
+                    open('trainstruct.data', 'a').writelines(
+                        [l for l in open('teststruct.data').readlines()])
+                    open('trainforces.data', 'a').writelines(
+                        [l for l in open('testforces.data').readlines()])
 
                 rc = p.returncode
 
