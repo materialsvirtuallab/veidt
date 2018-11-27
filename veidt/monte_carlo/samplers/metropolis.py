@@ -39,8 +39,9 @@ class Metropolis(Sampler):
             new_state_structure = proposal(self.state_structure, step_name)
             # exponential = self.ensemble.exponential(new_state_structure)
             d_exp = self.ensemble.d_exponential(self.state_structure, new_state_structure)
-            # print('delta exp: ', d_exp)
+
             is_accept = accept(d_exp, temperature)
+            # print('delta exp: ', d_exp, is_accept, temperature)
             if is_accept:
                 self.state_structure = new_state_structure
                 self.exponential = self.ensemble.exponential(new_state_structure)
