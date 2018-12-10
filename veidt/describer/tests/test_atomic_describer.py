@@ -97,6 +97,7 @@ class SOAPDescriptorTest(unittest.TestCase):
                                 [{"Li": 1}], [[0, 0, 0]])
         self.describer = SOAPDescriptor(cutoff=4.8, l_max=8, n_max=8)
 
+    @unittest.skipIf(not which('quip'), 'No quip cmd found.')
     def test_describe(self):
         unary_descriptors = self.describer.describe(self.unary_struct)
         self.assertEqual(unary_descriptors.shape[0], len(self.unary_struct))
@@ -119,6 +120,8 @@ class BPSymmetryFunctionsTest(unittest.TestCase):
                                              num_symm2=self.num_symm2,
                                              a_etas=self.a_etas)
 
+    @unittest.skipIf(not which('RuNNerMakesym'), 'No RuNNerMakesym cmd found.')
+    @unittest.skipIf(not which('RuNNer'), 'No RuNNer cmd found.')
     def test_describe(self):
         unary_descriptors = self.describer.describe(self.unary_struct)
         self.assertEqual(unary_descriptors.shape[0], len(self.unary_struct))

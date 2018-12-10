@@ -10,11 +10,19 @@ import tempfile
 import os
 import shutil
 
+import yaml
 import numpy as np
 from monty.os.path import which
-from pymatgen import Structure, Lattice
-from veidt.potential.lammps.calcs import SpectralNeighborAnalysis
+from pymatgen import Structure, Lattice, Element
+from veidt.potential.snap import SNAPotential
+from veidt.model.linear_model import LinearModel
+from veidt.describer.atomic_describer import BispectrumCoefficients
+from veidt.potential.lammps.calcs import \
+    SpectralNeighborAnalysis, EnergyForceStress, ElasticConstant, LatticeConstant
 
+CWD = os.getcwd()
+with open(os.path.join(os.path.dirname(__file__), 'coeff.yaml')) as f:
+    coeff, intercept = yaml.load(f)
 
 class SpectralNeighborAnalysisTest(unittest.TestCase):
 
@@ -103,6 +111,119 @@ class SpectralNeighborAnalysisTest(unittest.TestCase):
         self.assertEqual(snad3.shape, (len(s3), n3 * 3 * len(profile3)))
         self.assertEqual(snav3.shape, (len(s3), n3 * 6 * len(profile3)))
         self.assertEqual(len(np.unique(elem3)), len(profile3))
+
+class EnergyForceStressTest(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.this_dir = os.path.dirname(os.path.abspath(__file__))
+        cls.test_dir = tempfile.mkdtemp()
+        os.chdir(cls.test_dir)
+
+    @classmethod
+    def tearDownClass(cls):
+        os.chdir(CWD)
+        shutil.rmtree(cls.test_dir)
+
+    def setUp(self):
+
+        element_profile = {'Ni': {'r': 0.5, 'w': 1}}
+        describer = BispectrumCoefficients(rcutfac=4.1, twojmax=8,
+                                           element_profile=element_profile,
+                                           pot_fit=True)
+        model = LinearModel(describer=describer)
+        model.model.coef_ = coeff
+        model.model.intercept_ = intercept
+        snap = SNAPotential(model=model)
+        snap.specie = Element('Ni')
+        self.struct = Structure.from_spacegroup('Fm-3m',
+                                                Lattice.cubic(3.506),
+                                                ['Ni'], [[0, 0, 0]])
+        self.ff_settings = snap
+
+    @unittest.skipIf(not which('lmp_serial'), 'No LAMMPS cmd found.')
+    def test_calculate(self):
+        calculator = EnergyForceStress(ff_settings=self.ff_settings)
+        energy, forces, stresses = calculator.calculate([self.struct])[0]
+        self.assertTrue(abs(energy - (-23.1242962)) < 1e-2)
+        np.testing.assert_array_almost_equal(forces,
+                                             np.zeros((len(self.struct), 3)))
+        self.assertEqual(len(stresses), 6)
+
+
+class ElasticConstantTest(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.this_dir = os.path.dirname(os.path.abspath(__file__))
+        cls.test_dir = tempfile.mkdtemp()
+        os.chdir(cls.test_dir)
+
+    @classmethod
+    def tearDownClass(cls):
+        os.chdir(CWD)
+        shutil.rmtree(cls.test_dir)
+
+    def setUp(self):
+
+        element_profile = {'Ni': {'r': 0.5, 'w': 1}}
+        describer = BispectrumCoefficients(rcutfac=4.1, twojmax=8,
+                                           element_profile=element_profile,
+                                           pot_fit=True)
+        model = LinearModel(describer=describer)
+        model.model.coef_ = coeff
+        model.model.intercept_ = intercept
+        snap = SNAPotential(model=model)
+        snap.specie = Element('Ni')
+        self.ff_settings = snap
+
+    @unittest.skipIf(not which('lmp_serial'), 'No LAMMPS cmd found.')
+    def test_calculate(self):
+        calculator = ElasticConstant(ff_settings=self.ff_settings,
+                                     lattice='fcc', alat=3.506)
+        C11, C12, C44, bulkmodulus = calculator.calculate()
+        self.assertTrue(abs(C11 - 276) / 276 < 0.1)
+        self.assertTrue(abs(C12 - 159) / 159 < 0.1)
+        self.assertTrue(abs(C44 - 132) / 132 < 0.1)
+
+
+class LatticeConstantTest(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.this_dir = os.path.dirname(os.path.abspath(__file__))
+        cls.test_dir = tempfile.mkdtemp()
+        os.chdir(cls.test_dir)
+
+    @classmethod
+    def tearDownClass(cls):
+        os.chdir(CWD)
+        shutil.rmtree(cls.test_dir)
+
+    def setUp(self):
+
+        element_profile = {'Ni': {'r': 0.5, 'w': 1}}
+        describer = BispectrumCoefficients(rcutfac=4.1, twojmax=8,
+                                           element_profile=element_profile,
+                                           pot_fit=True)
+        model = LinearModel(describer=describer)
+        model.model.coef_ = coeff
+        model.model.intercept_ = intercept
+        snap = SNAPotential(model=model)
+        snap.specie = Element('Ni')
+        self.struct = Structure.from_spacegroup('Fm-3m',
+                                                Lattice.cubic(3.506),
+                                                ['Ni'], [[0, 0, 0]])
+        self.ff_settings = snap
+
+    @unittest.skipIf(not which('lmp_serial'), 'No LAMMPS cmd found.')
+    def test_calculate(self):
+        calculator = LatticeConstant(ff_settings=self.ff_settings)
+        a, b, c = self.struct.lattice.abc
+        calc_a, calc_b, calc_c = calculator.calculate([self.struct])[0]
+        np.testing.assert_almost_equal(calc_a, a, decimal=2)
+        np.testing.assert_almost_equal(calc_b, b, decimal=2)
+        np.testing.assert_almost_equal(calc_c, c, decimal=2)
 
 
 if __name__ == '__main__':
