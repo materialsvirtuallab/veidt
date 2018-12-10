@@ -8,12 +8,16 @@ from __future__ import division, print_function, unicode_literals, \
 import itertools
 import subprocess
 import io
-
+import re
 import numpy as np
 import pandas as pd
+from monty.io import zopen
+from monty.os.path import which
+from monty.tempfile import ScratchDir
 from pymatgen.core.periodic_table import get_el_sp
 
 from veidt.abstract import Describer
+from veidt.potential.processing import pool_from
 
 class BispectrumCoefficients(Describer):
     """
@@ -205,3 +209,88 @@ class AGNIFingerprints(Describer):
         return pd.concat([self.describe(s) for s in structures],
                          keys=range(len(structures)),
                          names=['input_index', None])
+
+class SOAPDescriptor(Describer):
+    """
+    Smooth Overlap of Atomic Position (SOAP) descriptor.
+    """
+
+    def __init__(self, cutoff, l_max=8, n_max=8, atom_sigma=0.5):
+        """
+
+        Args:
+            cutoff (float): Cutoff radius.
+            l_max (int): The band limit of spherical harmonics basis function.
+                Default to 8.
+            n_max (int): The number of radial basis function. Default to 8.
+            atom_sigma (float): The width of gaussian atomic density.
+                Default to 0.5.
+        """
+        from veidt.potential.soap import SOAPotential
+
+        self.cutoff = cutoff
+        self.l_max = l_max
+        self.n_max = n_max
+        self.atom_sigma = atom_sigma
+        self.writer = SOAPotential()
+
+    def describe(self, structure):
+        """
+        Returns data for one input structure.
+
+        Args:
+            structure (Structure): Input structure.
+        """
+        if not which('quip'):
+            raise RuntimeError("quip has not been found.\n",
+                               "Please refer to https://github.com/libAtoms/QUIP for ",
+                               "further detail.")
+        atoms_filename = 'structure.xyz'
+
+        exe_command = ['quip']
+        exe_command.append('atoms_filename={}'.format(atoms_filename))
+
+        descriptor_command = ['soap']
+        descriptor_command.append("cutoff" + '=' + '{}'.format(self.cutoff))
+        descriptor_command.append("l_max" + '=' + '{}'.format(self.l_max))
+        descriptor_command.append("n_max" + '=' + '{}'.format(self.n_max))
+        descriptor_command.append("atom_sigma" + '=' + '{}'.format(self.atom_sigma))
+        atomic_numbers = [str(num) for num in np.unique(structure.atomic_numbers)]
+        n_Z = len(atomic_numbers)
+        n_species = len(atomic_numbers)
+        Z = '{' + '{}'.format(','.join(atomic_numbers)) + '}'
+        species_Z = '{' + '{}'.format(','.join(atomic_numbers)) + '}'
+        descriptor_command.append("n_Z" + '=' + str(n_Z))
+        descriptor_command.append("Z" + '=' + Z)
+        descriptor_command.append("n_species" + '=' + str(n_species))
+        descriptor_command.append("species_Z" + '=' + species_Z)
+
+        exe_command.append("descriptor_str=" + "{" + \
+                           "{}".format(' '.join(descriptor_command)) + "}")
+
+        with ScratchDir('.'):
+            atoms_filename = self.writer.write_cfgs(filename=atoms_filename,
+                                                    cfg_pool=pool_from([structure]))
+            descriptor_output = 'output'
+            p = subprocess.Popen(exe_command, stdout=open(descriptor_output, 'w'))
+            stdout = p.communicate()[0]
+            rc = p.returncode
+            if rc != 0:
+                error_msg = 'QUIP exited with return code %d' % rc
+                msg = stdout.decode("utf-8").split('\n')[:-1]
+                try:
+                    error_line = [i for i, m in enumerate(msg)
+                                  if m.startswith('ERROR')][0]
+                    error_msg += ', '.join([e for e in msg[error_line:]])
+                except:
+                    error_msg += msg[-1]
+                raise RuntimeError(error_msg)
+
+            with zopen(descriptor_output, 'rt') as f:
+                lines = f.read()
+
+            descriptor_pattern = re.compile('DESC(.*?)\n', re.S)
+            descriptors = np.array([np.array(c.split(), dtype=np.float)
+                                     for c in descriptor_pattern.findall(lines)])
+
+        return descriptors

@@ -6,12 +6,13 @@ from __future__ import division, print_function, unicode_literals, \
 import unittest
 import random
 
+import os
+import tempfile
 import numpy as np
 from monty.os.path import which
 from pymatgen import Lattice, Structure, Element
 
-from veidt.describer.atomic_describer import BispectrumCoefficients
-
+from veidt.describer.atomic_describer import BispectrumCoefficients, SOAPDescriptor
 
 
 class BispectrumCoefficientsTest(unittest.TestCase):
@@ -82,7 +83,22 @@ class BispectrumCoefficientsTest(unittest.TestCase):
                                               np.zeros(len(s) * 3 + 6))
 
 
+class SOAPDescriptorTest(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        cls.this_dir = os.path.dirname(os.path.abspath(__file__))
+        cls.test_dir = tempfile.mkdtemp()
+        os.chdir(cls.test_dir)
+
+    def setUp(self):
+        self.unary_struct = Structure.from_spacegroup('Im-3m', Lattice.cubic(3.4268),
+                                [{"Li": 1}], [[0, 0, 0]])
+        self.describer = SOAPDescriptor(cutoff=4.8, l_max=8, n_max=8)
+
+    def test_describe(self):
+        unary_descriptors = self.describer.describe(self.unary_struct)
+        self.assertEqual(unary_descriptors.shape[0], len(self.unary_struct))
 
 
 if __name__ == "__main__":
