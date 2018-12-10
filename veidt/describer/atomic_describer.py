@@ -232,7 +232,7 @@ class SOAPDescriptor(Describer):
         self.l_max = l_max
         self.n_max = n_max
         self.atom_sigma = atom_sigma
-        self.writer = SOAPotential()
+        self.operator = SOAPotential()
 
     def describe(self, structure):
         """
@@ -269,7 +269,7 @@ class SOAPDescriptor(Describer):
                            "{}".format(' '.join(descriptor_command)) + "}")
 
         with ScratchDir('.'):
-            atoms_filename = self.writer.write_cfgs(filename=atoms_filename,
+            atoms_filename = self.operator.write_cfgs(filename=atoms_filename,
                                                     cfg_pool=pool_from([structure]))
             descriptor_output = 'output'
             p = subprocess.Popen(exe_command, stdout=open(descriptor_output, 'w'))
@@ -294,3 +294,79 @@ class SOAPDescriptor(Describer):
                                      for c in descriptor_pattern.findall(lines)])
 
         return descriptors
+
+class BPSymmetryFunctions(Describer):
+    """
+    Behler-Parrinello symmetry function descriptor.
+    """
+
+    def __init__(self, dmin, cutoff, num_symm2, a_etas):
+        """
+        Args:
+            dmin (float): The minimum interatomic distance accepted.
+            cutoff (float): Cutoff radius.
+            num_symm2 (int): The number of radial symmetry functions.
+            a_etas (list): The choice of η' in angular symmetry functions.
+        """
+
+        from veidt.potential.nnp import NNPotential
+
+        self.dmin = dmin
+        self.cutoff = cutoff
+        self.num_symm2 = num_symm2
+        self.a_etas = a_etas
+        self.operator = NNPotential()
+
+    def describe(self, structure):
+        """
+        Returns data for one input structure.
+
+        Args:
+            structure (Structure): Input structure.
+        """
+        if not which('RuNNer'):
+            raise RuntimeError("RuNNer has not been found.")
+        if not which("RuNNerMakesym"):
+            raise RuntimeError("RuNNerMakesym has not been found.")
+
+        def read_functions_data(filename):
+            """
+            Read structure features from file.
+
+            Args:
+                filename (str): The functions file to be read.
+            """
+            with zopen(filename, 'rt') as f:
+                lines = f.read()
+
+            block_pattern = re.compile('(\n\s+\d+\n|^\s+\d+\n)(.+?)(?=\n\s+\d+\n|$)', re.S)
+            points_features = []
+            for (num_neighbor, block) in block_pattern.findall(lines):
+                point_features = pd.DataFrame([feature.split()[1:] \
+                                               for feature in block.split('\n')[:-1]],
+                                               dtype=np.float32)
+                points_features.append(point_features)
+            points_features = pd.concat(points_features,
+                                        keys=range(len(block_pattern.findall(lines))),
+                                        names=['point_index', None])
+            return points_features
+
+        dmin = sorted(set(structure.distance_matrix.ravel()))[1]
+        r_etas = self.operator.generate_eta(dmin=self.dmin,
+                                            r_cut=self.cutoff,
+                                            num_symm2=self.num_symm2)
+        atoms_filename = 'input.data'
+        mode_output = 'mode.out'
+
+        with ScratchDir('.'):
+            atoms_filename = self.operator.write_cfgs(filename=atoms_filename,
+                                                      cfg_pool=pool_from([structure]))
+            input_filename = self.operator.write_input(mode=1, r_cut=self.cutoff,
+                                                       r_etas=r_etas, a_etas=self.a_etas,
+                                                       scale_feature=False)
+            p = subprocess.Popen(['RuNNer'], stdout=open(mode_output, 'w'))
+            stdout = p.communicate()[0]
+
+            descriptors = read_functions_data('function.data')
+
+        return np.array(descriptors)

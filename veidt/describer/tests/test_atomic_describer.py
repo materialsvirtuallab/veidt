@@ -12,7 +12,8 @@ import numpy as np
 from monty.os.path import which
 from pymatgen import Lattice, Structure, Element
 
-from veidt.describer.atomic_describer import BispectrumCoefficients, SOAPDescriptor
+from veidt.describer.atomic_describer import \
+    BispectrumCoefficients, SOAPDescriptor, BPSymmetryFunctions
 
 
 class BispectrumCoefficientsTest(unittest.TestCase):
@@ -100,6 +101,29 @@ class SOAPDescriptorTest(unittest.TestCase):
         unary_descriptors = self.describer.describe(self.unary_struct)
         self.assertEqual(unary_descriptors.shape[0], len(self.unary_struct))
 
+
+class BPSymmetryFunctionsTest(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.this_dir = os.path.dirname(os.path.abspath(__file__))
+        cls.test_dir = tempfile.mkdtemp()
+        os.chdir(cls.test_dir)
+
+    def setUp(self):
+        self.unary_struct = Structure.from_spacegroup('Im-3m', Lattice.cubic(3.4268),
+                                [{"Li": 1}], [[0, 0, 0]])
+        self.num_symm2 = 3
+        self.a_etas = [0.01, 0.05]
+        self.describer = BPSymmetryFunctions(dmin=2.0, cutoff=4.8,
+                                             num_symm2=self.num_symm2,
+                                             a_etas=self.a_etas)
+
+    def test_describe(self):
+        unary_descriptors = self.describer.describe(self.unary_struct)
+        self.assertEqual(unary_descriptors.shape[0], len(self.unary_struct))
+        self.assertEqual(unary_descriptors.shape[1],
+                         self.num_symm2 + len(self.a_etas) * 2 * 4)
 
 if __name__ == "__main__":
     unittest.main()
