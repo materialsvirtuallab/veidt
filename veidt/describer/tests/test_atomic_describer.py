@@ -102,6 +102,11 @@ class SOAPDescriptorTest(unittest.TestCase):
         unary_descriptors = self.describer.describe(self.unary_struct)
         self.assertEqual(unary_descriptors.shape[0], len(self.unary_struct))
 
+    @unittest.skipIf(not which('quip'), 'No quip cmd found.')
+    def test_describe_all(self):
+        descriptors = self.describer.describe([self.unary_struct] * 3)
+        self.assertEqual(descriptors.shape[0], len(self.unary_struct) * 3)
+
 
 class BPSymmetryFunctionsTest(unittest.TestCase):
 
@@ -126,6 +131,14 @@ class BPSymmetryFunctionsTest(unittest.TestCase):
         unary_descriptors = self.describer.describe(self.unary_struct)
         self.assertEqual(unary_descriptors.shape[0], len(self.unary_struct))
         self.assertEqual(unary_descriptors.shape[1],
+                         self.num_symm2 + len(self.a_etas) * 2 * 4)
+
+    @unittest.skipIf(not which('RuNNerMakesym'), 'No RuNNerMakesym cmd found.')
+    @unittest.skipIf(not which('RuNNer'), 'No RuNNer cmd found.')
+    def test_describe_all(self):
+        descriptors = self.describer.describe([self.unary_struct] * 3)
+        self.assertEqual(descriptors.shape[0], len(self.unary_struct) * 3)
+        self.assertEqual(descriptors.shape[1],
                          self.num_symm2 + len(self.a_etas) * 2 * 4)
 
 if __name__ == "__main__":

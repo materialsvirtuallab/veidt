@@ -290,10 +290,16 @@ class SOAPDescriptor(Describer):
                 lines = f.read()
 
             descriptor_pattern = re.compile('DESC(.*?)\n', re.S)
-            descriptors = np.array([np.array(c.split(), dtype=np.float)
+            descriptors = pd.DataFrame([np.array(c.split(), dtype=np.float)
                                      for c in descriptor_pattern.findall(lines)])
 
         return descriptors
+
+    def describe_all(self, structures):
+        return pd.concat([self.describe(s) for s in structures],
+                         keys=range(len(structures)),
+                         names=['input_index', None])
+
 
 class BPSymmetryFunctions(Describer):
     """
@@ -369,4 +375,9 @@ class BPSymmetryFunctions(Describer):
 
             descriptors = read_functions_data('function.data')
 
-        return np.array(descriptors)
+        return pd.DataFrame(descriptors)
+
+    def describe_all(self, structures):
+        return pd.concat([self.describe(s) for s in structures],
+                         keys=range(len(structures)),
+                         names=['input_index', None])
