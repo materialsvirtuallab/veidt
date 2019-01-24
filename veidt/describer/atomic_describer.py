@@ -27,7 +27,7 @@ class BispectrumCoefficients(Describer):
     """
 
     def __init__(self, rcutfac, twojmax, element_profile, rfac0=0.99363,
-                 rmin0=0, diagonalstyle=3, pot_fit=False):
+                 rmin0=0, diagonalstyle=3, quadratic=False, pot_fit=False):
         """
 
         Args:
@@ -44,6 +44,8 @@ class BispectrumCoefficients(Describer):
             diagonalstyle (int): Parameter defining which bispectrum
                 components are generated. Choose among 0, 1, 2 and 3,
                 default to 3.
+            quadratic (bool): Whether including quadratic terms.
+                Default to False.
             pot_fit (bool): Whether to output in potential fitting
                 format. Default to False, i.e., returning the bispectrum
                 coefficients for each site.
@@ -53,7 +55,8 @@ class BispectrumCoefficients(Describer):
         self.calculator = SpectralNeighborAnalysis(rcutfac, twojmax,
                                                    element_profile,
                                                    rfac0, rmin0,
-                                                   diagonalstyle)
+                                                   diagonalstyle,
+                                                   quadratic)
         self.rcutfac = rcutfac
         self.twojmax = twojmax
         self.element_profile = element_profile
@@ -62,6 +65,7 @@ class BispectrumCoefficients(Describer):
         self.diagonalstyle = diagonalstyle
         self.elements = sorted(element_profile.keys(),
                                key=lambda sym: get_el_sp(sym).X)
+        self.quadratic = quadratic
         self.pot_fit = pot_fit
 
     @property
@@ -119,6 +123,11 @@ class BispectrumCoefficients(Describer):
         """
         columns = list(map(lambda s: '-'.join(['%d' % i for i in s]),
                            self.subscripts))
+        if self.quadratic:
+            columns += list(map(lambda s: '-'.join(['%d%d%d' % (i, j, k)
+                                                   for i, j, k in s ]),
+            itertools.combinations_with_replacement(self.subscripts, 2)))
+
         raw_data = self.calculator.calculate(structures)
 
         def process(output, combine, idx, include_stress):

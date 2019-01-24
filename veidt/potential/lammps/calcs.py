@@ -190,7 +190,7 @@ class SpectralNeighborAnalysis(LMPStaticCalculator):
              'dump 4 all custom 1 dump.snav c_snav[*]']
 
     def __init__(self, rcutfac, twojmax, element_profile, rfac0=0.99363,
-                 rmin0=0, diagonalstyle=3):
+                 rmin0=0, diagonalstyle=3, quadratic=False):
         """
         For more details on the parameters, please refer to the
         official documentation of LAMMPS.
@@ -229,6 +229,7 @@ class SpectralNeighborAnalysis(LMPStaticCalculator):
         assert diagonalstyle in range(4), 'Invalid diagonalstype, ' \
                                           'choose among 0, 1, 2 and 3'
         self.diagonalstyle = diagonalstyle
+        self.quadratic = quadratic
 
     @staticmethod
     def get_bs_subscripts(twojmax, diagonal):
@@ -279,8 +280,9 @@ class SpectralNeighborAnalysis(LMPStaticCalculator):
                    for e in el_in_seq]
         weights = [self.element_profile[e]['w'] for e in el_in_seq]
         compute_args += ' '.join([str(p) for p in cutoffs + weights])
-        compute_args += ' diagonal {} rmin0 {}'.format(self.diagonalstyle,
-                                                       self.rmin0)
+        qflag = 1 if self.quadratic else 0
+        compute_args += ' diagonal {} rmin0 {} quadraticflag {}'.\
+            format(self.diagonalstyle, self.rmin0, qflag)
         add_args = lambda l: l + compute_args if l.startswith('compute') \
             else l
         CMDS = list(map(add_args, self._CMDS))
