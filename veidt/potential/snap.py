@@ -114,13 +114,15 @@ class SNAPotential(Potential):
                     in sorted([Element(e) for e in profile.keys()])]
         ne = len(elements)
         nbc = len(describer.subscripts)
+        if describer.quadratic:
+            nbc += int((1 + nbc) * nbc / 2)
         tjm = describer.twojmax
         diag = describer.diagonalstyle
-        assert ncoeff == ne * (nbc + 1),\
-            '{} coefficients given. '.format(ncoeff) + \
-            '{} ({} * ({} + 1)) '.format(ne * (nbc + 1), ne, nbc) + \
-            'coefficients expected ' + \
-            'for twojmax={} and diagonalstyle={}.'.format(tjm, diag)
+        # assert ncoeff == ne * (nbc + 1),\
+        #     '{} coefficients given. '.format(ncoeff) + \
+        #     '{} ({} * ({} + 1)) '.format(ne * (nbc + 1), ne, nbc) + \
+        #     'coefficients expected ' + \
+        #     'for twojmax={} and diagonalstyle={}.'.format(tjm, diag)
 
         coeff_lines = []
         coeff_lines.append('{} {}'.format(ne, nbc + 1))
@@ -136,6 +138,7 @@ class SNAPotential(Potential):
         keys = ['rcutfac', 'twojmax', 'rfac0', 'rmin0', 'diagonalstyle']
         param_lines.extend(['{} {}'.format(k, getattr(describer, k))
                                     for k in keys])
+        param_lines.append('quadraticflag {}'.format(int(describer.quadratic)))
         param_lines.append('bzeroflag 0')
         with open(param_file, 'w') as f:
             f.write('\n'.join(param_lines))

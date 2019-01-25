@@ -267,8 +267,8 @@ class SOAPDescriptor(Describer):
         atomic_numbers = [str(num) for num in np.unique(structure.atomic_numbers)]
         n_Z = len(atomic_numbers)
         n_species = len(atomic_numbers)
-        Z = '{' + '{}'.format(','.join(atomic_numbers)) + '}'
-        species_Z = '{' + '{}'.format(','.join(atomic_numbers)) + '}'
+        Z = '{' + '{}'.format(' '.join(atomic_numbers)) + '}'
+        species_Z = '{' + '{}'.format(' '.join(atomic_numbers)) + '}'
         descriptor_command.append("n_Z" + '=' + str(n_Z))
         descriptor_command.append("Z" + '=' + Z)
         descriptor_command.append("n_species" + '=' + str(n_species))
