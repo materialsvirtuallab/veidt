@@ -45,6 +45,7 @@ class BispectrumCoefficientsTest(unittest.TestCase):
             for tjm in range(11):
                 bc = BispectrumCoefficients(1.0, twojmax=tjm,
                                             element_profile=profile,
+                                            quadratic=False,
                                             diagonalstyle=d)
                 np.testing.assert_equal(bc.subscripts, from_lmp_doc(tjm, d))
 
@@ -61,15 +62,17 @@ class BispectrumCoefficientsTest(unittest.TestCase):
             n = np.random.randint(4)
             inds = np.random.randint(16, size=n)
             s.remove_sites(inds)
+
         bc_atom = BispectrumCoefficients(5, 3, profile, diagonalstyle=2,
-                                         pot_fit=False)
+                                         quadratic=False, pot_fit=False)
         df_atom = bc_atom.describe_all(structures)
         for i, s in enumerate(structures):
             df_s = df_atom.xs(i, level='input_index')
             self.assertEqual(df_s.shape, (len(s), 4))
             self.assertTrue(df_s.equals(bc_atom.describe(s)))
+
         bc_pot = BispectrumCoefficients(5, 3, profile, diagonalstyle=2,
-                                        pot_fit=True)
+                                        quadratic=False, pot_fit=True)
         df_pot = bc_pot.describe_all(structures, include_stress=True)
         for i, s in enumerate(structures):
             df_s = df_pot.xs(i, level='input_index')
@@ -95,17 +98,24 @@ class SOAPDescriptorTest(unittest.TestCase):
     def setUp(self):
         self.unary_struct = Structure.from_spacegroup('Im-3m', Lattice.cubic(3.4268),
                                 [{"Li": 1}], [[0, 0, 0]])
+        self.binary_struct = Structure.from_spacegroup(225, Lattice.cubic(5.69169),
+                                                       ['Na', 'Cl'],
+                                                       [[0, 0, 0], [0, 0, 0.5]])
         self.describer = SOAPDescriptor(cutoff=4.8, l_max=8, n_max=8)
 
     @unittest.skipIf(not which('quip'), 'No quip cmd found.')
     def test_describe(self):
         unary_descriptors = self.describer.describe(self.unary_struct)
+        binary_descriptors = self.describer.describe(self.binary_struct)
         self.assertEqual(unary_descriptors.shape[0], len(self.unary_struct))
+        self.assertEqual(binary_descriptors.shape[0], len(self.binary_struct))
 
     @unittest.skipIf(not which('quip'), 'No quip cmd found.')
     def test_describe_all(self):
-        descriptors = self.describer.describe([self.unary_struct] * 3)
-        self.assertEqual(descriptors.shape[0], len(self.unary_struct) * 3)
+        unary_descriptors = self.describer.describe_all([self.unary_struct] * 3)
+        self.assertEqual(unary_descriptors.shape[0], len(self.unary_struct) * 3)
+        binary_descriptors = self.describer.describe_all([self.binary_struct] * 3)
+        self.assertEqual(binary_descriptors.shape[0], len(self.binary_struct) * 3)
 
 
 class BPSymmetryFunctionsTest(unittest.TestCase):

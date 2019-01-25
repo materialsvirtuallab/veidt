@@ -64,6 +64,7 @@ class SpectralNeighborAnalysisTest(unittest.TestCase):
         tjm1 = np.random.randint(1, 11)
         calculator1 = SpectralNeighborAnalysis(rcutfac=5, twojmax=tjm1,
                                                element_profile=profile1,
+                                               quadratic=False,
                                                diagonalstyle=diag1)
         sna1, snad1, snav1, elem1 = calculator1.calculate([s1])[0]
         n1 = calculator1.n_bs
@@ -72,6 +73,19 @@ class SpectralNeighborAnalysisTest(unittest.TestCase):
         self.assertEqual(snad1.shape, (len(s1), n1 * 3 * len(profile1)))
         self.assertEqual(snav1.shape, (len(s1), n1 * 6 * len(profile1)))
         self.assertEqual(len(np.unique(elem1)), 1)
+
+        calculator4 = SpectralNeighborAnalysis(rcutfac=5, twojmax=tjm1,
+                                               element_profile=profile1,
+                                               quadratic=True,
+                                               diagonalstyle=diag1)
+        sna4, snad4, snav4, elem4 = calculator4.calculate([s1])[0]
+        n4 = calculator4.n_bs
+        n4 += int((1 + n4) * n4 / 2)
+        self.assertAlmostEqual(sna4[0][0], 585.920)
+        self.assertEqual(sna4.shape, (len(s1), n4))
+        self.assertEqual(snad4.shape, (len(s1), n4 * 3 * len(profile1)))
+        self.assertEqual(snav4.shape, (len(s1), n4 * 6 * len(profile1)))
+        self.assertEqual(len(np.unique(elem4)), 1)
 
         s2 = Structure.from_spacegroup(225, Lattice.cubic(5.69169),
                                        ['Na', 'Cl'],
@@ -82,6 +96,7 @@ class SpectralNeighborAnalysisTest(unittest.TestCase):
         tjm2 = np.random.randint(1, 11)
         calculator2 = SpectralNeighborAnalysis(rcutfac=5, twojmax=tjm2,
                                                element_profile=profile2,
+                                               quadratic=False,
                                                diagonalstyle=diag2)
         sna2, snad2, snav2, elem2 = calculator2.calculate([s2])[0]
         n2 = calculator2.n_bs
@@ -90,6 +105,19 @@ class SpectralNeighborAnalysisTest(unittest.TestCase):
         self.assertEqual(snad2.shape, (len(s2), n2 * 3 * len(profile2)))
         self.assertEqual(snav2.shape, (len(s2), n2 * 6 * len(profile2)))
         self.assertEqual(len(np.unique(elem2)), len(profile2))
+
+        calculator5 = SpectralNeighborAnalysis(rcutfac=5, twojmax=tjm2,
+                                               element_profile=profile2,
+                                               quadratic=True,
+                                               diagonalstyle=diag2)
+        sna5, snad5, snav5, elem5 = calculator5.calculate([s2])[0]
+        n5 = calculator5.n_bs
+        n5 += int((1 + n5) * n5 / 2)
+        self.assertAlmostEqual(sna5[0][0], 525.858)
+        self.assertEqual(sna5.shape, (len(s2), n5))
+        self.assertEqual(snad5.shape, (len(s2), n5 * 3 * len(profile2)))
+        self.assertEqual(snav5.shape, (len(s2), n5 * 6 * len(profile2)))
+        self.assertEqual(len(np.unique(elem5)), len(profile2))
 
         s3 = Structure.from_spacegroup(221, Lattice.cubic(3.88947),
                                        ['Ca', 'Ti', 'O'],
@@ -103,6 +131,7 @@ class SpectralNeighborAnalysisTest(unittest.TestCase):
         tjm3 = np.random.randint(1, 11)
         calculator3 = SpectralNeighborAnalysis(rcutfac=5, twojmax=tjm3,
                                                element_profile=profile3,
+                                               quadratic=False,
                                                diagonalstyle=diag3)
         sna3, snad3, snav3, elem3 = calculator3.calculate([s3])[0]
         n3 = calculator3.n_bs
@@ -111,6 +140,19 @@ class SpectralNeighborAnalysisTest(unittest.TestCase):
         self.assertEqual(snad3.shape, (len(s3), n3 * 3 * len(profile3)))
         self.assertEqual(snav3.shape, (len(s3), n3 * 6 * len(profile3)))
         self.assertEqual(len(np.unique(elem3)), len(profile3))
+
+        calculator6 = SpectralNeighborAnalysis(rcutfac=5, twojmax=tjm3,
+                                               element_profile=profile3,
+                                               quadratic=True,
+                                               diagonalstyle=diag3)
+        sna6, snad6, snav6, elem6 = calculator6.calculate([s3])[0]
+        n6 = calculator6.n_bs
+        n6 += int((1 + n6) * n6 / 2)
+        self.assertAlmostEqual(sna6[0][0], 25506.3)
+        self.assertEqual(sna6.shape, (len(s3), n6))
+        self.assertEqual(snad6.shape, (len(s3), n6 * 3 * len(profile3)))
+        self.assertEqual(snav6.shape, (len(s3), n6 * 6 * len(profile3)))
+        self.assertEqual(len(np.unique(elem6)), len(profile3))
 
 class EnergyForceStressTest(unittest.TestCase):
 
@@ -128,28 +170,41 @@ class EnergyForceStressTest(unittest.TestCase):
     def setUp(self):
 
         element_profile = {'Ni': {'r': 0.5, 'w': 1}}
-        describer = BispectrumCoefficients(rcutfac=4.1, twojmax=8,
-                                           element_profile=element_profile,
-                                           pot_fit=True)
-        model = LinearModel(describer=describer)
-        model.model.coef_ = coeff
-        model.model.intercept_ = intercept
-        snap = SNAPotential(model=model)
-        snap.specie = Element('Ni')
+        describer1 = BispectrumCoefficients(rcutfac=4.1, twojmax=8,
+                                            element_profile=element_profile,
+                                            quadratic=False,
+                                            pot_fit=True)
+        model1 = LinearModel(describer=describer1)
+        model1.model.coef_ = coeff
+        model1.model.intercept_ = intercept
+        snap1 = SNAPotential(model=model1)
+        snap1.specie = Element('Ni')
+        self.ff_settings1 = snap1
+
+        describer2 = BispectrumCoefficients(rcutfac=4.1, twojmax=8,
+                                            element_profile=element_profile,
+                                            quadratic=True,
+                                            pot_fit=True)
+        model2 = LinearModel(describer=describer2)
+        model2.model.coef_ = coeff
+        model2.model.intercept_ = intercept
+        snap2 = SNAPotential(model=model2)
+        snap2.specie = Element('Ni')
+        self.ff_settings2 = snap2
+
         self.struct = Structure.from_spacegroup('Fm-3m',
                                                 Lattice.cubic(3.506),
                                                 ['Ni'], [[0, 0, 0]])
-        self.ff_settings = snap
+
 
     @unittest.skipIf(not which('lmp_serial'), 'No LAMMPS cmd found.')
     def test_calculate(self):
-        calculator = EnergyForceStress(ff_settings=self.ff_settings)
-        energy, forces, stresses = calculator.calculate([self.struct])[0]
-        self.assertTrue(abs(energy - (-23.1242962)) < 1e-2)
-        np.testing.assert_array_almost_equal(forces,
+        calculator1 = EnergyForceStress(ff_settings=self.ff_settings1)
+        energy1, forces1, stresses1 = calculator1.calculate([self.struct])[0]
+        self.assertTrue(abs(energy1 - (-23.1242962)) < 1e-2)
+        np.testing.assert_array_almost_equal(forces1,
                                              np.zeros((len(self.struct), 3)))
-        self.assertEqual(len(stresses), 6)
-
+        self.assertEqual(len(stresses1), 6)
 
 class ElasticConstantTest(unittest.TestCase):
 
