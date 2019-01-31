@@ -19,7 +19,7 @@ class SNAPotential(Potential):
     This class implements Spectral Neighbor Analysis Potential.
     """
     pair_style = 'pair_style        snap'
-    pair_coeff = 'pair_coeff        * * {coeff_file} {specie} {param_file} {specie}'
+    pair_coeff = 'pair_coeff        * * {coeff_file} {elements} {param_file} {specie}'
     def __init__(self, model, name=None):
         """
         Initialize the SNAPotential Potential with atomic describer
@@ -107,7 +107,7 @@ class SNAPotential(Potential):
         coeff_file = '{}.snapcoeff'.format(self.name)
 
         model = self.model
-        ncoeff = len(model.coef)
+        # ncoeff = len(model.coef)
         describer = self.model.describer
         profile = describer.element_profile
         elements = [element.symbol for element
@@ -143,7 +143,8 @@ class SNAPotential(Potential):
         with open(param_file, 'w') as f:
             f.write('\n'.join(param_lines))
 
-        pair_coeff = self.pair_coeff.format(specie=self.specie.name,
+        pair_coeff = self.pair_coeff.format(elements=' '.join(elements),
+                                            specie=self.specie.name,
                                             coeff_file=coeff_file,
                                             param_file=param_file)
         ff_settings = [self.pair_style, pair_coeff]
