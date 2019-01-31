@@ -103,6 +103,9 @@ class SNAPotential(Potential):
         """
         Write parameter and coefficient file to perform lammps calculation.
         """
+        if not self.specie:
+            raise ValueError("No specie given!")
+
         param_file = '{}.snapparam'.format(self.name)
         coeff_file = '{}.snapcoeff'.format(self.name)
 
