@@ -287,6 +287,8 @@ class SpectralNeighborAnalysis(LMPStaticCalculator):
             else l
         CMDS = list(map(add_args, self._CMDS))
         CMDS[2] += ' bzeroflag 0'
+        CMDS[3] += ' bzeroflag 0'
+        CMDS[4] += ' bzeroflag 0'
         dump_modify = 'dump_modify 1 element '
         dump_modify += ' '.join(str(e) for e in el_in_seq)
         CMDS.append(dump_modify)
