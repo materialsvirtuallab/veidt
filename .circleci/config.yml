@@ -11,6 +11,7 @@ jobs:
             mkdir coverage_reports
             python -m venv venv
             . venv/bin/activate
+            pip install --upgrade setuptools
             pip install -q numpy
             pip install -q -r requirements.txt
             pip install -q -r requirements-ci.txt
