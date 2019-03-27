@@ -10,7 +10,7 @@ import tempfile
 import os
 import shutil
 
-import yaml
+import json
 import numpy as np
 from monty.os.path import which
 from pymatgen import Structure, Lattice, Element
@@ -21,8 +21,9 @@ from veidt.potential.lammps.calcs import \
     SpectralNeighborAnalysis, EnergyForceStress, ElasticConstant, LatticeConstant
 
 CWD = os.getcwd()
-with open(os.path.join(os.path.dirname(__file__), 'coeff.yaml')) as f:
-    coeff, intercept = yaml.load(f)
+with open(os.path.join(os.path.dirname(__file__), 'coeff.json')) as f:
+    coeff, intercept = json.load(f)
+    coeff = np.array(coeff)
 
 class SpectralNeighborAnalysisTest(unittest.TestCase):
 
