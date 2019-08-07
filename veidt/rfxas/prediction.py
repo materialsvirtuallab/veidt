@@ -30,8 +30,10 @@ class CenvPrediction(object):
                             'lowest', energy range value need to be a number specifies the energy range. If the energy
                             reference mode is 'E0', energy range ought to be a list of two numbers. The first number (negative)
                             represents the difference between the lower bound energy and energy reference.
-            edge_energy:
-            spectrum_interpolation:
+            edge_energy (float): Edge energy of spectra. Usually determined using MBACK algorithm and provided by users
+            spectrum_interpolation: Whether or not do spectrum interpolation. Default to True. If spectrum_interpolation option
+                            if False, then the CenvPrediction object will use the original spectrum of xanes_spectrum for
+                            coordination environment prediction. The original spectrum need to be a vector with length equals 200.
         """
 
         self.xanes_spectrum = xanes_spectrum
@@ -61,6 +63,15 @@ class CenvPrediction(object):
             self.interp_energy = self.xanes_spectrum.x
 
     def cenv_prediction(self):
+        """
+        Function used for coordination environment prediction
+
+        Returns:
+            Two new attributes of CenvPrediction object. The attribute 'pred_cnum_ranklist' is the predicted
+            coordination number ranklist. The attribute pred_cenv contains the final predicted coordination
+            environment ranklists.
+
+        """
         self._cnum_prediction()
         self._cmotif_prediction()
 
@@ -176,6 +187,15 @@ class CenvPrediction(object):
 
 
 def find_nearest_energy_index(energy_array, energy_value):
+    """
+    Given a target energy value, returns a value index of energy_array with index value most close to the target energy value
+    Args:
+        energy_array: Energy array to search for the closest energy value index
+        energy_value: Target energy value for index searching.
+
+    Returns:
+
+    """
     energy_array = np.asarray(energy_array)
     energy_index = (np.abs(energy_array - energy_value)).argmin()
     return energy_index

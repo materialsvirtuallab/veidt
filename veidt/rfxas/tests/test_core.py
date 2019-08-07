@@ -1,8 +1,6 @@
-import unittest
 
 from veidt.rfxas.core import XANES
 import pandas as pd
-from pymatgen.core import Structure
 import os, unittest
 import warnings
 
@@ -30,3 +28,17 @@ class RfxasXANESTest(unittest.TestCase):
             xanes_test = XANES(self.test_row_x, self.test_row_spect, self.test_row_absorb_specie, edge='K',
                                **self.test_row_add_paras)
             self.assertTrue('maximum derivative' in str(w[-1].message))
+            self.assertEqual(xanes_test.composition, 'NaB(CO2)4')
+            self.assertEqual(len(xanes_test.x), 200)
+            self.assertEqual(xanes_test.xas_id, 'mp-559618-4-XANES-K')
+            self.assertEqual(xanes_test.elemental_group, 'Carbon')
+
+        with warnings.catch_warnings(record=True) as w:
+            xanes_test_2 = XANES(self.test_row_x, self.test_row_spect, self.test_row_absorb_specie, edge='K',
+                               e0=self.test_row_energy_e0, **self.test_row_add_paras)
+            self.assertEqual(len(w), 0)
+            self.assertEqual(xanes_test_2.composition, 'NaB(CO2)4')
+            self.assertEqual(len(xanes_test_2.x), 200)
+            self.assertEqual(xanes_test_2.e0, 274.98)
+            self.assertEqual(xanes_test_2.xas_id, 'mp-559618-4-XANES-K')
+            self.assertEqual(xanes_test_2.elemental_group, 'Carbon')
