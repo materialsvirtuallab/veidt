@@ -26,7 +26,10 @@ class CenvPrediction(object):
                             using the lowest energy of spectrum as the starting point of the to be characterized
                             spectrum. 'E0' mode for using the edge energy as the reference point to generate to be
                             characterized spectrum energy range.
-            energy_range:
+            energy_range (list/float): Energy range of spectrum used for prediction. If the energy reference mode is
+                            'lowest', energy range value need to be a number specifies the energy range. If the energy
+                            reference mode is 'E0', energy range ought to be a list of two numbers. The first number (negative)
+                            represents the difference between the lower bound energy and energy reference.
             edge_energy:
             spectrum_interpolation:
         """
