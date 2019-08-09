@@ -136,15 +136,22 @@ def get_dllname():
             return pth, dllname
     return None, None
 
+def get_dllname_local():
+    dllname = 'libxdifile.so'
+
+    if sys.platform.startswith('darwin'):
+        dllname = 'libxdifile.dylib'
+
+    pth = os.path.join(os.path.dirname(__file__), 'xdiddl')
+    return pth, dllname
+
 def get_xdilib():
     """find and connect to XDIFILE dll"""
     global XDILIB
 
     load_dll = ctypes.cdll.LoadLibrary
-    if sys.platform.startswith('win'):
-        load_dll = ctypes.windll.LoadLibrary
 
-    dlldir, dllname = get_dllname()
+    dlldir, dllname = get_dllname_local()
     if dlldir is not None:
         fullname = os.path.join(dlldir, dllname)
         XDILIB = load_dll(fullname)
