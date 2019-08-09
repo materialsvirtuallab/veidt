@@ -58,10 +58,12 @@ class RfxasXANESTest(unittest.TestCase):
 
     def test_interpolation(self):
         self.xanes_obj_no_interp = CenvPrediction(self.xanes_obj, 'lowest', 45, None, False)
-        self.assertEqual(
-            pearsonr(self.xanes_obj_no_interp.interp_spectrum, self.xanes_obj_no_interp.xanes_spectrum.y)[0], 1)
-        self.assertEqual(
-            pearsonr(self.xanes_obj_no_interp.interp_energy, self.xanes_obj_no_interp.xanes_spectrum.x)[0], 1)
+        self.assertTrue(np.allclose(
+            pearsonr(self.xanes_obj_no_interp.interp_spectrum, self.xanes_obj_no_interp.xanes_spectrum.y)[0], 1,
+            rtol=1e-7))
+        self.assertTrue(np.allclose(
+            pearsonr(self.xanes_obj_no_interp.interp_energy, self.xanes_obj_no_interp.xanes_spectrum.x)[0], 1,
+            rtol=1e-7))
 
         self.xanes_obj_interp = CenvPrediction(self.xanes_obj, 'lowest', 45, None, True)
         self.assertTrue(
