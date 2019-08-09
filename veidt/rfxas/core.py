@@ -3,6 +3,7 @@
 # Distributed under the terms of the BSD License.
 
 from pymatgen.core.spectrum import Spectrum
+from veidt.rfxas.xdi import XDIFile
 import numpy as np
 import warnings
 import pandas as pd
@@ -66,6 +67,7 @@ class XANES(Spectrum):
             **kwargs: Other attributes of the spectrum object.
 
         Returns:
+            XANES object generated from tsv file
 
         """
 
@@ -73,6 +75,38 @@ class XANES(Spectrum):
         spectrum_energy = spectrum_sample['E (eV)']
         spectrum_mu = spectrum_sample['mu']
 
+        if absorption_specie is None:
+            warning_msg = 'Absorption specie is derived using the edge energy determined with maximum derivative.'
+            warnings.warn(warning_msg)
+            edge_energy = spectrum_energy[np.argmax(np.gradient(spectrum_mu) / np.gradient(spectrum_energy))]
+            edge_vs_atomNo_filepath = os.path.join(os.path.dirname(__file__), 'data', 'Edge_vs_atomNo.csv')
+            edge_vs_atomNo_df = pd.read_csv(edge_vs_atomNo_filepath)
+            kedge_vs_atomNo_df = edge_vs_atomNo_df[['Element', 'K Edge']]
+            kedge_vs_atomNo_df['K_edge_difference'] = kedge_vs_atomNo_df['K Edge'].apply(
+                lambda x: np.abs(x - edge_energy))
+            derived_abs_specie = kedge_vs_atomNo_df.sort_values('K_edge_difference').iloc[0]['Element']
+            return XANES(spectrum_energy, spectrum_mu, absorption_specie=derived_abs_specie, edge='K', **kwargs)
+        else:
+            return XANES(spectrum_energy, spectrum_mu, absorption_specie=absorption_specie, edge='K', **kwargs)
+
+    @staticmethod
+    def from_XDI_file(xdi_file, absorption_specie=None, **kwargs):
+        """
+        Args:
+            xdi_file: XDI (XAS Data Interchange) distribution file contains spectrum information. Please refer to
+                    https://github.com/XraySpectroscopy/XAS-Data-Interchange for details about XDI distribution.
+            absorption_specie (str): Specie associated with the XANES. If not given, will be derived using the
+                                    edge energy.
+            **kwargs: Other attributes of the spectrum object.
+
+        Returns:
+            XANES object generated from tsv file
+
+        """
+
+        xdi_obj = XDIFile(xdi_file)
+        spectrum_energy = xdi_obj.energy
+        spectrum_mu = xdi_obj.mutrans
         if absorption_specie is None:
             warning_msg = 'Absorption specie is derived using the edge energy determined with maximum derivative.'
             warnings.warn(warning_msg)

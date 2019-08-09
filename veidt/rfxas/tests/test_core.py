@@ -1,11 +1,14 @@
 
 from veidt.rfxas.core import XANES
+from veidt.rfxas.prediction import CenvPrediction
 import pandas as pd
 import os, unittest
 import warnings
 
 comp_test_df_path = os.path.join(os.path.dirname(__file__), 'comp_spectra_test.pkl')
 comp_test_df = pd.read_pickle(comp_test_df_path)
+Fe_tsv = os.path.join(os.path.dirname(__file__), 'xas.XANES.K.Fe.mp-13.tsv')
+Fe2O3_xdi = os.path.join(os.path.dirname(__file__), 'fe2o3_rt.xdi')
 
 class RfxasXANESTest(unittest.TestCase):
     def setUp(self):
@@ -42,3 +45,18 @@ class RfxasXANESTest(unittest.TestCase):
             self.assertEqual(xanes_test_2.e0, 274.98)
             self.assertEqual(xanes_test_2.xas_id, 'mp-559618-4-XANES-K')
             self.assertEqual(xanes_test_2.elemental_group, 'Carbon')
+
+    def test_tsv_loading(self):
+        self.Fe_xanes = XANES.from_K_XANES_MP_tsv(Fe_tsv, sep='\t', header=3)
+        self.Fe_CenvPred = CenvPrediction(self.Fe_xanes, 'lowest', 45)
+        self.Fe_CenvPred.cenv_prediction()
+        self.assertEqual(self.Fe_CenvPred.pred_cnum_ranklist, 'CN_4')
+        self.assertEqual(self.Fe_CenvPred.pred_cenv[0], 'CN_4-tetrahedral-trigonal pyramidal-see-saw-like-square co-planar')
+
+    def test_XDI_loading(self):
+        self.Fe2O3_xanes = XANES.from_XDI_file(Fe2O3_xdi)
+        self.Fe2O3_CenvPred = CenvPrediction(self.Fe2O3_xanes, 'E0', [-15, 45], self.Fe2O3_xanes.e0)
+        self.Fe2O3_CenvPred.cenv_prediction()
+        self.assertEqual(self.Fe2O3_CenvPred.pred_cnum_ranklist, 'CN_6')
+        self.assertEqual(self.Fe2O3_CenvPred.pred_cenv[0], 'CN_6-octahedral-pentagonal pyramidal-hexagonal planar')
+
