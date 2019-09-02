@@ -1,6 +1,6 @@
 numpy==1.16.2
 scipy==1.2.1
-pymatgen==2019.3.27
+pymatgen==2019.8.23
 monty==2.0.3
 keras==2.2.5
 tabulate==0.8.3
