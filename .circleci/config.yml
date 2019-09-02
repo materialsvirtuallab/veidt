@@ -26,7 +26,7 @@ jobs:
             pip install --quiet -e .
             pytest --cov=veidt --cov-report html:coverage_reports veidt
             echo "pycodestyle checks..."
-            pycodestyle pymatgen
+            pycodestyle veidt
             echo "--- Done ---"
             coveralls
           no_output_timeout: 3600
