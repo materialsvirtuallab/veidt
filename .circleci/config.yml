@@ -3,23 +3,31 @@ jobs:
   py3test:
     working_directory: ~/veidt
     docker:
-      - image: circleci/python:3.6.1
+      - image: materialsvirtuallab/circle-ci-pmg-py3:3.7.3
     steps:
       - checkout
       - run:
           command: |
-            mkdir coverage_reports
-            python -m venv venv
-            . venv/bin/activate
-            pip install --upgrade setuptools
-            pip install -q numpy
-            pip install -q -r requirements.txt
-            pip install -q -r requirements-ci.txt
+            export PATH=$HOME/miniconda3/bin:$PATH
+            conda config --set always_yes yes --set changeps1 no
+            conda update -q conda
+            conda info -a
+            conda create -q -n test-environment python=3.7 numpy scipy matplotlib sympy cython pandas networkx pytest cmake
+            source activate test-environment
+            conda update --quiet numpy scipy matplotlib sympy cython pandas networkx pytest pip cmake
+            conda install --quiet -c openbabel openbabel
+            # conda install --quiet -c clinicalgraphics vtk
+            conda install --quiet -c conda-forge python-igraph
+            pip install --quiet --ignore-installed -r requirements.txt -r requirements-ci.txt
       - run:
           command: |
-            . venv/bin/activate
-            python setup.py develop
-            nosetests --config=nose.cfg --cover-html --cover-html-dir=coverage_reports
+            export PATH=$HOME/miniconda3/bin:$PATH
+            source activate test-environment
+            pip install --quiet -e .
+            pytest --cov=veidt --cov-report html:coverage_reports veidt
+            echo "pycodestyle checks..."
+            pycodestyle pymatgen
+            echo "--- Done ---"
             coveralls
           no_output_timeout: 3600
       - store_artifacts:
