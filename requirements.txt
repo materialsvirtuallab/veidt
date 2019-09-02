@@ -5,7 +5,7 @@ monty==2.0.3
 keras==2.2.5
 tabulate==0.8.3
 pandas==0.24.1
-scikit-learn==0.20.3
+scikit-learn==0.21.3
 tensorflow==1.14.0
 six==1.12.0
 h5py==2.9.0
