@@ -9,6 +9,10 @@ comp_test_df_path = os.path.join(os.path.dirname(__file__), 'comp_spectra_test.p
 comp_test_df = pd.read_pickle(comp_test_df_path)
 Fe_tsv = os.path.join(os.path.dirname(__file__), 'xas.XANES.K.Fe.mp-13.tsv')
 Fe2O3_xdi = os.path.join(os.path.dirname(__file__), 'fe2o3_rt.xdi')
+binary_exist = False
+for path in ['/usr/lib', '/usr/lib64', '/usr/local/lib', '/usr/local/lib64']:
+    if os.path.isfile(os.path.join(path, "libxdifile.so")):
+        binary_exist = True
 
 class RfxasXANESTest(unittest.TestCase):
     def setUp(self):
@@ -25,6 +29,7 @@ class RfxasXANESTest(unittest.TestCase):
             'composition': self.test_row_formula, 'elemental_group': self.test_row_ele_group,
             'xas_id': self.test_row_xas_id
         }
+
 
     def test_raise_warning(self):
         with warnings.catch_warnings(record=True) as w:
@@ -53,6 +58,7 @@ class RfxasXANESTest(unittest.TestCase):
         self.assertEqual(self.Fe_CenvPred.pred_cnum_ranklist, 'CN_4')
         self.assertEqual(self.Fe_CenvPred.pred_cenv[0], 'CN_4-tetrahedral-trigonal pyramidal-see-saw-like-square co-planar')
 
+    @unittest.skipIf(not binary_exist, "No binary found to load XDI file.")
     def test_XDI_loading(self):
         self.Fe2O3_xanes = XANES.from_XDI_file(Fe2O3_xdi)
         self.Fe2O3_CenvPred = CenvPrediction(self.Fe2O3_xanes, 'E0', [-15, 45], self.Fe2O3_xanes.e0)
