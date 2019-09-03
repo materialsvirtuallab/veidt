@@ -250,14 +250,14 @@ class SpectralNeighborAnalysis(LMPStaticCalculator):
 
         """
         subs = itertools.product(range(twojmax + 1), repeat=3)
-        filters = [lambda x: True if x[0] >= x[1] else False]
+        filters = [lambda x: x[0] >= x[1]]
         if diagonal == 2:
-            filters.append(lambda x: True if x[0] == x[1] == x[2] else False)
+            filters.append(lambda x: x[0] == x[1] == x[2])
         else:
             if diagonal == 1:
-                filters.append(lambda x: True if x[0] == x[1] else False)
+                filters.append(lambda x: x[0] == x[1])
             elif diagonal == 3:
-                filters.append(lambda x: True if x[2] >= x[0] else False)
+                filters.append(lambda x: x[2] >= x[0])
             elif diagonal == 0:
                 pass
 
