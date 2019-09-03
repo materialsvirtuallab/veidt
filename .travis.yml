@@ -25,9 +25,7 @@ script:
   - export PATH="$HOME/miniconda/bin:$PATH"
   - source activate test-environment
   - pytest veidt
-  - echo "pycodestyle check..."
   - pycodestyle veidt
-  - echo "--- Done ---"
 notifications:
   email:
     recipients:
