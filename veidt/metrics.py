@@ -1,5 +1,4 @@
 import numpy as np
-import six
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 
 from veidt.utils.general_utils import deserialize_veidt_object

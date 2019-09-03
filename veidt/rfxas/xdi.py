@@ -7,7 +7,6 @@ provided in github repo with link: https://github.com/XraySpectroscopy/XAS-Data-
 """
 import sys
 import os
-import six
 import platform
 import ctypes
 from ctypes import (Structure, pointer,

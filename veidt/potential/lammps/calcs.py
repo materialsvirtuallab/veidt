@@ -11,7 +11,6 @@ import io
 import subprocess
 import itertools
 
-import six
 import numpy as np
 from monty.tempfile import ScratchDir
 from pymatgen import Element

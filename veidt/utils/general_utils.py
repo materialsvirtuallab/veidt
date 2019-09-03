@@ -1,4 +1,3 @@
-import six
 
 
 def serialize_veidt_object(instance):

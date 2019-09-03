@@ -1,4 +1,3 @@
-import six
 from abc import abstractmethod, ABCMeta
 import numpy as np
 
@@ -9,7 +8,7 @@ evs2A_n2_to_kg = 16.0218  # kg/eVs2A_n2
 u_to_eV = u_to_kg / evs2A_n2_to_kg
 
 
-class Ensemble(six.with_metaclass(ABCMeta)):
+class Ensemble(metaclass=ABCMeta):
     def __init__(self, model):
         """
 

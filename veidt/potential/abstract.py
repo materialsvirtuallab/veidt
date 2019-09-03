@@ -5,7 +5,6 @@
 import abc
 from veidt.abstract import Model
 import abc
-import six
 from monty.json import MSONable
 
 

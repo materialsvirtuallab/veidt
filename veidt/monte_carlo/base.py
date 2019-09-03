@@ -1,10 +1,9 @@
 from abc import abstractmethod, ABCMeta
-import six
 from collections import Iterable, OrderedDict
 from copy import copy
 
 
-class State(six.with_metaclass(ABCMeta)):
+class State(metaclass=ABCMeta):
     def __init__(self, state, name=None):
         """
         Base class for State.
@@ -90,7 +89,7 @@ class StateDict(OrderedDict):
         return new_state_dict
 
 
-class StateStructure(six.with_metaclass(ABCMeta)):
+class StateStructure(metaclass=ABCMeta):
     """
     Structure with StateDict to describe the states
     Each structure will be associated with a collection of state and can be converted to or from the states

@@ -7,7 +7,6 @@ Define abstract base classes.
 """
 
 import abc
-import six
 from monty.json import MSONable
 from sklearn.base import TransformerMixin, BaseEstimator
 from veidt.metrics import get
