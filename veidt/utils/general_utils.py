@@ -29,7 +29,7 @@ def deserialize_veidt_object(identifier, module_objects=None,
                              ': ' + class_name)
         return cls(**config['config'])
 
-    elif isinstance(identifier, six.string_types):
+    elif isinstance(identifier, str):
         function_name = identifier
         fn = module_objects.get(function_name)
         if fn is None:

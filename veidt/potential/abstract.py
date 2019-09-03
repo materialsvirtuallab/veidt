@@ -8,7 +8,7 @@ import abc
 from monty.json import MSONable
 
 
-class Potential(six.with_metaclass(abc.ABCMeta, MSONable)):
+class Potential(MSONable):
     """
     Abstract Base class for a interatomic Potential.
     """

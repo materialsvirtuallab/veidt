@@ -42,7 +42,7 @@ def _read_dump(file_name, dtype='float_'):
     return np.loadtxt(io.StringIO(''.join(lines)), dtype=dtype)
 
 
-class LMPStaticCalculator(six.with_metaclass(abc.ABCMeta, object)):
+class LMPStaticCalculator(metaclass=abc.ABCMeta):
     """
     Abstract class to perform static structure property calculation
     using LAMMPS.

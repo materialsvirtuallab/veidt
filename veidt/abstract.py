@@ -14,7 +14,7 @@ import pandas as pd
 import numpy as np
 
 
-class Describer(six.with_metaclass(abc.ABCMeta, BaseEstimator, MSONable, TransformerMixin)):
+class Describer(BaseEstimator, MSONable, TransformerMixin):
     """
     Base class for a Describer, i.e., something that converts an object to a
     describer, typically a numerical representation useful for machine
@@ -72,7 +72,7 @@ class Describer(six.with_metaclass(abc.ABCMeta, BaseEstimator, MSONable, Transfo
         return pd.concat([self.describe(o) for o in objs])
 
 
-class Model(six.with_metaclass(abc.ABCMeta, BaseEstimator, MSONable)):
+class Model(BaseEstimator, MSONable):
     """
     Abstract Base class for a Model. Basically, it usually wraps around a deep
     learning package, e.g., the Sequential Model in Keras, but provides for

@@ -59,15 +59,7 @@ string_attrs = ('comments', 'edge', 'element', 'error_line',
                 'xdi_version')
 
 
-def Py2tostr(val):
-    return str(val)
-
-
-def Py2tostrlist(address, nitems):
-    return [str(i) for i in (nitems * c_char_p).from_address(address)]
-
-
-def Py3tostr(val):
+def tostr(val):
     if isinstance(val, str):
         return val
     if isinstance(val, bytes):
@@ -75,15 +67,8 @@ def Py3tostr(val):
     return str(val)
 
 
-def Py3tostrlist(address, nitems):
+def tostrlist(address, nitems):
     return [str(i, 'ASCII') for i in (nitems * c_char_p).from_address(address)]
-
-
-tostr = Py2tostr
-tostrlist = Py2tostrlist
-if six.PY3:
-    tostr = Py3tostr
-    tostrlist = Py3tostrlist
 
 
 def add_dot2path():
@@ -216,7 +201,6 @@ class XDIFile(object):
         """
         if filename is None and self.filename is not None:
             filename = self.filename
-        filename = six.b(filename)
 
         pxdi = pointer(XDIFileStruct())
         self.status = out = self.xdilib.XDI_readfile(filename, pxdi)

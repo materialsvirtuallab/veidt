@@ -27,8 +27,8 @@ def get(identifier):
     if isinstance(identifier, dict):
         config = {'class_name': identifier['class_name'], 'config': identifier['config']}
         return deserialize(config)
-    elif isinstance(identifier, six.string_types):
-        return deserialize(str(identifier))
+    elif isinstance(identifier, str):
+        return deserialize(identifier)
     elif callable(identifier):
         return identifier
     else:
