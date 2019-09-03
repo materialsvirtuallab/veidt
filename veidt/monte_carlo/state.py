@@ -42,6 +42,7 @@ class SingleState(State):
     """
     One single variable state, such as temperature, pressure etc
     """
+
     def check_state(self):
         """
         check if only a scalar value is in the state
@@ -56,6 +57,7 @@ class AtomNumberState(SingleState):
     """
     Number of atom state
     """
+
     def __init__(self, atom_number, name='atom_number'):
         super(AtomNumberState, self).__init__(atom_number, name)
 
@@ -71,6 +73,7 @@ class SpinStructure(StateStructure):
     """
     Conversion class between binary spin and structure
     """
+
     def __init__(self, structure, state_dict, species_map):
         """
 
@@ -147,6 +150,7 @@ class Chain(object):
     A chain of states class
 
     To do, need to check states variable changes over steps"""
+
     def __init__(self):
         self.chain = defaultdict(list)
         self.length = 0

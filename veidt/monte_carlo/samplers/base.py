@@ -1,5 +1,6 @@
 from veidt.monte_carlo.base import StaticState
 from veidt.monte_carlo.state import Chain
+
 kb = 8.61733e-5
 
 
@@ -42,6 +43,3 @@ class Sampler(object):
         while self.n_step < cur_step + n:
             self.step(n_print, verbose)
         return self.chain
-
-
-

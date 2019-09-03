@@ -19,8 +19,10 @@ from veidt.describer.atomic_describer import AGNIFingerprints
 from veidt.potential.lammps.calcs import EnergyForceStress
 from sklearn.model_selection import GridSearchCV
 from sklearn.kernel_ridge import KernelRidge
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+
 
 # coding: utf-8
 # Copyright (c) Materials Virtual Lab
@@ -34,6 +36,7 @@ class AGNIPotential(Potential):
     """
     pair_style = 'pair_style        agni'
     pair_coeff = 'pair_coeff        * * {} {}'
+
     def __init__(self, name=None):
         """
         Args:
@@ -61,7 +64,7 @@ class AGNIPotential(Potential):
             lines = f.read()
 
         generation = int(re.search('generation (.*)', lines).group(1))
-        num_elements =  int(re.search('n_elements (.*)', lines).group(1))
+        num_elements = int(re.search('n_elements (.*)', lines).group(1))
         element_type = re.search('\nelement(.*)\n', lines).group(1)
         interaction = re.search('interaction (.*)\n', lines).group(1)
         cutoff = float(re.search('Rc (.*)\n', lines).group(1))
@@ -81,9 +84,11 @@ class AGNIPotential(Potential):
         self.param['lambda'] = lambd
 
         pattern = re.compile('endVar\s*(.*?)(?=\n$|$)', re.S)
-        map_format = lambda string: [float(s) for s in string.split()]
+
+        def map_format(string):
+            return [float(s) for s in string.split()]
         references_params = np.array(list(map(map_format,
-                                   pattern.findall(lines)[0].split('\n'))))
+                                              pattern.findall(lines)[0].split('\n'))))
         assert len(references_params) == num_references
         indices = references_params[:, 0]
         xU = references_params[:, 1:-2]
@@ -94,7 +99,7 @@ class AGNIPotential(Potential):
         self.alphas = alphas
 
     def sample(self, datapool=None, r_cut=8, eta_size=8, num_samples=3000,
-                            num_attempts=10000, t_init=1000, t_final=100):
+               num_attempts=10000, t_init=1000, t_final=100):
         """
         Use metropolis sampling method to select uniform and diverse enough
         data subsets to represent the whole structure-derived features.
@@ -111,6 +116,7 @@ class AGNIPotential(Potential):
         Returns:
             (features, targets)
         """
+
         def cost_function(x):
             dist_matrix = squareform(pdist(x))
             np.fill_diagonal(dist_matrix, np.Infinity)
@@ -168,22 +174,21 @@ class AGNIPotential(Potential):
         st_gamma = -np.inf
         nd_gamma = np.inf
         gamma_trials = np.logspace(-6, 4, 11)
-        while(abs(st_gamma - nd_gamma) > threshold):
+        while (abs(st_gamma - nd_gamma) > threshold):
             kr = GridSearchCV(KernelRidge(kernel='rbf', alpha=alpha,
-                              gamma=0.1), cv=cv, param_grid={"gamma": gamma_trials},
+                                          gamma=0.1), cv=cv, param_grid={"gamma": gamma_trials},
                               return_train_score=True)
             kr.fit(features, targets)
             cv_results = pd.DataFrame(kr.cv_results_)
-            st_gamma = cv_results['param_gamma'][cv_results['rank_test_score'] \
-                                           == 1].iloc[0]
-            nd_gamma = cv_results['param_gamma'][cv_results['rank_test_score'] \
-                                           == 2].iloc[0]
+            st_gamma = cv_results['param_gamma'][cv_results['rank_test_score']
+                                                 == 1].iloc[0]
+            nd_gamma = cv_results['param_gamma'][cv_results['rank_test_score']
+                                                 == 2].iloc[0]
             gamma_trials = np.linspace(min(st_gamma, nd_gamma), max(st_gamma, nd_gamma), 10)
         gamma = st_gamma
 
         K = np.exp(-gamma * squareform(pdist(features)) ** 2)
-        alphas = np.dot(np.linalg.inv(K \
-                        + alpha * np.eye(len(features))), targets)
+        alphas = np.dot(np.linalg.inv(K + alpha * np.eye(len(features))), targets)
         kkr = KernelRidge(alpha=alpha, gamma=gamma, kernel='rbf')
         kkr.fit(features, targets)
 
@@ -198,7 +203,7 @@ class AGNIPotential(Potential):
         return gamma
 
     def train(self, train_structures, energies=None, forces=None,
-                        stresses=None, **kwargs):
+              stresses=None, **kwargs):
         """
         Training data with agni method.
         Args:
@@ -229,9 +234,9 @@ class AGNIPotential(Potential):
 
         assert len(self.alphas) == len(self.yU)
         lines = [' '.join([key] + [str(f) for f in value])
-                            if isinstance(value, list)
-                            else ' '.join([key, str(value)])
-                            for key, value in self.param.items()]
+                 if isinstance(value, list)
+                 else ' '.join([key, str(value)])
+                 for key, value in self.param.items()]
         lines.insert(0, 'generation 1')
         lines.insert(1, 'n_elements 1')
         lines.append('endVar\n')
@@ -253,7 +258,7 @@ class AGNIPotential(Potential):
         return ff_settings
 
     def evaluate2(self, test_structures, ref_energies=None,
-                    ref_forces=None, ref_stresses=None):
+                  ref_forces=None, ref_stresses=None):
         """
         Evaluate energies, forces and stresses of structures with trained
         interatomic potential.
@@ -323,11 +328,13 @@ class AGNIPotential(Potential):
         _, df_pred = convert_docs(data_pool)
         return df_orig, df_pred
 
+
 class AGNIPotentialVeidt(PotentialVeidt):
     """
     This class implements Adaptive generalizable neighborhood
     informed potential.
     """
+
     def __init__(self,
                  name=None,
                  n_elements=1,
@@ -467,6 +474,7 @@ endVar
         Returns:
             AGNIPotential
         """
+
         def read_line(line):
             line_splits = line.split(" ")
             param = line_splits[0]
@@ -483,14 +491,14 @@ endVar
                 end_index = line_index
                 break
 
-        for i in range(end_index+1):
+        for i in range(end_index + 1):
             if not lines[i].startswith('#'):
                 line_strip = line.strip()
                 if line_strip:
                     parameter, value = read_line(line_strip)
                     param[parameter] = value
 
-        reference_params = np.genfromtxt(StringIO("\n".join(lines[end_index+1:])))
+        reference_params = np.genfromtxt(StringIO("\n".join(lines[end_index + 1:])))
         param['xu'] = reference_params[:, 1:-2]
         param['yu'] = reference_params[:, -2]
         param['alphas'] = reference_params[:, -1]

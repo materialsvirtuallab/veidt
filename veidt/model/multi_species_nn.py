@@ -12,7 +12,8 @@ def create_atomic_nn(keras_input, layers):
     the output of this function is a number, i.e., the total energy.
     Therefore, the keras_input argument should have a shape of [None, feature_dim].
 
-    :param keras_input: Keras layer, the input dimension is [None, feature_dim], where the None dimension is the nb of atoms
+    :param keras_input: Keras layer, the input dimension is [None, feature_dim], where the None dimension is the nb of
+        atoms
     :param layers: list, layer configuration, e.g., [30, 31, 32, 1] indicates
     that the input dimension is 30, with two hidden layers having 31 and 32 units and 1 output
     :return: Keras layer, layer object for latter steps

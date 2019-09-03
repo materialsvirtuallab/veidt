@@ -7,6 +7,7 @@ class Metropolis(Sampler):
     """
     A metropolis sampler
     """
+
     def __init__(self, state_structure, ensemble):
         """
 
@@ -67,8 +68,8 @@ def proposal(state_structure, step_name=None):
     if step_name is None:
         new_state_structure.change()
     else:
-        [i.change() for i in new_state_structure.state_dict.values() if i.label==step_name]
-        #new_state_structure.state_dict[step_name].change()
+        [i.change() for i in new_state_structure.state_dict.values() if i.label == step_name]
+        # new_state_structure.state_dict[step_name].change()
         new_state_structure.from_states(new_state_structure.state_dict)
     return new_state_structure
 
@@ -82,7 +83,7 @@ def accept(d_exp, temperature):
 
     if d_exp <= 0:
         return True
-    elif np.random.uniform() < np.exp(-d_exp/kb/temperature):
+    elif np.random.uniform() < np.exp(-d_exp / kb / temperature):
         return True
     else:
         return False

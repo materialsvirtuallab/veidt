@@ -19,6 +19,7 @@ from pymatgen.core.periodic_table import get_el_sp
 from veidt.abstract import Describer
 from veidt.potential.processing import pool_from
 
+
 class BispectrumCoefficients(Describer):
     """
     Bispectrum coefficients to describe the local environment of each
@@ -125,8 +126,8 @@ class BispectrumCoefficients(Describer):
                            self.subscripts))
         if self.quadratic:
             columns += list(map(lambda s: '-'.join(['%d%d%d' % (i, j, k)
-                                                   for i, j, k in s ]),
-            itertools.combinations_with_replacement(self.subscripts, 2)))
+                                                    for i, j, k in s]),
+                                itertools.combinations_with_replacement(self.subscripts, 2)))
 
         raw_data = self.calculator.calculate(structures)
 
@@ -219,6 +220,7 @@ class AGNIFingerprints(Describer):
                          keys=range(len(structures)),
                          names=['input_index', None])
 
+
 class SOAPDescriptor(Describer):
     """
     Smooth Overlap of Atomic Position (SOAP) descriptor.
@@ -274,12 +276,12 @@ class SOAPDescriptor(Describer):
         descriptor_command.append("n_species" + '=' + str(n_species))
         descriptor_command.append("species_Z" + '=' + species_Z)
 
-        exe_command.append("descriptor_str=" + "{" + \
+        exe_command.append("descriptor_str=" + "{" +
                            "{}".format(' '.join(descriptor_command)) + "}")
 
         with ScratchDir('.'):
             atoms_filename = self.operator.write_cfgs(filename=atoms_filename,
-                                                    cfg_pool=pool_from([structure]))
+                                                      cfg_pool=pool_from([structure]))
             descriptor_output = 'output'
             p = subprocess.Popen(exe_command, stdout=open(descriptor_output, 'w'))
             stdout = p.communicate()[0]
@@ -291,7 +293,7 @@ class SOAPDescriptor(Describer):
                     error_line = [i for i, m in enumerate(msg)
                                   if m.startswith('ERROR')][0]
                     error_msg += ', '.join([e for e in msg[error_line:]])
-                except:
+                except Exception:
                     error_msg += msg[-1]
                 raise RuntimeError(error_msg)
 
@@ -300,7 +302,7 @@ class SOAPDescriptor(Describer):
 
             descriptor_pattern = re.compile('DESC(.*?)\n', re.S)
             descriptors = pd.DataFrame([np.array(c.split(), dtype=np.float)
-                                     for c in descriptor_pattern.findall(lines)])
+                                        for c in descriptor_pattern.findall(lines)])
 
         return descriptors
 
@@ -357,9 +359,9 @@ class BPSymmetryFunctions(Describer):
             block_pattern = re.compile('(\n\s+\d+\n|^\s+\d+\n)(.+?)(?=\n\s+\d+\n|$)', re.S)
             points_features = []
             for (num_neighbor, block) in block_pattern.findall(lines):
-                point_features = pd.DataFrame([feature.split()[1:] \
+                point_features = pd.DataFrame([feature.split()[1:]
                                                for feature in block.split('\n')[:-1]],
-                                               dtype=np.float32)
+                                              dtype=np.float32)
                 points_features.append(point_features)
             points_features = pd.concat(points_features,
                                         keys=range(len(block_pattern.findall(lines))),

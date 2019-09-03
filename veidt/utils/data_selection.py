@@ -37,7 +37,7 @@ class MonteCarloSampler(object):
         self.num_total = len(datasets)
         self.num_remain = self.num_total - num_samples
         self.index_selected = list(np.random.choice(
-                self.num_total, num_samples, replace=False))
+            self.num_total, num_samples, replace=False))
         self._get_remain_index()
 
         self.cost = self.compute_cost(self.datasets[self.index_selected, :])

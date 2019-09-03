@@ -27,13 +27,14 @@ class CenvPrediction(object):
                             spectrum. 'E0' mode for using the edge energy as the reference point to generate to be
                             characterized spectrum energy range.
             energy_range (list/float): Energy range of spectrum used for prediction. If the energy reference mode is
-                            'lowest', energy range value need to be a number specifies the energy range. If the energy
-                            reference mode is 'E0', energy range ought to be a list of two numbers. The first number (negative)
-                            represents the difference between the lower bound energy and energy reference.
+                'lowest', energy range value need to be a number specifies the energy range. If the energy
+                reference mode is 'E0', energy range ought to be a list of two numbers. The first number
+                (negative) represents the difference between the lower bound energy and energy reference.
             edge_energy (float): Edge energy of spectra. Usually determined using MBACK algorithm and provided by users
-            spectrum_interpolation: Whether or not do spectrum interpolation. Default to True. If spectrum_interpolation option
-                            if False, then the CenvPrediction object will use the original spectrum of xanes_spectrum for
-                            coordination environment prediction. The original spectrum need to be a vector with length equals 200.
+            spectrum_interpolation: Whether or not do spectrum interpolation. Default to True. If
+                spectrum_interpolation option if False, then the CenvPrediction object will use the original spectrum
+                of xanes_spectrum for coordination environment prediction. The original spectrum need to be a vector
+                with length equals 200.
         """
 
         self.xanes_spectrum = xanes_spectrum
@@ -47,8 +48,8 @@ class CenvPrediction(object):
         self._parameter_validation()
 
         if energy_reference == 'E0' and edge_energy is None:
-            warning_msg = "Using edge energy of xanes_spectrum object, be cautious about how the object's edge energy is determined"
-            warnings.warn(warning_msg)
+            warnings.warn("Using edge energy of xanes_spectrum object, be cautious about how the object's edge energy"
+                          " is determined")
             self.edge_energy = self.xanes_spectrum.e0
         elif energy_reference == 'E0' and edge_energy:
             self.edge_energy = edge_energy
@@ -162,7 +163,8 @@ class CenvPrediction(object):
         if self.energy_reference == 'lowest':
             if not isinstance(self.energy_range, Number):
                 raise ValueError(
-                    'Energy range needs to be a number when the energy reference point is the starting energy of the spectrum')
+                    'Energy range needs to be a number when the energy reference point is the starting energy of '
+                    'the spectrum')
 
             if self.energy_range < 0:
                 raise ValueError(
@@ -172,7 +174,8 @@ class CenvPrediction(object):
         if self.energy_reference == 'E0':
             if not isinstance(self.energy_range, list):
                 raise ValueError(
-                    'Energy range needs to be a list contains lower energy bound and higher energy bound refer to energy reference point'
+                    'Energy range needs to be a list contains lower energy bound and higher energy bound refer to '
+                    'energy reference point'
                 )
 
             if self.energy_lower_bound > 0:
@@ -188,7 +191,9 @@ class CenvPrediction(object):
 
 def find_nearest_energy_index(energy_array, energy_value):
     """
-    Given a target energy value, returns a value index of energy_array with index value most close to the target energy value
+    Given a target energy value, returns a value index of energy_array with index value most close to the target energy
+    value
+
     Args:
         energy_array: Energy array to search for the closest energy value index
         energy_value: Target energy value for index searching.

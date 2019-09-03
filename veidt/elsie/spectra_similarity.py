@@ -41,21 +41,17 @@ class SpectraSimilarity(MSONable):
         1. If the overlap energy range is less than 30 meV,
         2. If there is no overlap energy, self.valid_comparison set to false
         """
-        min_energy_1, max_energy_1 = np.min(self.sp1.x), \
-                                     np.max(self.sp1.x)
-        min_energy_2, max_energy_2 = np.min(self.sp2.x), \
-                                     np.max(self.sp2.x)
+        min_energy_1, max_energy_1 = np.min(self.sp1.x), np.max(self.sp1.x)
+        min_energy_2, max_energy_2 = np.min(self.sp2.x), np.max(self.sp2.x)
         max_min_energy = max(min_energy_1, min_energy_2)
         min_max_energy = min(max_energy_1, max_energy_2)
 
         if (min_energy_2 > max_energy_1) or (min_energy_1 > max_energy_2):
-            warning_msg = "Candidate spectrum has no overlap with given " \
-                          "spectrum to match"
+            warning_msg = "Candidate spectrum has no overlap with given spectrum to match"
             warnings.warn(warning_msg)
             self.valid_comparison = False
         elif (min_max_energy - max_min_energy) < 30:
-            warning_msg = "Candidate and given spectra's overlap absorption " \
-                          "energy is less than 30 meV"
+            warning_msg = "Candidate and given spectra's overlap absorption energy is less than 30 meV"
             warnings.warn(warning_msg)
             self.valid_comparison = True
         else:
@@ -89,14 +85,12 @@ class SpectraSimilarity(MSONable):
 
         if algo == 'threshold_shift':
             self.sp1, self.sp2 = spectra_lower_extend(self.sp1, self.sp2)
-            self.shifted_sp1, self.shifted_sp2, self.shifted_energy, \
-            self.abs_onset = absorption_onset_shift(
-                self.sp1, self.sp2, intensity_threshold)
+            self.shifted_sp1, self.shifted_sp2, self.shifted_energy, self.abs_onset = \
+                absorption_onset_shift(self.sp1, self.sp2, intensity_threshold)
         elif algo == 'cross_correlate':
             self.sp1, self.sp2 = spectra_lower_extend(self.sp1, self.sp2)
             self.shifted_sp1, self.shifted_sp2, self.shifted_energy = \
                 signal_corre_shift(self.sp1, self.sp2)
-
 
     def get_shifted_similarity(self, similarity_metric, energy_variation=None,
                                spect_preprocess=None, **kwargs):
@@ -167,7 +161,7 @@ class SpectraSimilarity(MSONable):
 
                 try:
                     similarity_value = similarity_obj.similarity_measure()
-                except:
+                except Exception:
                     warnings.warn("Cannot generate valid similarity value for the two spectra")
                     similarity_value = np.NaN
 
@@ -222,7 +216,7 @@ class SpectraSimilarity(MSONable):
 
             try:
                 similarity_value = similarity_obj.similarity_measure()
-            except:
+            except Exception:
                 warnings.warn("Cannot generate valid similarity value "
                               "for the two spectra")
                 similarity_value = 0

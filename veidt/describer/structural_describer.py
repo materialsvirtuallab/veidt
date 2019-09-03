@@ -10,6 +10,7 @@ class DistinctSiteProperty(Describer):
     structure. For now, this assumes that there is only one type of species in
     a particular Wyckoff site.
     """
+
     # todo: generalize to multiple sites with the same Wyckoff.
 
     def fit(self, structures, target=None):
@@ -39,7 +40,6 @@ class DistinctSiteProperty(Describer):
                 data.append(getattr(site.specie, p))
                 names.append("%s-%s" % (w, p))
         return pd.DataFrame([data], columns=names)
-
 
 
 class CoulombMatrix(Describer):
@@ -133,7 +133,7 @@ class CoulombMatrix(Describer):
             c = self.sorted_coulomb_mat(structure)
         if self.randomized:
             c = self.randomized_coulomb_mat(structure)
-        if np.all([self.sorted == False, self.randomized == False]):
+        if np.all([not self.sorted, not self.randomized]):
             c = self.coulomb_mat(structure)
         return pd.DataFrame(c.ravel())
 
@@ -148,5 +148,5 @@ class CoulombMatrix(Describer):
             Indices are the elements index in the coulomb matrix
         """
 
-        return pd.concat([self.describe(s).rename(columns={0: ind}) \
+        return pd.concat([self.describe(s).rename(columns={0: ind})
                           for ind, s in enumerate(structures)], axis=1)

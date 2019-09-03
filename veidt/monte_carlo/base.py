@@ -58,6 +58,7 @@ class StaticState(State):
     """
     StaticState does not change the state when calling the change method
     """
+
     def change(self):
         pass
 
@@ -67,6 +68,7 @@ class StateDict(OrderedDict):
     A collection of states. Usually one physical system is described by more than
     one state variable
     """
+
     def __init__(self, states=None, **kwargs):
         if isinstance(states, (list, tuple)):
             super(StateDict, self).__init__({i.name: i for i in states})
@@ -93,6 +95,7 @@ class StateStructure(six.with_metaclass(ABCMeta)):
     Structure with StateDict to describe the states
     Each structure will be associated with a collection of state and can be converted to or from the states
     """
+
     def __init__(self, structure, state_dict):
         """
 
@@ -144,11 +147,3 @@ class StateStructure(six.with_metaclass(ABCMeta)):
         """
         [i.change() for i in self.state_dict.values()]
         self.from_states(self.state_dict)
-
-
-
-
-
-
-
-

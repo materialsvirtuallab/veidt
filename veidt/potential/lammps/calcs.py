@@ -18,8 +18,9 @@ from pymatgen import Element
 from pymatgen.io.lammps.data import LammpsData
 from veidt.potential.abstract import Potential
 
-_sort_elements = lambda symbols: [e.symbol for e in
-                                  sorted([Element(e) for e in symbols])]
+
+def _sort_elements(symbols):
+    return [e.symbol for e in sorted([Element(e) for e in symbols])]
 
 
 def _pretty_input(lines):
@@ -28,8 +29,10 @@ def _pretty_input(lines):
     keys = [c.split()[0] for c in commands
             if not c.split()[0].startswith('#')]
     width = max([len(k) for k in keys]) + 4
-    prettify = lambda l: l.split()[0].ljust(width) + ' '.join(l.split()[1:]) \
-        if not (len(l.split()) == 0 or l.strip().startswith('#')) else l
+
+    def prettify(l):
+        return l.split()[0].ljust(width) + ' '.join(l.split()[1:]) \
+            if not (len(l.split()) == 0 or l.strip().startswith('#')) else l
     new_lines = map(prettify, clean_lines)
     return '\n'.join(new_lines)
 
@@ -113,7 +116,7 @@ class LMPStaticCalculator(six.with_metaclass(abc.ABCMeta, object)):
                         error_line = [i for i, m in enumerate(msg)
                                       if m.startswith('ERROR')][0]
                         error_msg += ', '.join([e for e in msg[error_line:]])
-                    except:
+                    except Exception:
                         error_msg += msg[-1]
                     raise RuntimeError(error_msg)
                 results = self._parse()
@@ -125,6 +128,7 @@ class EnergyForceStress(LMPStaticCalculator):
     """
     Calculate energy, forces and virial stress of structures.
     """
+
     def __init__(self, ff_settings):
         """
         Args:
@@ -257,9 +261,9 @@ class SpectralNeighborAnalysis(LMPStaticCalculator):
                 filters.append(lambda x: True if x[2] >= x[0] else False)
             elif diagonal == 0:
                 pass
-            j_filter = lambda x: True if \
-                x[2] in range(x[0] - x[1], min(twojmax, x[0] + x[1]) + 1, 2)\
-                else False
+
+            def j_filter(x):
+                return x[2] in range(x[0] - x[1], min(twojmax, x[0] + x[1]) + 1, 2)
             filters.append(j_filter)
         for f in filters:
             subs = filter(f, subs)
@@ -281,10 +285,11 @@ class SpectralNeighborAnalysis(LMPStaticCalculator):
         weights = [self.element_profile[e]['w'] for e in el_in_seq]
         compute_args += ' '.join([str(p) for p in cutoffs + weights])
         qflag = 1 if self.quadratic else 0
-        compute_args += ' diagonal {} rmin0 {} quadraticflag {}'.\
+        compute_args += ' diagonal {} rmin0 {} quadraticflag {}'. \
             format(self.diagonalstyle, self.rmin0, qflag)
-        add_args = lambda l: l + compute_args if l.startswith('compute') \
-            else l
+
+        def add_args(l):
+            return l + compute_args if l.startswith('compute') else l
         CMDS = list(map(add_args, self._CMDS))
         CMDS[2] += ' bzeroflag 0'
         CMDS[3] += ' bzeroflag 0'
@@ -322,6 +327,7 @@ class ElasticConstant(LMPStaticCalculator):
                        'external': {'write_command': 'write_data',
                                     'read_command': 'read_data',
                                     'restart_file': 'data.static'}}
+
     def __init__(self, ff_settings, potential_type='external',
                  deformation_size=1e-6, jiggle=1e-5, lattice='bcc', alat=5.0,
                  maxiter=400, maxeval=1000):
@@ -401,7 +407,7 @@ class ElasticConstant(LMPStaticCalculator):
                     error_line = [i for i, m in enumerate(msg)
                                   if m.startswith('ERROR')][0]
                     error_msg += ', '.join([e for e in msg[error_line:]])
-                except:
+                except Exception:
                     error_msg += msg[-1]
                 raise RuntimeError(error_msg)
             result = self._parse()
@@ -427,6 +433,7 @@ class LatticeConstant(LMPStaticCalculator):
     """
     Lattice Constant Relaxation Calculator.
     """
+
     def __init__(self, ff_settings):
         """
         Args:
@@ -469,10 +476,12 @@ class LatticeConstant(LMPStaticCalculator):
         a, b, c = np.loadtxt('lattice.txt')
         return a, b, c
 
+
 class TimeBenchmarker(LMPStaticCalculator):
     """
     Time benchmark calculator.
     """
+
     def __init__(self, ff_settings):
         """
         Args:

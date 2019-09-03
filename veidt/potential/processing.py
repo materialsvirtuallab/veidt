@@ -11,6 +11,7 @@ import pandas as pd
 from copy import copy
 from pymatgen import Structure
 
+
 def doc_from(structure, energy=None, force=None, stress=None):
     """
     Method to convert structure and its properties into doc
@@ -36,6 +37,7 @@ def doc_from(structure, energy=None, force=None, stress=None):
                outputs=outputs)
     return doc
 
+
 def pool_from(structures, energies=None, forces=None, stresses=None):
     """
     Method to convert structures and their properties in to
@@ -56,9 +58,10 @@ def pool_from(structures, energies=None, forces=None, stresses=None):
     forces = forces if forces else [None] * len(structures)
     stresses = stresses if stresses else [None] * len(structures)
     datapool = [doc_from(structure, energy, force, stress)
-                    for structure, energy, force, stress
-                        in zip(structures, energies, forces, stresses)]
+                for structure, energy, force, stress
+                in zip(structures, energies, forces, stresses)]
     return datapool
+
 
 def convert_docs(docs, include_stress=False, **kwargs):
     """
@@ -82,7 +85,7 @@ def convert_docs(docs, include_stress=False, **kwargs):
             structure = d['structure']
         outputs = d['outputs']
         force_arr = np.array(outputs['forces'])
-        assert force_arr.shape == (len(structure), 3),\
+        assert force_arr.shape == (len(structure), 3), \
             'Wrong force array not matching structure'
         force_arr = force_arr.ravel()
 
@@ -128,7 +131,7 @@ class MonteCarloSampler(object):
         self.num_total = len(datasets)
         self.num_remain = self.num_total - num_samples
         self.index_selected = list(np.random.choice(
-                self.num_total, num_samples, replace=False))
+            self.num_total, num_samples, replace=False))
         self._get_remain_index()
 
         self.cost = self.compute_cost(self.datasets[self.index_selected, :])

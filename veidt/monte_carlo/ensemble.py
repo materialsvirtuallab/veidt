@@ -1,4 +1,3 @@
-from __future__ import division
 import six
 from abc import abstractmethod, ABCMeta
 import numpy as np
@@ -80,8 +79,7 @@ class NPT(Ensemble):
         volume = state_structure.state_dict['volume'].state
         atom_number = state_structure.state_dict['atom_number'].state
         temperature = state_structure.state_dict['temperature'].state
-        return hamil - \
-            atom_number * kb * temperature * np.log(volume)
+        return hamil - atom_number * kb * temperature * np.log(volume)
 
     def hamiltonian(self, state_structure):
         energy = self._calc_energy(state_structure)
@@ -115,16 +113,16 @@ class uVT(Ensemble):
         e2 = self.hamiltonian(new_state_structure)
         # print(n1, n2, e1, e2, e1-mu*n1, e2-mu*n2)
         if lambda_ is None:
-            lambda_ = np.sqrt(h**2/(2*np.pi*m*u_to_eV*kb*temperature))  # thermal wavelength Angstrom
+            lambda_ = np.sqrt(h ** 2 / (2 * np.pi * m * u_to_eV * kb * temperature))  # thermal wavelength Angstrom
             self._cache.update({'lambda': lambda_})
         du = self.hamiltonian(new_state_structure) - self.hamiltonian(state_structure)
-        mu_prime = mu - 3*kb*temperature*np.log(lambda_)
+        mu_prime = mu - 3 * kb * temperature * np.log(lambda_)
         # insertion
         if n1 < n2:
-            return du - mu_prime - kb * temperature * np.log(volume/(n1+1))
+            return du - mu_prime - kb * temperature * np.log(volume / (n1 + 1))
         # deletion
         else:
-            return du + mu_prime - kb * temperature * np.log(n1/volume)
+            return du + mu_prime - kb * temperature * np.log(n1 / volume)
 
     def hamiltonian(self, state_structure):
         return self._calc_energy(state_structure)
@@ -155,7 +153,7 @@ class SemiUVT(Ensemble):
     def get_fraction_or_n(self, state_structure, specie):
         n = state_structure.structure.composition.to_data_dict['unit_cell_composition'][specie]
         fu = self.get_formula_unit(state_structure)
-        return n/fu
+        return n / fu
 
     def get_formula_unit(self, state_structure):
         if self.is_fraction:
@@ -163,4 +161,3 @@ class SemiUVT(Ensemble):
                            for i in self.fu_species])
         else:
             return 1
-

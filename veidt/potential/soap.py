@@ -27,12 +27,14 @@ from veidt.potential.lammps.calcs import EnergyForceStress
 module_dir = os.path.dirname(__file__)
 soap_params = loadfn(os.path.join(module_dir, 'params', 'soap.json'))
 
+
 class SOAPotential(Potential):
     """
     This class implements Smooth Overlap of Atomic Position potential.
     """
     pair_style = 'pair_style        quip'
     pair_coeff = 'pair_coeff        * * {} {} {}'
+
     def __init__(self, name=None, param=None):
         """
 
@@ -63,10 +65,10 @@ class SOAPotential(Potential):
                               virial_stress[3], virial_stress[1], virial_stress[4],
                               virial_stress[5], virial_stress[4], virial_stress[2]]
 
-        inputs = OrderedDict(Size=structure.num_sites, \
-                             SuperCell=structure.lattice, \
-                             AtomData=(structure, forces), \
-                             Energy=energy, \
+        inputs = OrderedDict(Size=structure.num_sites,
+                             SuperCell=structure.lattice,
+                             AtomData=(structure, forces),
+                             Energy=energy,
                              Stress=full_virial_stress)
 
         lines = []
@@ -78,7 +80,7 @@ class SOAPotential(Potential):
             description.append('dft_energy={}'.format(inputs['Energy']))
         if 'Stress' in inputs:
             description.append('dft_virial={%s}' %
-                                '\t'.join(list(map(lambda f: str(f), inputs['Stress']))))
+                               '\t'.join(list(map(lambda f: str(f), inputs['Stress']))))
         if 'SuperCell' in inputs:
             SuperCell_str = list(map(lambda f: str(f), inputs['SuperCell'].matrix.ravel()))
             description.append('Lattice="{}"'.format('     '.join(SuperCell_str)))
@@ -88,7 +90,7 @@ class SOAPotential(Potential):
         if 'AtomData' in inputs:
             format_str = '{:<10s}{:>16f}{:>16f}{:>16f}{:>8d}{:>16f}{:>16f}{:>16f}'
             for i, (site, force) in enumerate(zip(structure, forces)):
-                lines.append(format_str.format(site.species_string, \
+                lines.append(format_str.format(site.species_string,
                                                *site.coords, site.specie.Z, *force))
         return '\n'.join(lines)
 
@@ -130,7 +132,7 @@ class SOAPotential(Potential):
         block_pattern = re.compile('(\n[0-9]+\n|^[0-9]+\n)(.+?)(?=\n[0-9]+\n|$)', re.S)
         lattice_pattern = re.compile('Lattice="(.+)"')
         # energy_pattern = re.compile('dft_energy=(-?[0-9]+.[0-9]+)', re.I)
-        energy_pattern = re.compile('(?<=\S{3}\s|dft_)energy=(-?[0-9]+.[0-9]+)')
+        energy_pattern = re.compile(r'(?<=\S{3}\s|dft_)energy=(-?[0-9]+.[0-9]+)')
         # stress_pattern = re.compile('dft_virial={(.+)}')
         stress_pattern = re.compile('dft_virial=({|)(.+?)(}|) \S.*')
         properties_pattern = re.compile('properties=(\S+)', re.I)
@@ -139,7 +141,7 @@ class SOAPotential(Potential):
         # formatify = lambda string: [float(s) for s in string.split()]
 
         for (size, block) in block_pattern.findall(lines):
-            d = {'outputs':{}}
+            d = {'outputs': {}}
             size = int(size)
             lattice_str = lattice_pattern.findall(block)[0]
             lattice = Lattice(list(map(lambda s: float(s), lattice_str.split())))
@@ -160,10 +162,9 @@ class SOAPotential(Potential):
             column_index = 0
             for key in labels_columns:
                 num_columns, dtype = labels_columns[key]
-                labels[key] = position[:, column_index : \
-                    column_index + num_columns].astype(type_convert[dtype])
+                labels[key] = position[:, column_index: column_index + num_columns].astype(type_convert[dtype])
                 column_index += num_columns
-            struct = Structure(lattice=lattice, species=labels['species'].ravel(), \
+            struct = Structure(lattice=lattice, species=labels['species'].ravel(),
                                coords=labels['pos'], coords_are_cartesian=True)
             if predict:
                 forces = labels['force']
@@ -181,8 +182,8 @@ class SOAPotential(Potential):
         return data_pool, df
 
     def train(self, train_structures, energies=None, forces=None, stresses=None,
-                    default_sigma=[0.0005, 0.1, 0.05, 0.01],
-                    use_energies=True, use_forces=True, use_stress=False, **kwargs):
+              default_sigma=[0.0005, 0.1, 0.05, 0.01],
+              use_energies=True, use_forces=True, use_stress=False, **kwargs):
         """
         Training data with gaussian process regression.
 
@@ -249,8 +250,8 @@ class SOAPotential(Potential):
 
         exe_command = ["teach_sparse"]
         exe_command.append('at_file={}'.format(atoms_filename))
-        gap_configure_params = ['l_max', 'n_max', 'atom_sigma', 'zeta', 'cutoff', \
-                                'cutoff_transition_width', 'delta', 'f0', 'n_sparse', \
+        gap_configure_params = ['l_max', 'n_max', 'atom_sigma', 'zeta', 'cutoff',
+                                'cutoff_transition_width', 'delta', 'f0', 'n_sparse',
                                 'covariance_type', 'sparse_method']
         preprocess_params = ['sparse_jitter', 'e0', 'e0_offset']
         target_for_training = ['use_energies', 'use_forces', 'use_stress']
@@ -260,13 +261,13 @@ class SOAPotential(Potential):
         gap_command = ['soap']
         for param_name in gap_configure_params:
             param = kwargs.get(param_name) if kwargs.get(param_name) \
-                                        else soap_params.get(param_name)
+                else soap_params.get(param_name)
             gap_command.append(param_name + '=' + '{}'.format(param))
         exe_command.append("gap=" + "{" + "{}".format(' '.join(gap_command)) + "}")
 
         for param_name in preprocess_params:
             param = kwargs.get(param_name) if kwargs.get(param_name) \
-                                        else soap_params.get(param_name)
+                else soap_params.get(param_name)
             exe_command.append(param_name + '=' + '{}'.format(param))
 
         default_sigma = [str(f) for f in default_sigma]
@@ -293,7 +294,7 @@ class SOAPotential(Potential):
                     error_line = [i for i, m in enumerate(msg)
                                   if m.startswith('ERROR')][0]
                     error_msg += ', '.join([e for e in msg[error_line:]])
-                except:
+                except Exception:
                     error_msg += msg[-1]
                 raise RuntimeError(error_msg)
 
@@ -330,15 +331,14 @@ class SOAPotential(Potential):
         np.savetxt(param_filename, self.param.get('param'))
         tree.write(xml_filename)
         pair_coeff = self.pair_coeff.format(xml_filename,
-                        '\"Potential xml_label={}\"'. \
-                        format(self.param.get('potential_label')),
-                        self.specie.Z)
+                                            '\"Potential xml_label={}\"'.format(self.param.get('potential_label')),
+                                            self.specie.Z)
         ff_settings = [self.pair_style, pair_coeff]
         return ff_settings
 
     def evaluate(self, test_structures, ref_energies=None, ref_forces=None,
-                        ref_stresses=None, predict_energies=True,
-                        predict_forces=True, predict_stress=False):
+                 ref_stresses=None, predict_energies=True,
+                 predict_forces=True, predict_stress=False):
         """
         Evaluate energies, forces and stresses of structures with trained
         interatomic potential.

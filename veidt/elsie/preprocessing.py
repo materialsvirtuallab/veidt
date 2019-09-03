@@ -164,7 +164,7 @@ class Preprocessing(object):
             process_seq (list/tuple/string): preprocessing methods
         """
         if (process_seq is not None) and (isinstance(process_seq, list) or
-                                              isinstance(process_seq, tuple)):
+                                          isinstance(process_seq, tuple)):
             for pro in process_seq:
                 getattr(self, self.proc_dict[pro])()
                 self.process_tag.append(pro)
