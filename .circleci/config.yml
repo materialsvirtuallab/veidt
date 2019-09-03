@@ -21,7 +21,7 @@ jobs:
             export PATH=$HOME/miniconda3/bin:$PATH
             source activate test-environment
             pip install --quiet -e .
-            pytest veidt
+            pytest --cov=veidt --cov-report html:coverage_reports veidt
             echo "pycodestyle checks..."
             pycodestyle veidt
             echo "--- Done ---"
