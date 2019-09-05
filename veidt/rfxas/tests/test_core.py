@@ -57,12 +57,3 @@ class RfxasXANESTest(unittest.TestCase):
         self.Fe_CenvPred.cenv_prediction()
         self.assertEqual(self.Fe_CenvPred.pred_cnum_ranklist, 'CN_4')
         self.assertEqual(self.Fe_CenvPred.pred_cenv[0], 'CN_4-tetrahedral-trigonal pyramidal-see-saw-like-square co-planar')
-
-    @unittest.skipIf(not binary_exist, "No binary found to load XDI file.")
-    def test_XDI_loading(self):
-        self.Fe2O3_xanes = XANES.from_XDI_file(Fe2O3_xdi)
-        self.Fe2O3_CenvPred = CenvPrediction(self.Fe2O3_xanes, 'E0', [-15, 45], self.Fe2O3_xanes.e0)
-        self.Fe2O3_CenvPred.cenv_prediction()
-        self.assertEqual(self.Fe2O3_CenvPred.pred_cnum_ranklist, 'CN_6')
-        self.assertEqual(self.Fe2O3_CenvPred.pred_cenv[0], 'CN_6-octahedral-pentagonal pyramidal-hexagonal planar')
-
