@@ -77,7 +77,7 @@ def release_github(ctx):
 @task
 def release(ctx, notest=False):
     if not notest:
-        ctx.run("nosetests")
+        ctx.run("pytest veidt")
     publish(ctx)
     update_doc(ctx)
     ctx.run("git tag -a v%s -m \"v%s release\"" % (VERSION, VERSION))
