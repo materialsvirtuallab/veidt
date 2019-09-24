@@ -8,8 +8,6 @@ from __future__ import division, print_function, unicode_literals, \
 import re
 import os
 import glob
-import random
-import logging
 import subprocess
 import itertools
 from collections import OrderedDict, defaultdict
@@ -20,7 +18,8 @@ from monty.io import zopen
 from monty.os.path import which
 from monty.tempfile import ScratchDir
 from monty.serialization import loadfn
-from pymatgen import Structure, Lattice, Element, units
+from pymatgen import Structure, Lattice, Element
+from pymatgen.core import units
 from veidt.potential.abstract import Potential
 from veidt.potential.processing import pool_from, convert_docs
 from veidt.potential.lammps.calcs import EnergyForceStress

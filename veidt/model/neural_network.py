@@ -5,7 +5,7 @@
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.externals import joblib
-from ..abstract import Model
+from veidt.abstract import Model
 
 
 class MultiLayerPerceptron(Model):
