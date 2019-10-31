@@ -100,8 +100,7 @@ def BESTCHILD(parent, C):
     bestscore = -np.inf
     for c in parent.children:
         exploid = c.reward / c.visits
-        explore = math.sqrt(2.0 * math.log(parent.visits) / \
-                            float(c.visits))
+        explore = math.sqrt(2.0 * math.log(parent.visits) / float(c.visits))
         score = exploid + C * explore
         if score == bestscore:
             bestchildren.append(c)
@@ -132,7 +131,7 @@ def REWARD(state, setup):
     filter_method = SelectKBest(f_regression, k=setup.k).fit_transform
     try:
         Fcandidate = filter_method(featureSubset, setup.properties)
-    except:
+    except ValueError:
         # k > len(Fcandidate)
         if featureSubset.shape[1]:
             Fcandidate = featureSubset
@@ -142,7 +141,7 @@ def REWARD(state, setup):
 
 
 def BACKUP(node, reward):
-    while node != None:
+    while node is not None:
         node.visits += 1
         # node.reward = reward if reward > node.reward else node.reward
         node.reward += reward
