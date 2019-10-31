@@ -36,7 +36,7 @@ class State():
         return next
 
     def is_terminal(self, k):
-        if len(self.fids) == k:
+        if len(self.fids) == k or len(self.avail_fids) == 0:
             return True
         return False
 
@@ -133,7 +133,10 @@ def REWARD(state, setup):
     try:
         Fcandidate = filter_method(featureSubset, setup.properties)
     except:
-        Fcandidate = featureSubset
+        # k > len(Fcandidate)
+        if featureSubset.shape[1]:
+            Fcandidate = featureSubset
+
     simulation_reward = gbr_reward(Fcandidate, setup.properties)
     return simulation_reward
 
