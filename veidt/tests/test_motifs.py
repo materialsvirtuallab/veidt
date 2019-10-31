@@ -2,7 +2,9 @@ import unittest
 from veidt.mcts.motifs import *
 from veidt.mcts.reward import gbr_reward
 import pandas as pd
+import os
 
+file_path = os.path.dirname(__file__)
 
 class TestState(unittest.TestCase):
     def testInit(self):
@@ -138,7 +140,7 @@ class TestTreePolicy(unittest.TestCase):
 
 class TestDefaultPolicy(unittest.TestCase):
     def testReward(self):
-        data = pd.read_csv("train.dat", sep=' ')
+        data = pd.read_csv(os.path.join(file_path, "train.dat"), sep=' ')
         features = data.values[:, 2:]
         properties = data.property
         state = State(list(range(5)), [5], 1)
@@ -161,7 +163,7 @@ class TestDefaultPolicy(unittest.TestCase):
         self.assertAlmostEqual(r3, gbr_r3, 3)
 
     def testDefaultPolicy(self):
-        data = pd.read_csv("train.dat", sep=' ')
+        data = pd.read_csv(os.path.join(file_path, "train.dat"), sep=' ')
         features = data.values[:, 2:]
         properties = data.property
         setup = SetUp(features,
