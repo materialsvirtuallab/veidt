@@ -36,7 +36,7 @@ class State():
         return next
 
     def is_terminal(self, k):
-        if len(self.avail_fids) == k:
+        if len(self.fids) == k:
             return True
         return False
 
