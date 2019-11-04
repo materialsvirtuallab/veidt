@@ -4,7 +4,7 @@ pymatgen==2019.10.16
 monty==3.0.2
 keras==2.3.1
 tabulate==0.8.5
-pandas==0.25.2
+pandas==0.25.3
 scikit-learn==0.21.3
 tensorflow==2.0.0
 h5py==2.10.0
