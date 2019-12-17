@@ -4,10 +4,10 @@
 
 import warnings
 
+import joblib
 from veidt.abstract import Model
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process import kernels
-from sklearn.externals import joblib
 
 
 class GaussianProcessRegressionModel(Model):
