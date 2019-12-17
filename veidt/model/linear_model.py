@@ -7,7 +7,6 @@ import warnings
 
 import joblib
 from veidt.abstract import Model
-import sklearn.linear_model
 
 
 class LinearModel(Model):
