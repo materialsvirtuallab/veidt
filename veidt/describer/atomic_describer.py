@@ -356,7 +356,7 @@ class BPSymmetryFunctions(Describer):
             with zopen(filename, 'rt') as f:
                 lines = f.read()
 
-            block_pattern = re.compile('(\n\s+\d+\n|^\s+\d+\n)(.+?)(?=\n\s+\d+\n|$)', re.S)
+            block_pattern = re.compile(r'(\n\s+\d+\n|^\s+\d+\n)(.+?)(?=\n\s+\d+\n|$)', re.S)
             points_features = []
             for (num_neighbor, block) in block_pattern.findall(lines):
                 point_features = pd.DataFrame([feature.split()[1:]

@@ -134,8 +134,8 @@ class SOAPotential(Potential):
         # energy_pattern = re.compile('dft_energy=(-?[0-9]+.[0-9]+)', re.I)
         energy_pattern = re.compile(r'(?<=\S{3}\s|dft_)energy=(-?[0-9]+.[0-9]+)')
         # stress_pattern = re.compile('dft_virial={(.+)}')
-        stress_pattern = re.compile('dft_virial=({|)(.+?)(}|) \S.*')
-        properties_pattern = re.compile('properties=(\S+)', re.I)
+        stress_pattern = re.compile(r'dft_virial=({|)(.+?)(}|) \S.*')
+        properties_pattern = re.compile(r'properties=(\S+)', re.I)
         # position_pattern = re.compile('\n(.+)', re.S)
         position_pattern = re.compile('\n(.+?)(?=\nE.*|\n\n.*|$)', re.S)
         # formatify = lambda string: [float(s) for s in string.split()]

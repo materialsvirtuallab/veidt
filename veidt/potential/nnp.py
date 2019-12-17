@@ -496,8 +496,8 @@ class NNPotential(Potential):
             with zopen(output) as f:
                 error_lines = f.read()
 
-            energy_rmse_pattern = re.compile('ENERGY\s*\S*\s*(\S*)\s*(\S*).*?\n')
-            forces_rmse_pattern = re.compile('FORCES\s*\S*\s*(\S*)\s*(\S*).*?\n')
+            energy_rmse_pattern = re.compile(r'ENERGY\s*\S*\s*(\S*)\s*(\S*).*?\n')
+            forces_rmse_pattern = re.compile(r'FORCES\s*\S*\s*(\S*)\s*(\S*).*?\n')
             self.train_energy_rmse, self.validation_energy_rmse = \
                 np.array([line for line in energy_rmse_pattern.findall(error_lines)],
                          dtype=np.float).T
