@@ -38,7 +38,6 @@ class GeneratorTest(unittest.TestCase):
     def test_serialize(self):
         json_str = json.dumps(self.generator.as_dict())
         recover = FuncGenerator.from_dict(json.loads(json_str))
-        self.assert_(True)
 
 
 class MultiDescriberTest(unittest.TestCase):

@@ -91,7 +91,7 @@ class CoulomMatrixTest(unittest.TestCase):
 
     def test_coulomb_mat(self):
         cm = CoulombMatrix()
-        cmat = cm.describe(self.s1).as_matrix().reshape(self.s1.num_sites, self.s1.num_sites)
+        cmat = cm.describe(self.s1).values.reshape(self.s1.num_sites, self.s1.num_sites)
         na = Element('Na')
         cl = Element('Cl')
         dist = self.s1.distance_matrix
@@ -102,7 +102,7 @@ class CoulomMatrixTest(unittest.TestCase):
     def test_sorted_coulomb_mat(self):
         cm = CoulombMatrix(sorted=True)
         c = cm.coulomb_mat(self.s2)
-        cmat = cm.describe(self.s2).as_matrix().reshape(self.s2.num_sites, self.s2.num_sites)
+        cmat = cm.describe(self.s2).values.reshape(self.s2.num_sites, self.s2.num_sites)
         norm_order_ind = np.argsort(np.linalg.norm(c, axis=1))
         for i in range(cmat.shape[1]):
             self.assertTrue(np.all(cmat[i] == c[norm_order_ind[i]]))
@@ -110,9 +110,9 @@ class CoulomMatrixTest(unittest.TestCase):
     def test_random_coulom_mat(self):
         cm = CoulombMatrix(randomized=True, random_seed=7)
         c = cm.coulomb_mat(self.s2)
-        cmat = cm.describe(self.s2).as_matrix().reshape(self.s2.num_sites, self.s2.num_sites)
+        cmat = cm.describe(self.s2).values.reshape(self.s2.num_sites, self.s2.num_sites)
         cm2 = CoulombMatrix(randomized=True, random_seed=8)
-        cmat2 = cm2.describe(self.s2).as_matrix().reshape(self.s2.num_sites, self.s2.num_sites)
+        cmat2 = cm2.describe(self.s2).values.reshape(self.s2.num_sites, self.s2.num_sites)
         self.assertEqual(np.all(cmat == cmat2), False)
         for i in range(cmat.shape[1]):
             self.assertTrue(cmat[i] in c[i])
