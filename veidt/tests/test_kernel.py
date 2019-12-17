@@ -18,12 +18,12 @@ class TestKernel(unittest.TestCase):
         cls.sigma = 1
 
     def test_rbf(self):
-        self.assertAlmostEqual(np.asscalar(np.sum(rbf(self.x1, self.x2, self.sigma))),
+        self.assertAlmostEqual(np.sum(rbf(self.x1, self.x2, self.sigma)).item(),
                                4.*np.exp(-2/2))
 
     def test_get_kernel(self):
         rbf2 = get_kernel('rbf')
-        self.assertAlmostEqual(np.asscalar(np.sum(rbf2(self.x1, self.x2, self.sigma))),
+        self.assertAlmostEqual(np.sum(rbf2(self.x1, self.x2, self.sigma)).item(),
                                4. * np.exp(-2 / 2))
         test_callable = get_kernel(test_func)
         self.assertEqual(1, test_callable())
@@ -32,7 +32,7 @@ class TestKernel(unittest.TestCase):
                                  "config": {"x1": np.array([[1, 2], [1, 2]]),
                                             "x2": np.array([[2, 3], [2, 3]]),
                                             "sigma": 1}})
-        self.assertAlmostEqual(np.asscalar(np.sum(test_dict)),
+        self.assertAlmostEqual(np.sum(test_dict).item(),
                                4. * np.exp(-2 / 2))
         with self.assertRaises(ValueError):
             get_kernel({"class_name": 'none existing',
