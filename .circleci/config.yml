@@ -24,7 +24,7 @@ jobs:
             echo "pycodestyle checks..."
             pycodestyle veidt
             echo "--- Done ---"
-            coveralls
+            # coveralls
           no_output_timeout: 3600
       - store_artifacts:
           path: coverage_reports/
