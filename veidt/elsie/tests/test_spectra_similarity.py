@@ -3,7 +3,7 @@ import numpy as np
 from pymatgen import Structure, Element
 from copy import deepcopy
 from veidt.elsie.spectra_similarity import *
-from pymatgen.analysis.xas.spectrum import XANES
+from pymatgen.analysis.xas.spectrum import XAS
 
 Al2O3_cif = os.path.join(os.path.dirname(__file__), 'alpha_Al2O3.cif')
 LiCoO2_cif = os.path.join(os.path.dirname(__file__), 'LiCoO2_mp24850.cif')
@@ -20,7 +20,7 @@ with open(Al2O3_spect_file, 'r') as f:
 
 class SpectraSimilarityTest(unittest.TestCase):
     def setUp(self):
-        self.Al2O3_xane_1 = XANES(Al2O3_spect['x'], Al2O3_spect['y'], Al2O3_stru, Element('Al'), 'K')
+        self.Al2O3_xane_1 = XAS(Al2O3_spect['x'], Al2O3_spect['y'], Al2O3_stru, Element('Al'), 'K')
 
         self.Al2O3_xane_2 = deepcopy(self.Al2O3_xane_1)
         self.Al2O3_xane_2.x = self.Al2O3_xane_2.x - 40
@@ -31,7 +31,7 @@ class SpectraSimilarityTest(unittest.TestCase):
         self.Al2O3_xane_right_shift5 = deepcopy(self.Al2O3_xane_1)
         self.Al2O3_xane_right_shift5.x = self.Al2O3_xane_right_shift5.x + 5
 
-        self.LiCoO2_xane = XANES(LiCoO2_spect['x'], LiCoO2_spect['y'], LiCoO2_stru, Element('Co'), 'K')
+        self.LiCoO2_xane = XAS(LiCoO2_spect['x'], LiCoO2_spect['y'], LiCoO2_stru, Element('Co'), 'K')
 
     def test_energy_range_warning(self):
         #with self.assertWarnsRegex(UserWarning, 'less than 30 meV'):
