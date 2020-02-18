@@ -8,17 +8,51 @@ import warnings
 import os
 import json
 import joblib
+import logging 
+import requests
+from tqdm import tqdm
+from zipfile import ZipFile
 
-MODEL_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "./models")
-DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "./data")
-CNUM_MODEL_NAME_TEMPLATE = 'RandomForest_{}_c_num.sav'
-CMOTIF_MODEL_NAME_TEMPLATE = 'RandomForest_{}_c_env_ex_{}.sav'
+from keras.models import load_model
+
+logging.basicConfig()
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+CWD = os.path.dirname(os.path.abspath(__file__))
+
+DATA_DIR = os.path.join(CWD, "./data")
+EXTRA_MODELS = os.path.join(CWD, "./ex_models.zip")
+EXTRA_MODEL_DIR = os.path.join(CWD, "./ex_models/Model_share")
+EXTRA_MODEL_SUB_DICT = {"cnn": "CNN_model", "knn": "KNN_model", "mlp": "MLP_model", "svc": "SVC_model"}
+EXTRA_TEMPLATES = {"cnum": "{}_c_num", "cmotif": "{}_c_env_{}_env_label"}
+
+EXTRA_MODEL_URL = 'https://ndownloader.figshare.com/files/18741755'
+
+CN_CLASSES = ['CN_1-CN_4', 'CN_12', 'CN_12-CN_10', 'CN_12-CN_3',
+              'CN_12-CN_6-CN_9', 'CN_2', 'CN_2-CN_4-CN_6', 'CN_2-CN_6',
+              'CN_2-CN_6-CN_5', 'CN_3', 'CN_3-CN_4', 'CN_3-CN_5',
+              'CN_3-CN_5-CN_6', 'CN_3-CN_6', 'CN_3-CN_6-CN_4', 'CN_4',
+              'CN_4-CN_1', 'CN_4-CN_2', 'CN_4-CN_3', 'CN_4-CN_3-CN_5-CN_6',
+              'CN_4-CN_3-CN_6', 'CN_4-CN_5', 'CN_4-CN_5-CN_6', 'CN_4-CN_6',
+              'CN_4-CN_6-CN_5', 'CN_4-CN_8', 'CN_5', 'CN_5-CN_3',
+              'CN_5-CN_3-CN_4', 'CN_5-CN_3-CN_6', 'CN_5-CN_4', 'CN_5-CN_4-CN_6',
+              'CN_5-CN_6', 'CN_5-CN_6-CN_3', 'CN_5-CN_6-CN_7', 'CN_5-CN_7-CN_6',
+              'CN_6', 'CN_6-CN_1', 'CN_6-CN_12', 'CN_6-CN_2', 'CN_6-CN_3',
+              'CN_6-CN_3-CN_5', 'CN_6-CN_4', 'CN_6-CN_4-CN_5', 'CN_6-CN_5',
+              'CN_6-CN_5-CN_3', 'CN_6-CN_7', 'CN_6-CN_8', 'CN_6-CN_8-CN_4',
+              'CN_7', 'CN_7-CN_6', 'CN_7-CN_9', 'CN_8', 'CN_8-CN_7']
+
+
+with open(os.path.join(DATA_DIR, 'cmotif_labels.json'), 'r') as f:
+    CMOTIF_LABELS = json.load(f)
 
 
 class CenvPrediction(object):
+    _available_models = ['rf', 'knn', 'svc', 'mlp', 'cnn']
 
     def __init__(self, xanes_spectrum, energy_reference, energy_range, edge_energy=None,
-                 spectrum_interpolation=True):
+                 spectrum_interpolation=True, model='rf'):
         """
         Args:
             xanes_spectrum: veidt.rfxas.core.XANES object
@@ -35,12 +69,33 @@ class CenvPrediction(object):
                 spectrum_interpolation option if False, then the CenvPrediction object will use the original spectrum
                 of xanes_spectrum for coordination environment prediction. The original spectrum need to be a vector
                 with length equals 200.
+            model (str): rf, knn, mlp or svc. Default is rf. For other models, model download ~1.28 GB is required.
         """
 
         self.xanes_spectrum = xanes_spectrum
         self.absorption_specie = self.xanes_spectrum.absorption_specie
         self.energy_reference = energy_reference
         self.energy_range = energy_range
+        self.cnum_model_name_template = 'RandomForest_{}_c_num.sav'
+        self.cmotif_model_name_template = 'RandomForest_{}_c_env_ex_{}.sav'
+        self.model_dir = os.path.join(CWD, "./models")
+        if model not in self._available_models:
+            raise ValueError('Model type %s not recognized ' % str(model), ' choose from ', self._available_models)
+        if model != 'rf':
+            if os.path.isdir(EXTRA_MODEL_DIR):
+                pass
+            else:
+                _download_models(EXTRA_MODEL_URL, EXTRA_MODELS)
+            global MODEL_DIR
+            self.model_dir = os.path.join(EXTRA_MODEL_DIR, EXTRA_MODEL_SUB_DICT[model])
+
+            if model.lower() == 'cnn':
+                suffix = '.h5'
+            else:
+                suffix = '.sav'
+            self.cnum_model_name_template = model.upper() + '_' + EXTRA_TEMPLATES['cnum'] + suffix
+            self.cmotif_model_name_template = model.upper() + '_' + EXTRA_TEMPLATES['cmotif'] + suffix
+
         if isinstance(self.energy_range, list):
             self.energy_lower_bound = self.energy_range[0]
             self.energy_higher_bound = self.energy_range[-1]
@@ -62,6 +117,10 @@ class CenvPrediction(object):
             self.interp_spectrum = self.xanes_spectrum.y
             self.interp_spectrum_reshape = np.array(self.interp_spectrum).reshape(1, -1)
             self.interp_energy = self.xanes_spectrum.x
+
+        self.model = model.lower()
+        if self.model == 'cnn':
+            self.interp_spectrum_reshape = self.interp_spectrum_reshape.reshape((1, -1, 1))
 
     def cenv_prediction(self):
         """
@@ -86,12 +145,22 @@ class CenvPrediction(object):
             warnings.warn(warning_msg)
             self.pred_cnum_ranklist = 'cnum undetermined'
         else:
-            cnum_model_name = CNUM_MODEL_NAME_TEMPLATE.format(self.absorption_specie)
-            cnum_model_path = os.path.join(MODEL_DIR, 'cnum', cnum_model_name)
+            cnum_model_name = self.cnum_model_name_template.format(self.absorption_specie)
+            cnum_model_path = os.path.join(self.model_dir, 'cnum', cnum_model_name)
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore", category=UserWarning)
-                cnum_model_loaded = joblib.load(cnum_model_path)
-            self.pred_cnum_ranklist = cnum_model_loaded.predict(self.interp_spectrum_reshape)[0]
+                logger.info('Loaded %s model' % cnum_model_path)
+                if cnum_model_path.endswith('.sav'):
+                    cnum_model_loaded = joblib.load(cnum_model_path)
+                elif cnum_model_path.endswith('.h5'):
+                    cnum_model_loaded = load_model(cnum_model_path)
+                else:
+                    raise ValueError("Cnum model not recognized")
+            self.pred_cnum_ranklist = cnum_model_loaded.predict(self.interp_spectrum_reshape)
+            if self.model == 'cnn':
+                self.pred_cnum_ranklist = CN_CLASSES[np.argmax(self.pred_cnum_ranklist)]
+            else:
+                self.pred_cnum_ranklist = self.pred_cnum_ranklist[0]
 
     def _cmotif_prediction(self):
         cmotif_pred_ele_json = os.path.join(DATA_DIR, 'cmotif_predict_elements.json')
@@ -113,12 +182,24 @@ class CenvPrediction(object):
                     pseudo_cmotif_label = '{} coord. motif undetermined'.format(indi_pred_cnum)
                     spectral_env_pred.append(pseudo_cmotif_label)
                 else:
-                    cmotif_model_name = CMOTIF_MODEL_NAME_TEMPLATE.format(self.absorption_specie, indi_pred_cnum)
-                    cmotif_model_path = os.path.join(MODEL_DIR, 'cmotif', cmotif_model_name)
+                    cmotif_model_name = self.cmotif_model_name_template.format(self.absorption_specie, indi_pred_cnum)
+                    cmotif_model_path = os.path.join(self.model_dir, 'cmotif', cmotif_model_name)
                     with warnings.catch_warnings():
                         warnings.simplefilter("ignore", category=UserWarning)
-                        cmotif_model_loaded = joblib.load(cmotif_model_path)
-                        pred_motif_ranklist = cmotif_model_loaded.predict(self.interp_spectrum_reshape)[0]
+                        logger.info('Loaded %s model' % cmotif_model_path)
+                        if cmotif_model_path.endswith('.sav'):
+                            cmotif_model_loaded = joblib.load(cmotif_model_path)
+                        elif cmotif_model_path.endswith('.h5'):
+                            cmotif_model_loaded = load_model(cmotif_model_path)
+                        else:
+                            raise ValueError("Model format not recognized")
+
+                        if self.model == 'cnn':
+                            pred_motif_ranklist = cmotif_model_loaded.predict(self.interp_spectrum_reshape.reshape((1, -1, 1)))
+                            labels = CMOTIF_LABELS[cmotif_model_name[4:-3]]
+                            pred_motif_ranklist = labels[np.argmax(pred_motif_ranklist)]
+                        else:
+                            pred_motif_ranklist = cmotif_model_loaded.predict(self.interp_spectrum_reshape)[0]
                         pred_cnum_cmotif_concat = '-'.join([indi_pred_cnum, pred_motif_ranklist])
                         spectral_env_pred.append(pred_cnum_cmotif_concat)
 
@@ -204,3 +285,29 @@ def find_nearest_energy_index(energy_array, energy_value):
     energy_array = np.asarray(energy_array)
     energy_index = (np.abs(energy_array - energy_value)).argmin()
     return energy_index
+
+
+def _download_models(url, file_path=EXTRA_MODELS):
+    """
+    Download machine learning model files 
+    
+    Args:
+        url: (str) url link for the models
+    """
+    
+    logger.info("Fetching {} from {} to {}".format(os.path.basename(file_path),
+                                             url, file_path))
+
+    r = requests.get(url, stream=True)
+    total_size = int(r.headers.get('content-length', 0))
+    block_size = 1024 * 1024  # 1 Mbyte
+    t = tqdm(total=total_size, unit='iB', unit_scale=True)
+    with open(file_path, "wb") as file_out:
+        for chunk in r.iter_content(chunk_size=block_size):
+            t.update(len(chunk))
+            file_out.write(chunk)
+    t.close()
+    r.close()
+    logger.info("Start extracting models...")
+    with ZipFile(EXTRA_MODELS, 'r') as zip_obj:
+        zip_obj.extractall(os.path.join(os.path.basename(file_path), 'ex_models'))
