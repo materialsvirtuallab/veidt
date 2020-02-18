@@ -8,7 +8,7 @@ import warnings
 import os
 import json
 import joblib
-import logging 
+import logging
 import requests
 from tqdm import tqdm
 from zipfile import ZipFile
@@ -195,7 +195,8 @@ class CenvPrediction(object):
                             raise ValueError("Model format not recognized")
 
                         if self.model == 'cnn':
-                            pred_motif_ranklist = cmotif_model_loaded.predict(self.interp_spectrum_reshape.reshape((1, -1, 1)))
+                            pred_motif_ranklist = cmotif_model_loaded.predict(
+                                self.interp_spectrum_reshape.reshape((1, -1, 1)))
                             labels = CMOTIF_LABELS[cmotif_model_name[4:-3]]
                             pred_motif_ranklist = labels[np.argmax(pred_motif_ranklist)]
                         else:
@@ -289,14 +290,14 @@ def find_nearest_energy_index(energy_array, energy_value):
 
 def _download_models(url, file_path=EXTRA_MODELS):
     """
-    Download machine learning model files 
-    
+    Download machine learning model files
+
     Args:
         url: (str) url link for the models
     """
-    
-    logger.info("Fetching {} from {} to {}".format(os.path.basename(file_path),
-                                             url, file_path))
+
+    logger.info("Fetching {} from {} to {}".format(
+        os.path.basename(file_path), url, file_path))
 
     r = requests.get(url, stream=True)
     total_size = int(r.headers.get('content-length', 0))
